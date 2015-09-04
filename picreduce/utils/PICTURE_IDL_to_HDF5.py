@@ -9,59 +9,115 @@ import astropy.io.fits as fits
 def get_dsets(sequence_dir):
     return [path.split('/')[-2] for path in glob.glob(sequence_dir+"/*/")]
 
-def load_or_create(data_directory,dset_list=[],fname='/data.hdf5',readwrite='r'):
-    print("hdf5 file:"+data_directory+fname)
-    '''
-    checks if fname exists, and if not, creates a file, fname,
-    in data_directory with datasets from dset_list
+def load_or_create(data_directory,
+                   dset_list=[],
+                   fname='/data.hdf5',
+                   readwrite='r'):
+    r"""Function for loading a HDF5 dataset generated from PICTURE IDL save files.
+    Checks if `fname exists`, and if not, creates a file, `fname`,
+    in `data_directory` with datasets from `dset_list`
      (corresponding to subdirectories inside data_directory)
-    if dset_list is not set, the new file will not be created.
-    '''
+     
+    .. warning:: if dset_list is not set, the new file will not be created.
+
+    Parameters
+    ----------
+    data_directory : string
+        
+    dset_list : list
+       list of datasets (e.g. jplgse.20071101.11111)
+    fname : string, optional
+        filename of the output HDF5 file
+         defaults to creating `data.hdf5`  in `data_directory` when ommited.
+    Returns
+    -------
+    f:
+        An h5py file object.
+       
+    Raises
+    ------
+    ValueError
+        forgot to pass a list?
+    See Also
+    --------
+    PICTURE_IDL_to_HDF5 : the heavy lifting parsing function.
+    Notes
+    References
+    ----------
+    Cite the relevant literature, e.g. [1]_.  You may also cite these
+    references in the notes section above.
+    .. h5py documentation: 
+    Examples
+    --------
+    >>> data_directory=expanduser('~')+'/projects/picture/data/wcs_multi_color_nulling/'
+    >>>dset_list=['jplgse.20141202.63381',
+            'jplgse.20141202.63531',
+           'jplgse.20141202.63737',
+             'jplgse.20141202.63960',
+           'jplgse.20141202.64119',
+            'jplgse.20141202.64294',
+            'jplgse.20141202.64497']
+    >>>IDL_to_HDF5.load_or_create(data_directory,dset_list=dset_list) 
+    
+    """
+    print("Checking for hdf5 file:"+data_directory+fname)
+
     if not os.path.isfile(data_directory+fname):
         with h5py.File(data_directory+fname,'w') as f:
             if dset_list:
                 for dset in dset_list:
                     print("creating: "+dset+" in "+fname+" in "+ data_directory)
-                    run(f,data_directory,dset)
+                    PICTURE_IDL_to_HDF5(f,data_directory,dset)
                 #f.close()
             else:
                 raise ValueError("invalid dset list: "+str(dset_list))
+    else:
+        print("Found hdf5 file:"+data_directory+fname)
+
     f = h5py.File(data_directory+fname,readwrite)
     return f
 
-def run(f,base_dir,sub_dir):
+def PICTURE_IDL_to_HDF5(f,base_dir,sub_dir):
     '''
-    douglase@bu.edu, 2 august 2014
-    inputs:
-    f -an hdf file or group
-    base_dir -the path to the data directory
-    sub_dir - the the subdirectory the files of interest are stored in within base_dir,
-    this will also be the name of the HDF data group added to f.
+
+    Parameters
+    ----------
+    f : an HDF5 file or group
+    base_dir  : the path to the data directory
+    sub_dir :  the the subdirectory the files of interest are stored in
+     within `base_dir,` this will also be the name of the HDF data group added to `f`.
     
-    returns f
+    Returns
+    ----------
+    f : the input HDF5 file or group.
     
     CAVEATS: 
     currently data.d is not added to the HDF5 file, additional parsing needs to be added.
 
-    Example, MULTIPLE SUBDIRECTORIES in a single file:
     
-data_directory="~/projects/PICTURE/data/todays_run"
-datasets=[["gsedata.idl.20140703.59076","showat.20140703.59067"," #test 1 bright, white light"],
+    Example
+    ----------
+     MULTIPLE SUBDIRECTORIES in a single file:
+    
+    >>> data_directory="~/projects/PICTURE/data/todays_run"
+    >>> datasets=[["gsedata.idl.20140703.59076","showat.20140703.59067"," #test 1 bright, white light"],
     ["gsedata.idl.20140703.59453","showat.20140703.59431","test 2: dim, white light"]]
 
-f = h5py.File(data_directory+'data.hdf5','w')
-for dset in datasets:
-    PICTURE_IDL_to_HDF5.run(f,data_directory,dset[0])
-    if len(dset)==3:
-        PICTURE_IDL_to_HDF5.run(f,data_directory,dset[1])
-    f.close()
-    
-    f = h5py.File(data_directory+'data.hdf5','w')
-for dset in datasets:
-    PICTURE_IDL_to_HDF5.run(f,data_directory,dset[0])
-    if len(dset)==3:
-        PICTURE_IDL_to_HDF5.run(f,data_directory,dset[1])
-f.close()
+    >>> f = h5py.File(data_directory+'data.hdf5','w')
+    >>> for dset in datasets:
+            PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[0])
+            if len(dset)==3:
+                PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[1])
+        >>> #process data
+        >>>f.close()
+        
+    Single subdirectory
+    >>> f = h5py.File(data_directory+'data.hdf5','w')
+    >>>for dset in datasets:
+           PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[0])
+          if len(dset)==3:
+               PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[1])
+    >>> f.close()
     
     '''
     grp = f.create_group(str(sub_dir))
@@ -187,6 +243,7 @@ def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     'idlsave' header from a custom IDLSAV file opened with scipy.io
 
     returns:
+    
     astropy.io.fits.PrimaryHDU
     
     example:
@@ -214,14 +271,18 @@ def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     return hdu
 
 def attribute_to_FITS_header(attrs,hdu=None):
-    '''takes HDF5 dsets attributes and parses it's attributes into a FITS header
+    '''
+    Takes HDF5 dsets attributes and parses it's attributes into a FITS header
 
     returns:
+    ----------
+
     astropy.io.fits.PrimaryHDU
     
-    example:
-    
-    hdu=  header_to_FITS_header(f[im_dset]['sci_header'][0],input='hdf5')
+    Examples:
+    ----------
+
+    >>> hdu =  header_to_FITS_header(f[im_dset]['sci_header'][0], input='hdf5')
 
     '''
     if hdu==None:
@@ -249,6 +310,9 @@ def attribute_to_FITS_header(attrs,hdu=None):
 
 
 def get_dsets(sequence_dir):
+    '''
+    Find all the the subdirectories in `sequence_dir` and return as a sorted list
+    '''
     dsets=[path.split('/')[-2] for path in glob.glob(sequence_dir+"/*/")]
     dsets.sort()
     return dsets

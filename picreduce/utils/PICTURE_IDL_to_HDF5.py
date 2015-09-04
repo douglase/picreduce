@@ -236,20 +236,24 @@ def collect_data_and_headers(globbed_list):
 
 def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     '''
-    takes input header and parse into a FITS header
+    Takes input header from one format and parses it into a FITS header.
 
     keywords:
     'hdf5' structured numpy array  from a custom PICTURE hdf5 file. 
     'idlsave' header from a custom IDLSAV file opened with scipy.io
-
-    returns:
     
+    returns:
+    ----------
     astropy.io.fits.PrimaryHDU
     
-    example:
-    
-    hdu=  header_to_FITS_header(f[im_dset]['sci_header'][0],input='hdf5')
+    Examples
+    ----------
 
+    >>> hdu =  header_to_FITS_header(f[im_dset]['sci_header'][0],input='hdf5')
+
+    Raises
+    ----------
+          ValueError
     '''
     if hdu == None:
         hdu=fits.PrimaryHDU()

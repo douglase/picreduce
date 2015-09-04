@@ -41,9 +41,11 @@ User Documentation
 .. only:: latex
 
     .. toctree::
-       :maxdepth: 1
+       :maxdepth: 2
 
-       whatsnew/1.0
-
+       PCA
+       utils
+       null_depth
+       plotting
 
 

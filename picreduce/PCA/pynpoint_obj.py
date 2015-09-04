@@ -16,9 +16,9 @@ import poppy
 import astropy.io.fits
 import glob
 import sys,os
-sys.path.insert(0, '../../analysis_tools/')
+
 #import radial_profile
-import max_cen_phot
+from ..utils import max_cen_phot
 
 
 import astropy.convolution as conv
@@ -33,8 +33,6 @@ mpl.rcParams['image.interpolation'] = 'none'
 mpl.rcParams['image.origin']='lower'
 
 # <codecell>
-
-#ls '/home/douglase/projects/picture/data/flight_sequence_20140530/gsedata.idl.05302014.58866/shifted/gsedata.idl.05302014.58866/'
 
 # <codecell>
 
@@ -120,13 +118,22 @@ class observation_sets:
                       low_color = 'black',
                       angular_units='arcsec'):
         '''
-    
-        angular_units:
+
+        Parameters
+        ----------
+        angular_units: string
             'arcsec' or 'lambdaD', changes xlabel.
-        ran_sub:
+        ran_sub: Bool 
              None or false gives glob() ordered set, -1 shuffles, N<N_files gives smaller set of images
-        smooth_option:
+        smooth_option: string
              values: None, 'before', 'after', smooth with the bright_psf_kernel before or after the PCA analysis.
+
+             
+        Returns
+        -------
+        dict containing the 'residual', the radial residual, 'radial_res', ploting axis:'ax':ax,center of image: 'center':center}
+
+
         '''
         self.smooth_option=smooth_option
         zero_color = 'white'

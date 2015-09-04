@@ -46,7 +46,7 @@ def load_or_create(data_directory,
     
     See Also
     --------
-    PICTURE_IDL_to_HDF5 : the heavy lifting parsing function.
+    jplgse_IDL_to_HDF5 : the heavy lifting parsing function.
     
     Notes
     ----------
@@ -70,7 +70,7 @@ def load_or_create(data_directory,
             if dset_list:
                 for dset in dset_list:
                     print("creating: "+dset+" in "+fname+" in "+ data_directory)
-                    PICTURE_IDL_to_HDF5(f,data_directory,dset)
+                    jplgse_IDL_to_HDF5(f,data_directory,dset)
                 #f.close()
             else:
                 raise ValueError("invalid dset list: "+str(dset_list))
@@ -80,7 +80,7 @@ def load_or_create(data_directory,
     f = h5py.File(data_directory+fname,readwrite)
     return f
 
-def PICTURE_IDL_to_HDF5(f,base_dir,sub_dir):
+def jplgse_IDL_to_HDF5(f,base_dir,sub_dir):
     r'''
     Function for parsing a directory idl save files produced by jplgse.
     
@@ -109,9 +109,9 @@ def PICTURE_IDL_to_HDF5(f,base_dir,sub_dir):
 
     >>> f = h5py.File(data_directory+'data.hdf5','w')
     >>> for dset in datasets:
-            PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[0])
+            PICTURE_IDL_to_HDF5.jplgse_IDL_to_HDF5(f,data_directory,dset[0])
             if len(dset)==3:
-                PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[1])
+                PICTURE_IDL_to_HDF5.jplgse_IDL_to_HDF5(f,data_directory,dset[1])
         >>> #process data
         >>>f.close()
         
@@ -119,9 +119,9 @@ def PICTURE_IDL_to_HDF5(f,base_dir,sub_dir):
     
     >>> f = h5py.File(data_directory+'data.hdf5','w')
     >>>for dset in datasets:
-           PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[0])
+           PICTURE_IDL_to_HDF5.jplgse_IDL_to_HDF5(f,data_directory,dset[0])
            if len(dset)==3:
-               PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[1])
+               PICTURE_IDL_to_HDF5.jplgse_IDL_to_HDF5(f,data_directory,dset[1])
     >>> f.close()
     
     '''

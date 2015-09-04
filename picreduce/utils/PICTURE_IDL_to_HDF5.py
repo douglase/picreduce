@@ -34,18 +34,18 @@ def load_or_create(data_directory,
         filename of the output HDF5 file
          defaults to creating `data.hdf5`  in `data_directory` when ommited.
     Returns
-    -------
+    ----------
     f:
         An h5py file object.
     
     Raises
-    ------
+    ----------
     
     ValueError
     forgot to pass a list?
     
     See Also
-    --------
+    ----------
     jplgse_to_HDF5 : the heavy lifting parsing function.
     
     Notes
@@ -56,7 +56,7 @@ def load_or_create(data_directory,
     5py documentation:
     
     Examples
-    --------
+    ----------
     
     >>> data_directory=expanduser('~')+'/projects/picture/data/wcs_multi_color_nulling/'
     >>> dset_list=['jplgse.20141202.63381','jplgse.20141202.63531','jplgse.20141202.63737','jplgse.20141202.63960','jplgse.20141202.64119','jplgse.20141202.64294','jplgse.20141202.64497']
@@ -99,7 +99,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
     Examples
     ----------
     
-     MULTIPLE SUBDIRECTORIES in a single file:
+    >>> #MULTIPLE SUBDIRECTORIES in a single file:
     >>> data_directory="~/projects/PICTURE/data/todays_run"
     >>> datasets=[["gsedata.idl.20140703.59076","showat.20140703.59067"," #test 1 bright, white light"],
     ["gsedata.idl.20140703.59453","showat.20140703.59431","test 2: dim, white light"]]
@@ -111,8 +111,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 PICTURE_IDL_to_HDF5.jplgse_to_HDF5(f,data_directory,dset[1])
         >>> #process data
         >>>f.close()
-        
-    Single subdirectory:
+
     
     >>> f = h5py.File(data_directory+'data.hdf5','w')
     >>>for dset in datasets:

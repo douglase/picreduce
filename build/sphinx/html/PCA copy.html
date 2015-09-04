@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Reduction utilities (picreduce.utils) &mdash; picreduce v0.0.dev4</title>
+    
+    <link rel="stylesheet" href="_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.dev4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev4" href="index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="genindex.html">Index</a></li>
+    <li><a title="Module Index" href="py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="index.html">picreduce v0.0.dev4</a>
+	 &raquo;
+      </li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="data-reduction-utilities-picreduce-utils">
+<span id="picreduce-utils"></span><h1>Data Reduction utilities (<tt class="docutils literal"><span class="pre">picreduce.utils</span></tt>)<a class="headerlink" href="#data-reduction-utilities-picreduce-utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="reference-api">
+<h2>Reference/API<a class="headerlink" href="#reference-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-picreduce.utils">
+<span id="picreduce-utils-package"></span><h3>picreduce.utils Package<a class="headerlink" href="#module-picreduce.utils" title="Permalink to this headline">¶</a></h3>
+<p>This package contains tools for measuring system performance with Principle Component Analysis (PCA)</p>
+<div class="section" id="functions">
+<h4>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.ZoomSameShape.html#picreduce.utils.ZoomSameShape" title="picreduce.utils.ZoomSameShape"><tt class="xref py py-obj docutils literal"><span class="pre">ZoomSameShape</span></tt></a>(input_array,&nbsp;zoom[,&nbsp;oversample])</td>
+<td>uses</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.attribute_to_FITS_header.html#picreduce.utils.attribute_to_FITS_header" title="picreduce.utils.attribute_to_FITS_header"><tt class="xref py py-obj docutils literal"><span class="pre">attribute_to_FITS_header</span></tt></a>(attrs[,&nbsp;hdu])</td>
+<td>takes HDF5 dsets attributes and parses it&#8217;s attributes into a FITS header</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.collect_data_and_headers.html#picreduce.utils.collect_data_and_headers" title="picreduce.utils.collect_data_and_headers"><tt class="xref py py-obj docutils literal"><span class="pre">collect_data_and_headers</span></tt></a>(globbed_list)</td>
+<td>this function should replace seperate sections for WFS and sci</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.congrid.html#picreduce.utils.congrid" title="picreduce.utils.congrid"><tt class="xref py py-obj docutils literal"><span class="pre">congrid</span></tt></a>(a,&nbsp;newdims[,&nbsp;method,&nbsp;centre,&nbsp;minusone])</td>
+<td>Arbitrary resampling of source array to new dimension sizes.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.defosys.html#picreduce.utils.defosys" title="picreduce.utils.defosys"><tt class="xref py py-obj docutils literal"><span class="pre">defosys</span></tt></a>([fov])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.general_opt.html#picreduce.utils.general_opt" title="picreduce.utils.general_opt"><tt class="xref py py-obj docutils literal"><span class="pre">general_opt</span></tt></a>(image1,&nbsp;image2,&nbsp;function[,&nbsp;...])</td>
+<td>globalmin:</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.get_dsets.html#picreduce.utils.get_dsets" title="picreduce.utils.get_dsets"><tt class="xref py py-obj docutils literal"><span class="pre">get_dsets</span></tt></a>(sequence_dir)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.get_nulled_frame_headers.html#picreduce.utils.get_nulled_frame_headers" title="picreduce.utils.get_nulled_frame_headers"><tt class="xref py py-obj docutils literal"><span class="pre">get_nulled_frame_headers</span></tt></a>(f,&nbsp;dset[,&nbsp;...])</td>
+<td>example:</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.get_nulled_frames.html#picreduce.utils.get_nulled_frames" title="picreduce.utils.get_nulled_frames"><tt class="xref py py-obj docutils literal"><span class="pre">get_nulled_frames</span></tt></a>(f,&nbsp;dset[,&nbsp;null_state,&nbsp;...])</td>
+<td>example:</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.header_to_FITS_header.html#picreduce.utils.header_to_FITS_header" title="picreduce.utils.header_to_FITS_header"><tt class="xref py py-obj docutils literal"><span class="pre">header_to_FITS_header</span></tt></a>(inputHeader[,&nbsp;fmt,&nbsp;hdu])</td>
+<td>takes input header and parse into a FITS header</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.load_or_create.html#picreduce.utils.load_or_create" title="picreduce.utils.load_or_create"><tt class="xref py py-obj docutils literal"><span class="pre">load_or_create</span></tt></a>(data_directory[,&nbsp;dset_list,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.max_cen_phot.html#picreduce.utils.max_cen_phot" title="picreduce.utils.max_cen_phot"><tt class="xref py py-obj docutils literal"><span class="pre">max_cen_phot</span></tt></a>(in_array[,&nbsp;radius_pixels,&nbsp;...])</td>
+<td>aperture photometry with auto centroiding.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.nuller_dm.html#picreduce.utils.nuller_dm" title="picreduce.utils.nuller_dm"><tt class="xref py py-obj docutils literal"><span class="pre">nuller_dm</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.nuller_wfs.html#picreduce.utils.nuller_wfs" title="picreduce.utils.nuller_wfs"><tt class="xref py py-obj docutils literal"><span class="pre">nuller_wfs</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.opt_shift.html#picreduce.utils.opt_shift" title="picreduce.utils.opt_shift"><tt class="xref py py-obj docutils literal"><span class="pre">opt_shift</span></tt></a>(image1,&nbsp;image2[,&nbsp;return_array,&nbsp;...])</td>
+<td>globalmin:</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.optimally_shift_and_save.html#picreduce.utils.optimally_shift_and_save" title="picreduce.utils.optimally_shift_and_save"><tt class="xref py py-obj docutils literal"><span class="pre">optimally_shift_and_save</span></tt></a>(f,&nbsp;dset1,&nbsp;dset2[,&nbsp;...])</td>
+<td>align the frames of dset2 to dset1 using opt_shift() and save in a subfolder of dset1</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.radial_profile.html#picreduce.utils.radial_profile" title="picreduce.utils.radial_profile"><tt class="xref py py-obj docutils literal"><span class="pre">radial_profile</span></tt></a>([HDUlist_or_filename,&nbsp;ext,&nbsp;...])</td>
+<td>original code from: <a class="reference external" href="https://github.com/mperrin/poppy/utils.py">https://github.com/mperrin/poppy/utils.py</a></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.recenter.html#picreduce.utils.recenter" title="picreduce.utils.recenter"><tt class="xref py py-obj docutils literal"><span class="pre">recenter</span></tt></a>(in_array,&nbsp;newcntr[,&nbsp;verbose])</td>
+<td>uses the POPPY centroid measuring routine to find the center of an PSF,</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.rms.html#picreduce.utils.rms" title="picreduce.utils.rms"><tt class="xref py py-obj docutils literal"><span class="pre">rms</span></tt></a>(array)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.run.html#picreduce.utils.run" title="picreduce.utils.run"><tt class="xref py py-obj docutils literal"><span class="pre">run</span></tt></a>(f,&nbsp;base_dir,&nbsp;sub_dir)</td>
+<td><a class="reference external" href="mailto:douglase&#37;&#52;&#48;bu&#46;edu">douglase<span>&#64;</span>bu<span>&#46;</span>edu</a>, 2 august 2014</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.scale_and_sub.html#picreduce.utils.scale_and_sub" title="picreduce.utils.scale_and_sub"><tt class="xref py py-obj docutils literal"><span class="pre">scale_and_sub</span></tt></a>(c,&nbsp;image1,&nbsp;image2[,&nbsp;metric])</td>
+<td>scale image 2 by the value of c, and subtract image 1 from it,</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.shift_and_sub.html#picreduce.utils.shift_and_sub" title="picreduce.utils.shift_and_sub"><tt class="xref py py-obj docutils literal"><span class="pre">shift_and_sub</span></tt></a>(yx,&nbsp;image1,&nbsp;image2[,&nbsp;metric])</td>
+<td>shift image 2 by the value of xy tuple, equal to (y,x), and subtract image 1 from it,</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.symm_circle.html#picreduce.utils.symm_circle" title="picreduce.utils.symm_circle"><tt class="xref py py-obj docutils literal"><span class="pre">symm_circle</span></tt></a>(x_dim,&nbsp;y_dim,&nbsp;sigma)</td>
+<td>a symmetrical circle</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.symm_gauss_2d.html#picreduce.utils.symm_gauss_2d" title="picreduce.utils.symm_gauss_2d"><tt class="xref py py-obj docutils literal"><span class="pre">symm_gauss_2d</span></tt></a>(x_dim,&nbsp;y_dim,&nbsp;sigma[,&nbsp;...])</td>
+<td>an array consisting of a centered  (symmetrical) gaussian distribution, set to zero beyond the (optional) truncation_radius</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api/picreduce.utils.trans_2d.html#picreduce.utils.trans_2d" title="picreduce.utils.trans_2d"><tt class="xref py py-obj docutils literal"><span class="pre">trans_2d</span></tt></a>(detx,&nbsp;dety,&nbsp;PIXELSCL[,&nbsp;transpose])</td>
+<td>makes a square transmission function array.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api/picreduce.utils.trans_func.html#picreduce.utils.trans_func" title="picreduce.utils.trans_func"><tt class="xref py py-obj docutils literal"><span class="pre">trans_func</span></tt></a>(arcsec[,&nbsp;wave,&nbsp;shear])</td>
+<td>creates a transmission function for a shearing nuller</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+<ul>
+<li><a class="reference internal" href="#">Data Reduction utilities (<tt class="docutils literal"><span class="pre">picreduce.utils</span></tt>)</a><ul>
+<li><a class="reference internal" href="#reference-api">Reference/API</a><ul>
+<li><a class="reference internal" href="#module-picreduce.utils">picreduce.utils Package</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right">
+    <a href="_sources/PCA copy.txt"
+       rel="nofollow">Page Source</a> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 03 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

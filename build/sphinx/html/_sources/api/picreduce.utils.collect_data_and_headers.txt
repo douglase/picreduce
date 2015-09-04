@@ -1,0 +1,8 @@
+
+
+collect_data_and_headers
+========================================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: collect_data_and_headers

@@ -1,0 +1,8 @@
+
+
+general_opt
+===========================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: general_opt

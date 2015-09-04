@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>picreduce.utils.radial_profile &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../../../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../../../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../../../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../../../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for picreduce.utils.radial_profile</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="p">(</span><span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span><span class="o">,</span> <span class="nn">scipy.ndimage</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;poppy&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="kn">as</span> <span class="nn">fits</span>
+
+
+
+<span class="k">def</span> <span class="nf">radial_profile</span><span class="p">(</span><span class="n">HDUlist_or_filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">EE</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">binsize</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">maxradius</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">minmax</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="radial_profile"><a class="viewcode-back" href="../../../api/picreduce.utils.radial_profile.html#picreduce.utils.radial_profile">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    original code from: https://github.com/mperrin/poppy/utils.py</span>
+
+<span class="sd">    Compute a radial profile of the image. </span>
+
+<span class="sd">    This computes a discrete radial profile evaluated on the provided binsize. For a version</span>
+<span class="sd">    interpolated onto a continuous curve, see measure_radial().</span>
+
+<span class="sd">    Code taken pretty much directly from pydatatut.pdf</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HDUlist_or_filename : string</span>
+<span class="sd">        what it sounds like.</span>
+<span class="sd">    ext : int</span>
+<span class="sd">        Extension in FITS file</span>
+<span class="sd">    EE : bool</span>
+<span class="sd">        Also return encircled energy (EE) curve in addition to radial profile?</span>
+<span class="sd">    center : tuple of floats</span>
+<span class="sd">        Coordinates (x,y) of PSF center, in pixel units. Default is image center. </span>
+<span class="sd">    binsize : float</span>
+<span class="sd">        size of step for profile. Default is pixel size.</span>
+<span class="sd">    stddev : bool</span>
+<span class="sd">        Compute standard deviation in each radial bin, not average?</span>
+<span class="sd">    minmax : bool</span>
+<span class="sd">        return the mean, stdv, min and max in each radial bin?</span>
+<span class="sd">    </span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    results : tuple</span>
+<span class="sd">        Tuple containing (radius, profile) or (radius, profile, EE) depending on what is requested.</span>
+<span class="sd">        The radius gives the center radius of each bin, while the EE is given inside the whole bin</span>
+<span class="sd">        so you should use (radius+binsize/2) for the radius of the EE curve if you want to be</span>
+<span class="sd">        as precise as possible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">HDUlist_or_filename</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">HDUlist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">HDUlist_or_filename</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">HDUlist_or_filename</span><span class="p">,</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">):</span>
+        <span class="n">HDUlist</span> <span class="o">=</span> <span class="n">HDUlist_or_filename</span>
+    <span class="k">else</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;input must be a filename or HDUlist&quot;</span><span class="p">)</span>
+
+    <span class="n">image</span> <span class="o">=</span> <span class="n">HDUlist</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">pixelscale</span> <span class="o">=</span> <span class="n">HDUlist</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;PIXELSCL&#39;</span><span class="p">]</span>
+
+
+    <span class="k">if</span> <span class="n">maxradius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s">&quot;add max radius&quot;</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">binsize</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">binsize</span><span class="o">=</span><span class="n">pixelscale</span>
+
+    <span class="n">y</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">center</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># get exact center of image</span>
+        <span class="c">#center = (image.shape[1]/2, image.shape[0]/2)</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span> <span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span><span class="n">pixelscale</span> <span class="o">/</span> <span class="n">binsize</span> <span class="c"># radius in bin size steps</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">flat</span><span class="p">)</span>
+
+
+    <span class="n">sr</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="n">ri</span> <span class="o">=</span> <span class="n">sr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">deltar</span> <span class="o">=</span> <span class="n">ri</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">ri</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># assume all radii represented (more work if not)</span>
+    <span class="n">rind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">deltar</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nr</span> <span class="o">=</span> <span class="n">rind</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">rind</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># number in radius bin</span>
+    <span class="n">csim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="c"># cumulative sum to figure out sums for each bin</span>
+    <span class="n">tbin</span> <span class="o">=</span> <span class="n">csim</span><span class="p">[</span><span class="n">rind</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span> <span class="o">-</span> <span class="n">csim</span><span class="p">[</span><span class="n">rind</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="c"># sum for image values in radius bins</span>
+    <span class="n">radialprofile</span><span class="o">=</span><span class="n">tbin</span><span class="o">/</span><span class="n">nr</span>
+
+    <span class="c">#pre-pend the initial element that the above code misses.</span>
+    <span class="n">radialprofile2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">radialprofile</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rind</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">radialprofile2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">csim</span><span class="p">[</span><span class="n">rind</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">/</span> <span class="p">(</span><span class="n">rind</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c"># if there are multiple elements in the center bin, average them</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">radialprofile2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">csim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                       <span class="c"># otherwise if there&#39;s just one then just take it. </span>
+    <span class="n">radialprofile2</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">radialprofile</span>
+    <span class="n">rr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">radialprofile2</span><span class="p">))</span><span class="o">*</span><span class="n">binsize</span> <span class="o">+</span> <span class="n">binsize</span><span class="o">*</span><span class="mf">0.5</span>  <span class="c"># these should be centered in the bins, so add a half.</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">stddev</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">minmax</span><span class="p">):</span>
+        <span class="n">stddevs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">radialprofile2</span><span class="p">)</span>
+        <span class="n">mins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">radialprofile2</span><span class="p">)</span>
+        <span class="n">maxes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">radialprofile2</span><span class="p">)</span>
+
+        <span class="n">r_pix</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">binsize</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">radius</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rr</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">wg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="n">radius</span><span class="o">+</span> <span class="n">binsize</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">wg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="p">(</span><span class="n">r_pix</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">radius</span><span class="o">-</span><span class="n">binsize</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span> <span class="o">&amp;</span>  <span class="p">(</span><span class="n">r_pix</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">radius</span><span class="o">+</span><span class="n">binsize</span><span class="o">/</span><span class="mi">2</span><span class="p">)))</span>
+                <span class="c">#wg = np.where( (r &gt;= rr[i-1]) &amp;  (r &lt;rr[i] )))</span>
+            <span class="n">stddevs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">wg</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">image</span><span class="p">[</span><span class="n">wg</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">mins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">wg</span><span class="p">])</span>
+                <span class="n">maxes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">image</span><span class="p">[</span><span class="n">wg</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">minmax</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">stddev</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">radialprofile2</span><span class="p">,</span><span class="n">stddevs</span><span class="p">,</span><span class="n">mins</span><span class="p">,</span><span class="n">maxes</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">minmax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span><span class="n">maxes</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">stddev</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">stddevs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">EE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">radialprofile2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c">#weighted_profile = radialprofile2*2*np.pi*(rr/rr[1])</span>
+        <span class="c">#EE = np.cumsum(weighted_profile)</span>
+        <span class="n">EE</span> <span class="o">=</span> <span class="n">csim</span><span class="p">[</span><span class="n">rind</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">radialprofile2</span><span class="p">,</span> <span class="n">EE</span><span class="p">)</span> 
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right"> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

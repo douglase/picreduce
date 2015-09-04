@@ -1,0 +1,8 @@
+
+
+rms
+===================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: rms

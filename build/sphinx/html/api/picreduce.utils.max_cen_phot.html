@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>max_cen_phot &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="max-cen-phot">
+<h1>max_cen_phot<a class="headerlink" href="#max-cen-phot" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="picreduce.utils.max_cen_phot">
+<tt class="descclassname">picreduce.utils.</tt><tt class="descname">max_cen_phot</tt><big>(</big><em>in_array</em>, <em>radius_pixels=5</em>, <em>ref_width=0</em>, <em>fixed_center=None</em>, <em>verbose=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/picreduce/utils/max_cen_phot.html#max_cen_phot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.max_cen_phot" title="Permalink to this definition">¶</a></dt>
+<dd><p>aperture photometry with auto centroiding.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_array</strong> : array_like</p>
+<blockquote class="last">
+<div><blockquote>
+<div><p>image to centroid and do photometry on</p>
+</div></blockquote>
+<p>radius_pixels: int
+defines photometry aperture
+fixed_center : tuple
+(y,x) coordinates of photometry aperture, defaults to None
+ref_width:  int</p>
+<blockquote>
+<div><p>pixels to add to the aperture radius for background measurement.
+defines background measuring photometry aperture beyond the primary radius,
+the average of which is subtracted.</p>
+</div></blockquote>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+<ul>
+<li><a class="reference internal" href="#">max_cen_phot</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right">
+    <a href="../_sources/api/picreduce.utils.max_cen_phot.txt"
+       rel="nofollow">Page Source</a> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

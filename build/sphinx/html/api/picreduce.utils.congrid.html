@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>congrid &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="congrid">
+<h1>congrid<a class="headerlink" href="#congrid" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="picreduce.utils.congrid">
+<tt class="descclassname">picreduce.utils.</tt><tt class="descname">congrid</tt><big>(</big><em>a</em>, <em>newdims</em>, <em>method='linear'</em>, <em>centre=False</em>, <em>minusone=False</em><big>)</big><a class="reference internal" href="../_modules/picreduce/utils/congrid.html#congrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.congrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arbitrary resampling of source array to new dimension sizes.
+Currently only supports maintaining the same number of dimensions.
+To use 1-D arrays, first promote them to shape (x,1).</p>
+<p>Uses the same parameters and creates the same co-ordinate lookup points
+as IDL&#8217;&#8217;s congrid routine, which apparently originally came from a VAX/VMS
+routine of the same name.</p>
+<p>method:
+neighbour - closest value from original data
+nearest and linear - uses n x 1-D interpolations using</p>
+<blockquote>
+<div>scipy.interpolate.interp1d</div></blockquote>
+<p>(see Numerical Recipes for validity of use of n 1-D interpolations)
+spline - uses ndimage.map_coordinates</p>
+<p>centre:
+True - interpolation points are at the centres of the bins
+False - points are at the front edge of the bin</p>
+<p>minusone:
+For example- inarray.shape = (i,j) &amp; new dimensions = (x,y)
+False - inarray is resampled by factors of (i/x) * (j/y)
+True - inarray is resampled by(i-1)/(x-1) * (j-1)/(y-1)
+This prevents extrapolation one element beyond bounds of input array.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+<ul>
+<li><a class="reference internal" href="#">congrid</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right">
+    <a href="../_sources/api/picreduce.utils.congrid.txt"
+       rel="nofollow">Page Source</a> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

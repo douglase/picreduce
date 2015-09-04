@@ -1,0 +1,8 @@
+
+
+max_cen_phot
+============================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: max_cen_phot

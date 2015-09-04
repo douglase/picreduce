@@ -1,0 +1,8 @@
+
+
+get_dsets
+=========================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: get_dsets

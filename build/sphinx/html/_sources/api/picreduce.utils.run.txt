@@ -1,0 +1,8 @@
+
+
+run
+===================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: run

@@ -1,0 +1,8 @@
+
+
+defosys
+=======================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: defosys

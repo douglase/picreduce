@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>load_or_create &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="load-or-create">
+<h1>load_or_create<a class="headerlink" href="#load-or-create" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="picreduce.utils.load_or_create">
+<tt class="descclassname">picreduce.utils.</tt><tt class="descname">load_or_create</tt><big>(</big><em>data_directory</em>, <em>dset_list=[]</em>, <em>fname='/data.hdf5'</em>, <em>readwrite='r'</em><big>)</big><a class="reference internal" href="../_modules/picreduce/utils/PICTURE_IDL_to_HDF5.html#load_or_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.load_or_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for loading a HDF5 dataset generated from PICTURE IDL save files.
+Checks if <tt class="xref py py-obj docutils literal"><span class="pre">fname</span> <span class="pre">exists</span></tt>, and if not, creates a file, <tt class="xref py py-obj docutils literal"><span class="pre">fname</span></tt>,
+in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory</span></tt> with datasets from <tt class="xref py py-obj docutils literal"><span class="pre">dset_list</span></tt>
+(corresponding to subdirectories inside data_directory)</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">if dset_list is not set, the new file will not be created.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data_directory</strong> : string</p>
+<p><strong>dset_list</strong> : list</p>
+<blockquote>
+<div><p>list of datasets (e.g. jplgse.20071101.11111)</p>
+</div></blockquote>
+<p><strong>fname</strong> : string, optional</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>filename of the output HDF5 file</dt>
+<dd><p class="first last">defaults to creating <tt class="xref py py-obj docutils literal"><span class="pre">data.hdf5</span></tt>  in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory</span></tt> when ommited.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>Returns</strong></p>
+<p><strong>&#8212;&#8212;&#8212;-</strong></p>
+<p><strong>f:</strong></p>
+<blockquote>
+<div><p>An h5py file object.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<p class="last"><strong>forgot to pass a list?</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="picreduce.utils.jplgse_to_HDF5.html#picreduce.utils.jplgse_to_HDF5" title="picreduce.utils.jplgse_to_HDF5"><tt class="xref py py-obj docutils literal"><span class="pre">jplgse_to_HDF5</span></tt></a></dt>
+<dd>the heavy lifting parsing function.</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<p>5py documentation:</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data_directory</span><span class="o">=</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;/projects/picture/data/wcs_multi_color_nulling/&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dset_list</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;jplgse.20141202.63381&#39;</span><span class="p">,</span><span class="s">&#39;jplgse.20141202.63531&#39;</span><span class="p">,</span><span class="s">&#39;jplgse.20141202.63737&#39;</span><span class="p">,</span><span class="s">&#39;jplgse.20141202.63960&#39;</span><span class="p">,</span><span class="s">&#39;jplgse.20141202.64119&#39;</span><span class="p">,</span><span class="s">&#39;jplgse.20141202.64294&#39;</span><span class="p">,</span><span class="s">&#39;jplgse.20141202.64497&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">IDL_to_HDF5</span><span class="o">.</span><span class="n">load_or_create</span><span class="p">(</span><span class="n">data_directory</span><span class="p">,</span><span class="n">dset_list</span><span class="o">=</span><span class="n">dset_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+<ul>
+<li><a class="reference internal" href="#">load_or_create</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right">
+    <a href="../_sources/api/picreduce.utils.load_or_create.txt"
+       rel="nofollow">Page Source</a> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

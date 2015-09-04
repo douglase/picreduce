@@ -1,0 +1,8 @@
+
+
+symm_gauss_2d
+=============================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: symm_gauss_2d

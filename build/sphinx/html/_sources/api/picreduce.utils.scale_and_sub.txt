@@ -1,0 +1,8 @@
+
+
+scale_and_sub
+=============================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: scale_and_sub

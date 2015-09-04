@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>picreduce.utils.congrid &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../../../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../../../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../../../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../../../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for picreduce.utils.congrid</h1><div class="highlight"><pre>
+<span class="c">#http://wiki.scipy.org/Cookbook/Rebinning</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">n</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span>
+
+<div class="viewcode-block" id="congrid"><a class="viewcode-back" href="../../../api/picreduce.utils.congrid.html#picreduce.utils.congrid">[docs]</a><span class="k">def</span> <span class="nf">congrid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">newdims</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;linear&#39;</span><span class="p">,</span> <span class="n">centre</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">minusone</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Arbitrary resampling of source array to new dimension sizes.</span>
+<span class="sd">    Currently only supports maintaining the same number of dimensions.</span>
+<span class="sd">    To use 1-D arrays, first promote them to shape (x,1).</span>
+<span class="sd">    </span>
+<span class="sd">    Uses the same parameters and creates the same co-ordinate lookup points</span>
+<span class="sd">    as IDL&#39;&#39;s congrid routine, which apparently originally came from a VAX/VMS</span>
+<span class="sd">    routine of the same name.</span>
+
+<span class="sd">    method:</span>
+<span class="sd">    neighbour - closest value from original data</span>
+<span class="sd">    nearest and linear - uses n x 1-D interpolations using</span>
+<span class="sd">                         scipy.interpolate.interp1d</span>
+<span class="sd">    (see Numerical Recipes for validity of use of n 1-D interpolations)</span>
+<span class="sd">    spline - uses ndimage.map_coordinates</span>
+
+<span class="sd">    centre:</span>
+<span class="sd">    True - interpolation points are at the centres of the bins</span>
+<span class="sd">    False - points are at the front edge of the bin</span>
+
+<span class="sd">    minusone:</span>
+<span class="sd">    For example- inarray.shape = (i,j) &amp; new dimensions = (x,y)</span>
+<span class="sd">    False - inarray is resampled by factors of (i/x) * (j/y)</span>
+<span class="sd">    True - inarray is resampled by(i-1)/(x-1) * (j-1)/(y-1)</span>
+<span class="sd">    This prevents extrapolation one element beyond bounds of input array.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">float32</span><span class="p">]:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="nb">float</span><span class="p">](</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="nb">int</span><span class="p">](</span><span class="n">minusone</span><span class="p">)</span>
+    <span class="n">ofs</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="nb">int</span><span class="p">](</span><span class="n">centre</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+    <span class="n">old</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+    <span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">newdims</span> <span class="p">)</span> <span class="o">!=</span> <span class="n">ndims</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;[congrid] dimensions error. &quot;</span> \
+              <span class="s">&quot;This routine currently only support &quot;</span> \
+              <span class="s">&quot;rebinning to the same number of dimensions.&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="n">newdims</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span> <span class="n">newdims</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span> <span class="p">)</span>
+    <span class="n">dimlist</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;neighbour&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="p">):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">newdims</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">dimlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">old</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">newdims</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> \
+                            <span class="o">*</span> <span class="p">(</span><span class="n">base</span> <span class="o">+</span> <span class="n">ofs</span><span class="p">)</span> <span class="o">-</span> <span class="n">ofs</span> <span class="p">)</span>
+        <span class="n">cd</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">dimlist</span> <span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">newa</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span> <span class="n">cd</span> <span class="p">)]</span>
+        <span class="k">return</span> <span class="n">newa</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;nearest&#39;</span><span class="p">,</span><span class="s">&#39;linear&#39;</span><span class="p">]:</span>
+        <span class="c"># calculate new dims</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="p">):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">newdims</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+            <span class="n">dimlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">old</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">newdims</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> \
+                            <span class="o">*</span> <span class="p">(</span><span class="n">base</span> <span class="o">+</span> <span class="n">ofs</span><span class="p">)</span> <span class="o">-</span> <span class="n">ofs</span> <span class="p">)</span>
+        <span class="c"># specify old dims</span>
+        <span class="n">olddims</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="p">)]</span>
+
+        <span class="c"># first interpolation - for ndims = any</span>
+        <span class="n">mint</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span> <span class="n">olddims</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">method</span> <span class="p">)</span>
+        <span class="n">newa</span> <span class="o">=</span> <span class="n">mint</span><span class="p">(</span> <span class="n">dimlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">trorder</span> <span class="o">=</span> <span class="p">[</span><span class="n">ndims</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+            <span class="n">newa</span> <span class="o">=</span> <span class="n">newa</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span> <span class="n">trorder</span> <span class="p">)</span>
+
+            <span class="n">mint</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span> <span class="n">olddims</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">newa</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">method</span> <span class="p">)</span>
+            <span class="n">newa</span> <span class="o">=</span> <span class="n">mint</span><span class="p">(</span> <span class="n">dimlist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># need one more transpose to return to original dimensions</span>
+            <span class="n">newa</span> <span class="o">=</span> <span class="n">newa</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span> <span class="n">trorder</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newa</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;spline&#39;</span><span class="p">]:</span>
+        <span class="n">oslices</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">old</span> <span class="p">]</span>
+        <span class="n">oldcoords</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="n">oslices</span><span class="p">]</span>
+        <span class="n">nslices</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">newdims</span><span class="p">)</span> <span class="p">]</span>
+        <span class="n">newcoords</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">nslices</span><span class="p">]</span>
+
+        <span class="n">newcoords_dims</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">newcoords</span><span class="p">))</span>
+        <span class="c">#make first index last</span>
+        <span class="n">newcoords_dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newcoords_dims</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">newcoords_tr</span> <span class="o">=</span> <span class="n">newcoords</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">newcoords_dims</span><span class="p">)</span>
+        <span class="c"># makes a view that affects newcoords</span>
+
+        <span class="n">newcoords_tr</span> <span class="o">+=</span> <span class="n">ofs</span>
+
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">old</span><span class="p">)</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">newdims</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span>
+        <span class="n">newcoords_tr</span> <span class="o">*=</span> <span class="n">deltas</span>
+
+        <span class="n">newcoords_tr</span> <span class="o">-=</span> <span class="n">ofs</span>
+
+        <span class="n">newa</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">map_coordinates</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">newcoords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newa</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Congrid error: Unrecognized interpolation type.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> \
+              <span class="s">&quot;Currently only </span><span class="se">\&#39;</span><span class="s">neighbour</span><span class="se">\&#39;</span><span class="s">, </span><span class="se">\&#39;</span><span class="s">nearest</span><span class="se">\&#39;</span><span class="s">,</span><span class="se">\&#39;</span><span class="s">linear</span><span class="se">\&#39;</span><span class="s">,&quot;</span><span class="p">,</span> \
+              <span class="s">&quot;and </span><span class="se">\&#39;</span><span class="s">spline</span><span class="se">\&#39;</span><span class="s"> are supported.&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right"> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

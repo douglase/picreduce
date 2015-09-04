@@ -1,0 +1,8 @@
+
+
+shift_and_sub
+=============================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: shift_and_sub

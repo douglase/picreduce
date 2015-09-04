@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>picreduce.utils.picbslices &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../../../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../../../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../../../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../../../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for picreduce.utils.picbslices</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;picb&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="get_nulled_frames"><a class="viewcode-back" href="../../../api/picreduce.utils.get_nulled_frames.html#picreduce.utils.get_nulled_frames">[docs]</a><span class="k">def</span> <span class="nf">get_nulled_frames</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">dset</span><span class="p">,</span>
+                      <span class="n">null_state</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span>
+                      <span class="n">n_skip</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                      <span class="n">avgfunction</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">,</span>
+                      <span class="n">delete_saturated</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                      <span class="n">sat_val</span><span class="o">=</span><span class="mi">4095</span><span class="p">):</span>
+    
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    example:</span>
+<span class="sd">    #note! the first 3 values are skipped because they usually aren&#39;t really nulling</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">nulled</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci_header&#39;</span><span class="p">][</span><span class="s">&#39;STATE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">==</span><span class="n">null_state</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">good_sci_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci&#39;</span><span class="p">][:,:</span><span class="mi">138</span><span class="p">,</span><span class="n">nulled</span><span class="p">[</span><span class="n">n_skip</span><span class="p">]:</span><span class="n">nulled</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">original_shape</span><span class="o">=</span><span class="n">good_sci_data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">delete_saturated</span><span class="p">:</span>
+        <span class="n">saturated_frames</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">good_sci_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">sat_val</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;shape of original array&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">good_sci_data</span><span class="p">)))</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;saturated frames: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">saturated_frames</span><span class="p">))</span>
+
+        <span class="n">good_sci_data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">good_sci_data</span><span class="p">,</span><span class="n">saturated_frames</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;deleted </span><span class="si">%g</span><span class="s"> frames of </span><span class="si">%g</span><span class="s"> &quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">saturated_frames</span><span class="p">),</span><span class="n">original_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+        <span class="c">#print(np.delete(saturated_frames,saturated_frames,2).shape)</span>
+
+    <span class="c">#null_diagnostic_plot(good_sci_data,oc,name=dset,xlo=45,xhi=93,ylo=45,yhi=93)#,grid=outer_grid)</span>
+    <span class="n">median</span><span class="o">=</span><span class="n">avgfunction</span><span class="p">(</span><span class="n">good_sci_data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="c">#-np.median(f[dset][u&#39;sci&#39;][0:10,0:10,nulled[n_skip]:nulled[-1]])</span>
+    <span class="n">std</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">good_sci_data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c">#null_diagnostic_plot(good_sci_data,oc,name=dset,xlo=45,xhi=93,ylo=45,yhi=93)#,grid=outer_grid)</span>
+    
+    <span class="sd">&#39;&#39;&#39;good_sci_data= good_sci_data.swapaxes(0,2)</span>
+<span class="sd">    good_sci_data = PynPoint._Util.mk_resizerecent(good_sci_data[:,:138,:],2,1)</span>
+<span class="sd">    median=np.median(good_sci_data,axis=0)&#39;&#39;&#39;</span>
+            
+    <span class="c">#median = recenter(median,(68, 68),boxsize=10)</span>
+    <span class="k">return</span> <span class="n">good_sci_data</span><span class="p">,</span><span class="n">median</span><span class="p">,</span><span class="n">std</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right"> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

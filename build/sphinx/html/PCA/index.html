@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Principle Component Analysis Functions (picreduce.PCA) &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="principle-component-analysis-functions-picreduce-pca">
+<span id="picreduce-pca"></span><h1>Principle Component Analysis Functions (<tt class="docutils literal"><span class="pre">picreduce.PCA</span></tt>)<a class="headerlink" href="#principle-component-analysis-functions-picreduce-pca" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="reference-api">
+<h2>Reference/API<a class="headerlink" href="#reference-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-picreduce.PCA">
+<span id="picreduce-pca-package"></span><h3>picreduce.PCA Package<a class="headerlink" href="#module-picreduce.PCA" title="Permalink to this headline">¶</a></h3>
+<p>This package contains tools for measuring system performance with Principle Component Analysis (PCA)</p>
+<div class="section" id="classes">
+<h4>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">LinearSegmentedColormap</span></tt>(name,&nbsp;segmentdata[,&nbsp;...])</td>
+<td>Colormap objects based on lookup tables using linear segments.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">SymLogNorm</span></tt>(linthresh[,&nbsp;linscale,&nbsp;vmin,&nbsp;...])</td>
+<td>The symmetrical logarithmic scale is logarithmic in both the positive and negative directions from the origin.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">base_pynpoint</span></tt>()</td>
+<td>Object for dealing with the images that need to be analysed</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">basis</span></tt>()</td>
+<td>For creating a basis set from a given set of postage stamp images</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">images</span></tt>()</td>
+<td>Deals with the postage stamp images that will be analysed.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../api/picreduce.PCA.observation_sets.html#picreduce.PCA.observation_sets" title="picreduce.PCA.observation_sets"><tt class="xref py py-obj docutils literal"><span class="pre">observation_sets</span></tt></a>(image_dir,&nbsp;basis_dir[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">residuals</span></tt>()</td>
+<td>For dealing with the residual data.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">workflow</span></tt>()</td>
+<td>A simple workflow engine for managing PynPoint runs.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+<ul>
+<li><a class="reference internal" href="#">Principle Component Analysis Functions (<tt class="docutils literal"><span class="pre">picreduce.PCA</span></tt>)</a><ul>
+<li><a class="reference internal" href="#reference-api">Reference/API</a><ul>
+<li><a class="reference internal" href="#module-picreduce.PCA">picreduce.PCA Package</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right">
+    <a href="../_sources/PCA/index.txt"
+       rel="nofollow">Page Source</a> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

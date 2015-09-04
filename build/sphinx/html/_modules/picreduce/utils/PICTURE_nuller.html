@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>picreduce.utils.PICTURE_nuller &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../../../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../../../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../../../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../../../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for picreduce.utils.PICTURE_nuller</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">example code, shows nulling with the PICTURE (Planet Imaging Concept Testbed Using a Rocket Experiment Nuller.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;../poppy&#39;</span><span class="p">)</span>
+<span class="n">home</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">nulling_utils</span>
+<span class="kn">import</span> <span class="nn">poppy</span>
+<span class="kn">import</span> <span class="nn">null</span>
+<span class="kn">import</span> <span class="nn">astropy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;poppy&#39;</span><span class="p">)</span>
+
+<span class="k">global</span> <span class="n">osys</span>
+<div class="viewcode-block" id="defosys"><a class="viewcode-back" href="../../../api/picreduce.utils.defosys.html#picreduce.utils.defosys">[docs]</a><span class="k">def</span> <span class="nf">defosys</span><span class="p">(</span><span class="n">fov</span><span class="o">=</span><span class="mf">20.2</span><span class="p">):</span>
+    
+    <span class="n">plate_scale</span><span class="o">=</span><span class="mf">0.158</span><span class="c">#&quot;/px [sci]</span>
+
+    <span class="n">_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">osys</span> <span class="o">=</span> <span class="n">poppy</span><span class="o">.</span><span class="n">OpticalSystem</span><span class="p">(</span><span class="n">oversample</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">osys</span><span class="o">.</span><span class="n">addPupil</span><span class="p">(</span> <span class="n">poppy</span><span class="o">.</span><span class="n">CircularAperture</span><span class="p">(</span><span class="n">radius</span><span class="o">=.</span><span class="mi">25</span><span class="p">,</span><span class="n">pad_factor</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="n">pixelscl</span> <span class="o">=</span> <span class="n">plate_scale</span>
+    
+    <span class="n">osys</span><span class="o">.</span><span class="n">addDetector</span><span class="p">(</span><span class="n">pixelscale</span><span class="o">=</span><span class="n">pixelscl</span><span class="p">,</span> <span class="n">fov_arcsec</span><span class="o">=</span><span class="n">fov</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">osys</span>
+
+</div>
+<div class="viewcode-block" id="nuller_dm"><a class="viewcode-back" href="../../../api/picreduce.utils.nuller_dm.html#picreduce.utils.nuller_dm">[docs]</a><span class="k">def</span> <span class="nf">nuller_dm</span><span class="p">():</span>
+    <span class="n">osys</span><span class="o">=</span><span class="n">defosys</span><span class="p">()</span>
+    <span class="n">meter_pixel_dm</span><span class="o">=</span><span class="mf">340e-6</span><span class="o">/</span><span class="mf">32.</span><span class="o">*</span><span class="mf">42.55</span> <span class="c">#[wfs]</span>
+
+    <span class="n">dm</span><span class="o">=</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">home</span><span class="o">+</span><span class="s">&#39;/projects/PICTURE/data/FITS/splinecongriddedcroppedrawdmdata.fits&#39;</span><span class="p">)</span>
+<span class="c">#convert DM surface error to WFE|</span>
+    <span class="n">dm_phase_array</span><span class="o">=</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">*</span><span class="mf">2.0</span>
+    <span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="o">=</span><span class="n">dm_phase_array</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">pad_size</span><span class="o">=</span><span class="mi">2048</span>
+    <span class="k">if</span> <span class="n">lx</span> <span class="o">&gt;</span><span class="n">pad_size</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;padding problem&quot;</span><span class="p">)</span>
+    <span class="n">padded_dm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">pad_size</span><span class="p">,</span><span class="n">pad_size</span><span class="p">])</span>
+    <span class="n">padded_dm</span><span class="p">[(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">:(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">lx</span><span class="p">,(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">:(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">lx</span><span class="p">]</span><span class="o">=</span> <span class="n">dm_phase_array</span>
+
+    <span class="n">dm_phase</span><span class="o">=</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">padded_dm</span><span class="p">)])</span>
+    
+    <span class="n">pupilmask_unscaled</span><span class="o">=</span><span class="n">poppy</span><span class="o">.</span><span class="n">FITSOpticalElement</span><span class="p">(</span><span class="n">transmission</span><span class="o">=</span><span class="n">home</span><span class="o">+</span><span class="s">&#39;/projects/PICTURE/data/FITS/kenny_mask.fits&#39;</span><span class="p">,</span><span class="n">pixelscale</span><span class="o">=</span><span class="mf">0.24</span><span class="o">/</span><span class="mf">410.</span><span class="p">,</span><span class="n">oversample</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">opdunits</span><span class="o">=</span><span class="s">&#39;meters&#39;</span><span class="p">,</span><span class="n">rotation</span><span class="o">=-</span><span class="mi">45</span><span class="p">)</span>
+    <span class="n">X</span><span class="o">=</span><span class="n">pupilmask_unscaled</span><span class="o">.</span><span class="n">getPhasor</span><span class="p">(</span><span class="n">osys</span><span class="o">.</span><span class="n">inputWavefront</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">pupilmask</span><span class="o">=</span><span class="n">poppy</span><span class="o">.</span><span class="n">FITSOpticalElement</span><span class="p">(</span><span class="n">transmission</span><span class="o">=</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">(</span><span class="n">X</span><span class="p">))]),</span><span class="n">pixelscale</span><span class="o">=</span><span class="mf">0.5</span><span class="o">/</span><span class="mf">1024.</span><span class="p">,</span><span class="n">oversample</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">opdunits</span><span class="o">=</span><span class="s">&#39;meters&#39;</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">dm_flat_lowpass</span><span class="o">=</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">home</span><span class="o">+</span><span class="s">&#39;/projects/PICTURE/data/FITS/boxcarred30pix.dm.fits&#39;</span><span class="p">)</span>
+    <span class="c">#convert DM surface error to WFE|</span>
+    <span class="n">dmflat_lowpass_phase_array</span><span class="o">=</span><span class="n">dm_flat_lowpass</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">*</span><span class="mf">2.0</span>
+    <span class="n">padded_dm_lowpass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">pad_size</span><span class="p">,</span><span class="n">pad_size</span><span class="p">])</span>
+    <span class="n">padded_dm_lowpass</span><span class="p">[(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">:(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">lx</span><span class="p">,(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">:(</span><span class="n">pad_size</span><span class="o">-</span><span class="n">lx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">lx</span><span class="p">]</span><span class="o">=</span> <span class="n">dmflat_lowpass_phase_array</span>
+    
+    <span class="n">DM_elem</span><span class="o">=</span>            <span class="n">poppy</span><span class="o">.</span><span class="n">FITSOpticalElement</span><span class="p">(</span><span class="n">opd</span><span class="o">=</span><span class="n">dm_phase</span><span class="p">,</span><span class="n">pixelscale</span><span class="o">=</span><span class="n">meter_pixel_dm</span><span class="p">,</span>
+                                                <span class="n">oversample</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">opdunits</span><span class="o">=</span><span class="s">&#39;meters&#39;</span><span class="p">,</span><span class="n">rotation</span><span class="o">=-</span><span class="mi">45</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">dmflat_lowpass_phase</span><span class="o">=</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">padded_dm_lowpass</span><span class="p">)])</span>
+    <span class="n">DMflat_lowpass_elem</span><span class="o">=</span><span class="n">poppy</span><span class="o">.</span><span class="n">FITSOpticalElement</span><span class="p">(</span><span class="n">opd</span><span class="o">=</span><span class="n">dmflat_lowpass_phase</span><span class="p">,</span><span class="n">pixelscale</span><span class="o">=</span><span class="n">meter_pixel_dm</span><span class="p">,</span>
+                                             <span class="n">oversample</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">opdunits</span><span class="o">=</span><span class="s">&#39;meters&#39;</span><span class="p">,</span><span class="n">rotation</span><span class="o">=-</span><span class="mi">45</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">nuller_dm</span> <span class="o">=</span> <span class="n">null</span><span class="o">.</span><span class="n">NullingCoronagraph</span><span class="p">(</span><span class="n">osys</span><span class="p">,</span><span class="n">intensity_mismatch</span><span class="o">=.</span><span class="mo">01</span><span class="p">,</span> 
+                                        <span class="n">display_intermediates</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="n">shear</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+                                        <span class="n">phase_mismatch_fits</span><span class="o">=</span><span class="n">DM_elem</span><span class="p">,</span><span class="n">pupilmask</span><span class="o">=</span><span class="n">pupilmask</span><span class="p">,</span>
+                                        <span class="n">phase_mismatch_meters_pixel</span><span class="o">=</span><span class="n">meter_pixel_dm</span><span class="p">,</span>
+                                        <span class="n">phase_flat_fits</span><span class="o">=</span><span class="n">DMflat_lowpass_elem</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">nuller_dm</span>
+
+</div>
+<div class="viewcode-block" id="nuller_wfs"><a class="viewcode-back" href="../../../api/picreduce.utils.nuller_wfs.html#picreduce.utils.nuller_wfs">[docs]</a><span class="k">def</span> <span class="nf">nuller_wfs</span><span class="p">():</span>
+    <span class="n">osys</span><span class="o">=</span><span class="n">defosys</span><span class="p">()</span>
+  
+    <span class="n">nuller</span><span class="o">=</span><span class="n">null</span><span class="o">.</span><span class="n">NullingCoronagraph</span><span class="p">(</span><span class="n">osys</span><span class="p">,</span><span class="n">intensity_mismatch</span><span class="o">=</span><span class="mf">0.00</span><span class="p">,</span>
+                               <span class="n">phase_mismatch_meters_pixel</span><span class="o">=</span><span class="mf">170e-6</span><span class="o">*</span><span class="mf">42.55</span><span class="p">,</span>
+                               <span class="n">display_intermediates</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                               <span class="n">normalize</span><span class="o">=</span><span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="n">shear</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">nuller</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right"> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

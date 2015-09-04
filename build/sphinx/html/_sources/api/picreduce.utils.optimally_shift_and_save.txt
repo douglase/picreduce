@@ -1,0 +1,8 @@
+
+
+optimally_shift_and_save
+========================================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: optimally_shift_and_save

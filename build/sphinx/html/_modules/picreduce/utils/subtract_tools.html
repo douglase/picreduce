@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>picreduce.utils.subtract_tools &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../../../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../../../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../../../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../../../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for picreduce.utils.subtract_tools</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">poppy</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="kn">as</span> <span class="nn">fits</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.optimize</span>
+<span class="kn">import</span> <span class="nn">PICTURE_IDL_to_HDF5</span>
+<span class="kn">import</span> <span class="nn">astropy.convolution</span> <span class="kn">as</span> <span class="nn">conv</span>
+
+
+<div class="viewcode-block" id="recenter"><a class="viewcode-back" href="../../../api/picreduce.utils.recenter.html#picreduce.utils.recenter">[docs]</a><span class="k">def</span> <span class="nf">recenter</span><span class="p">(</span><span class="n">in_array</span><span class="p">,</span><span class="n">newcntr</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    uses the POPPY centroid measuring routine to find the center of an PSF,</span>
+<span class="sd">    and then move that to the new coordinate specified by newcntr.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cntry</span><span class="p">,</span><span class="n">cntrx</span><span class="o">=</span><span class="n">poppy</span><span class="o">.</span><span class="n">measure_centroid</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">in_array</span><span class="p">)),</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">cntrx</span><span class="p">,</span><span class="n">cntry</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">in_array</span><span class="p">,(</span><span class="n">newcntr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">cntry</span><span class="p">,</span><span class="n">newcntr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">cntrx</span><span class="p">),</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="shift_and_sub"><a class="viewcode-back" href="../../../api/picreduce.utils.shift_and_sub.html#picreduce.utils.shift_and_sub">[docs]</a><span class="k">def</span> <span class="nf">shift_and_sub</span><span class="p">(</span><span class="n">yx</span><span class="p">,</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">,</span><span class="n">metric</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    shift image 2 by the value of xy tuple, equal to (y,x), and subtract image 1 from it,</span>
+<span class="sd">     return the value of the function metric, which defaults to standard deviation.</span>
+<span class="sd">     alternatives could include rms() or np.mean() or median or...</span>
+<span class="sd">     </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">im2shift</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">image2</span><span class="p">,(</span><span class="n">yx</span><span class="p">))</span>
+    <span class="c">#metric=np.sqrt(np.mean(im2shift-image1)**2) #alternate metric</span>
+    <span class="n">val</span><span class="o">=</span><span class="n">metric</span><span class="p">(</span><span class="n">im2shift</span><span class="o">-</span><span class="n">image1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">val</span>
+</div>
+<div class="viewcode-block" id="scale_and_sub"><a class="viewcode-back" href="../../../api/picreduce.utils.scale_and_sub.html#picreduce.utils.scale_and_sub">[docs]</a><span class="k">def</span> <span class="nf">scale_and_sub</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">,</span><span class="n">metric</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    scale image 2 by the value of c, and subtract image 1 from it,</span>
+<span class="sd">     return the value of the function metric, which defaults to standard deviation.</span>
+<span class="sd">     alternatives could include rms() or np.mean() or median or...</span>
+<span class="sd">     </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c">#im2shift=scipy.ndimage.shift(image2,(yx))</span>
+    <span class="c">#metric=np.sqrt(np.mean(im2shift-image1)**2) #alternate metric</span>
+    <span class="n">val</span><span class="o">=</span><span class="n">metric</span><span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="n">image2</span><span class="o">-</span><span class="n">image1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">val</span>
+</div>
+<div class="viewcode-block" id="rms"><a class="viewcode-back" href="../../../api/picreduce.utils.rms.html#picreduce.utils.rms">[docs]</a><span class="k">def</span> <span class="nf">rms</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">array</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="opt_shift"><a class="viewcode-back" href="../../../api/picreduce.utils.opt_shift.html#picreduce.utils.opt_shift">[docs]</a><span class="k">def</span> <span class="nf">opt_shift</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">,</span><span class="n">return_array</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">globalmin</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">x0</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;Powell&#39;</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">stepsize</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    globalmin:</span>
+<span class="sd">              Use MonteCarlo (basinhopping) to</span>
+<span class="sd">     jump between local minima found, otherwise, use method alone.</span>
+<span class="sd">     method:</span>
+<span class="sd">            e.g. &#39;Nelder-Mead&#39;,&#39;Powell&#39;</span>
+<span class="sd">     x0: starting offset</span>
+<span class="sd">    return_array:</span>
+<span class="sd">               if True returns a shifted copy of array 2</span>
+<span class="sd">    Returns:</span>
+<span class="sd">            the output of the optimization, unless return array keyword is set True (the default).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">globalmin</span><span class="p">:</span>
+        <span class="n">opt</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">shift_and_sub</span><span class="p">,[</span><span class="n">x0</span><span class="p">],</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">),</span>
+                                    <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;maxiter&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">minimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;args&quot;</span><span class="p">:(</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">),</span>
+                            <span class="s">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span> 
+                            <span class="p">}</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">basinhopping</span><span class="p">(</span><span class="n">shift_and_sub</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span><span class="n">minimizer_kwargs</span><span class="o">=</span><span class="n">minimizer_kwargs</span><span class="p">,</span>
+                   <span class="n">niter</span><span class="o">=</span><span class="n">niter</span><span class="p">,</span><span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">return_array</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">image2</span><span class="p">,</span><span class="n">opt</span><span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">opt</span>
+</div>
+<div class="viewcode-block" id="general_opt"><a class="viewcode-back" href="../../../api/picreduce.utils.general_opt.html#picreduce.utils.general_opt">[docs]</a><span class="k">def</span> <span class="nf">general_opt</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">,</span><span class="n">function</span><span class="p">,</span><span class="n">globalmin</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">x0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;Powell&#39;</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">stepsize</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    globalmin:</span>
+<span class="sd">              Use MonteCarlo (basinhopping) to</span>
+<span class="sd">     jump between local minima found, otherwise, use method alone.</span>
+<span class="sd">     method:</span>
+<span class="sd">            e.g. &#39;Nelder-Mead&#39;,&#39;Powell&#39;</span>
+<span class="sd">     x0: starting offset</span>
+<span class="sd">    return_array:</span>
+<span class="sd">               if True returns the optimized copy of array 2</span>
+<span class="sd">    Returns:</span>
+<span class="sd">            the output of the optimization, unless return array keyword is set True (the default).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">globalmin</span><span class="p">:</span>
+        <span class="n">opt</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">function</span><span class="p">,[</span><span class="n">x0</span><span class="p">],</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">),</span>
+                                    <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;maxiter&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">minimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;args&quot;</span><span class="p">:(</span><span class="n">image1</span><span class="p">,</span><span class="n">image2</span><span class="p">),</span>
+                            <span class="s">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span> 
+                            <span class="p">}</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">basinhopping</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span><span class="n">minimizer_kwargs</span><span class="o">=</span><span class="n">minimizer_kwargs</span><span class="p">,</span>
+                   <span class="n">niter</span><span class="o">=</span><span class="n">niter</span><span class="p">,</span><span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">opt</span>
+    </div>
+<div class="viewcode-block" id="ZoomSameShape"><a class="viewcode-back" href="../../../api/picreduce.utils.ZoomSameShape.html#picreduce.utils.ZoomSameShape">[docs]</a><span class="k">def</span> <span class="nf">ZoomSameShape</span><span class="p">(</span><span class="n">input_array</span><span class="p">,</span><span class="n">zoom</span><span class="p">,</span><span class="n">oversample</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    uses </span>
+<span class="sd">    Rescales input_array by a factor zoom, centered on the center of the array, </span>
+<span class="sd">    and returns the scaled array with the same dimensions as the input</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;   zoomed=interpolation.zoom(input_array,zoom)</span>
+<span class="sd">    if zoomed.shape == input_array.shape:</span>
+<span class="sd">        return zoomed</span>
+<span class="sd">    else:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="c">#rescale an array without changing it&#39;s size:</span>
+    <span class="k">if</span> <span class="n">oversample</span> <span class="o">!=</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">input_array</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">input_array</span><span class="p">,</span><span class="n">oversample</span><span class="p">)</span>
+    
+    <span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="n">input_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">1j</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="n">input_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">1j</span><span class="p">]</span>
+    <span class="n">points</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">grid_x</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">grid_y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+
+    <span class="n">new_points</span><span class="o">=</span><span class="p">(</span><span class="n">points</span><span class="o">-</span><span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mf">1.01</span><span class="o">+</span><span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+
+    <span class="n">grid_z0</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">griddata</span><span class="p">(</span><span class="n">new_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">input_array</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">),</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">oversample</span> <span class="o">!=</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">grid_z0</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">grid_z0</span><span class="p">,</span><span class="mf">1.0</span><span class="o">/</span><span class="n">oversample</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">grid_z0</span>
+
+
+
+</div>
+<div class="viewcode-block" id="optimally_shift_and_save"><a class="viewcode-back" href="../../../api/picreduce.utils.optimally_shift_and_save.html#picreduce.utils.optimally_shift_and_save">[docs]</a><span class="k">def</span> <span class="nf">optimally_shift_and_save</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">dset1</span><span class="p">,</span><span class="n">dset2</span><span class="p">,</span><span class="n">null_state</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span><span class="n">n_skip</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">sequence_dir</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">para_angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">kernel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                             <span class="n">dark_fits_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">subtract_corner</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                             <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    </span>
+<span class="sd">    align the frames of dset2 to dset1 using opt_shift() and save in a subfolder of dset1</span>
+
+
+<span class="sd">    inputs:</span>
+<span class="sd">    f:</span>
+<span class="sd">        input hdf5 file</span>
+<span class="sd">    dset1:</span>
+<span class="sd">        first hdf5 dataset.</span>
+<span class="sd">    dset2:</span>
+<span class="sd">        first hdf5 dataset.</span>
+
+<span class="sd">    null_state:</span>
+<span class="sd">        the PICTURE FSM state indicating the instrument is nulling</span>
+<span class="sd">    n_skip:</span>
+<span class="sd">        the number of nulling frames to skip at the beginning of the data cube.</span>
+<span class="sd">    sequence_dir:</span>
+<span class="sd">        where outputs go, should be the parent diretory of the file.</span>
+<span class="sd">    para_angl:</span>
+<span class="sd">        rotation angle of both datasets, defaults to zero.</span>
+<span class="sd">    kernel:</span>
+<span class="sd">         astropy smoothing kernel, default is None.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">mkdir</span>
+    <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">exists</span><span class="p">,</span> <span class="n">isdir</span><span class="p">,</span><span class="n">expanduser</span>
+
+    <span class="k">if</span> <span class="n">para_angle</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;De-Rotation not implemented&quot;</span><span class="p">)</span>
+
+    <span class="n">good_sci_data1</span><span class="p">,</span><span class="n">median1</span><span class="p">,</span><span class="n">std1</span> <span class="o">=</span> <span class="n">get_nulled_frames</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">dset1</span><span class="p">,</span><span class="n">null_state</span><span class="o">=</span><span class="n">null_state</span><span class="p">,</span><span class="n">n_skip</span><span class="o">=</span><span class="n">n_skip</span><span class="p">)</span>
+    <span class="n">good_sci_data2</span><span class="p">,</span><span class="n">median2</span><span class="p">,</span><span class="n">std2</span> <span class="o">=</span> <span class="n">get_nulled_frames</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">dset2</span><span class="p">,</span><span class="n">null_state</span><span class="o">=</span><span class="n">null_state</span><span class="p">,</span><span class="n">n_skip</span><span class="o">=</span><span class="n">n_skip</span><span class="p">)</span>
+
+    <span class="n">headers2</span> <span class="o">=</span> <span class="n">get_nulled_frame_headers</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dset2</span><span class="p">,</span><span class="n">null_state</span><span class="o">=</span><span class="n">null_state</span><span class="p">,</span><span class="n">n_skip</span><span class="o">=</span><span class="n">n_skip</span><span class="p">)</span>
+    <span class="n">frame_numbers2</span><span class="o">=</span><span class="n">headers2</span><span class="p">[</span><span class="s">&#39;FRAME_NUMBER&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">dark_fits_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">dark</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dark_fits_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">median1</span> <span class="o">-=</span> <span class="n">dark</span>
+        <span class="n">median2</span> <span class="o">-=</span> <span class="n">dark</span>
+
+    <span class="k">if</span> <span class="n">subtract_corner</span><span class="p">:</span>
+        <span class="n">median1</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">median1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+        <span class="n">median2</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">median2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+
+    
+    <span class="k">if</span> <span class="n">kernel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">conv</span><span class="o">.</span><span class="n">convolve_fft</span><span class="p">(</span><span class="n">median1</span><span class="p">,</span><span class="n">kernel</span><span class="p">)</span>
+        <span class="n">conv</span><span class="o">.</span><span class="n">convolve_fft</span><span class="p">(</span><span class="n">median2</span><span class="p">,</span><span class="n">kernel</span><span class="p">)</span>
+        
+
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">opt_shift</span><span class="p">(</span><span class="n">median1</span><span class="p">,</span><span class="n">median2</span><span class="p">,</span><span class="n">return_array</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">frame_numbers2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">good_sci_data2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;lengths: </span><span class="si">%i</span><span class="s">, </span><span class="si">%i</span><span class="s">, do not match&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">frame_numbers2</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_sci_data2</span><span class="p">)))</span>
+
+    <span class="n">datadir</span> <span class="o">=</span> <span class="n">sequence_dir</span><span class="o">+</span><span class="s">&#39;/&#39;</span><span class="o">+</span><span class="n">dset1</span><span class="o">+</span><span class="s">&#39;/shifted&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">datadir</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mkdir</span><span class="p">(</span><span class="n">datadir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">datadir</span><span class="p">):</span>
+                <span class="k">raise</span>
+    <span class="n">subdir</span> <span class="o">=</span> <span class="n">datadir</span><span class="o">+</span><span class="s">&#39;/&#39;</span><span class="o">+</span><span class="n">dset2</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">subdir</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mkdir</span><span class="p">(</span><span class="n">subdir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">subdir</span><span class="p">):</span>
+                <span class="k">raise</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">frame_num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame_numbers2</span><span class="p">):</span>
+        <span class="n">shifted2</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">good_sci_data2</span><span class="p">[:,:,</span><span class="n">i</span><span class="p">],</span><span class="n">opt</span><span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">])</span>
+        
+ 
+        <span class="c">#print(&quot;output max:%.4e&quot;%(good_sci_data2[:,:,i].max()))</span>
+        <span class="n">FITS_HDU</span><span class="o">=</span><span class="n">PICTURE_IDL_to_HDF5</span><span class="o">.</span><span class="n">header_to_FITS_header</span><span class="p">(</span><span class="n">headers2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">fmt</span><span class="o">=</span><span class="s">&#39;hdf5&#39;</span><span class="p">)</span>
+
+        <span class="n">PICTURE_IDL_to_HDF5</span><span class="o">.</span><span class="n">attribute_to_FITS_header</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">dset2</span><span class="p">][</span><span class="s">&#39;sci_header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">,</span><span class="n">hdu</span><span class="o">=</span><span class="n">FITS_HDU</span><span class="p">)</span>
+        <span class="n">FITS_HDU</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&quot;NEW_PARA&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">para_angle</span>
+        
+        <span class="n">FITS_HDU</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;HISTORY&#39;</span><span class="p">]</span><span class="o">=</span><span class="s">&quot;Shift optimization output&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span> <span class="s">&#39;replace&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dark_fits_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dark</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dark_fits_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">shifted2</span> <span class="o">=</span><span class="n">shifted2</span> <span class="o">-</span> <span class="n">dark</span>
+            <span class="n">FITS_HDU</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;DARKFILE&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">dark_fits_name</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">subtract_corner</span><span class="p">:</span>
+            <span class="n">corner</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">shifted2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+            <span class="n">shifted2</span> <span class="o">=</span> <span class="n">shifted2</span><span class="o">-</span> <span class="n">corner</span>
+            <span class="n">FITS_HDU</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;HISTORY&#39;</span><span class="p">]</span><span class="o">=</span><span class="s">&quot;subtracted mean of 100 pixels in corner: </span><span class="si">%.3g</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">corner</span><span class="p">)</span>
+
+   
+        
+        <span class="k">if</span> <span class="n">kernel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">shifted2</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">convolve_fft</span><span class="p">(</span><span class="n">shifted2</span><span class="p">,</span><span class="n">kernel</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">shifted2</span><span class="p">))</span>
+            <span class="n">FITS_HDU</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&quot;HISTORY&quot;</span><span class="p">]</span><span class="o">=</span><span class="s">&quot;Applied convolution:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            
+        <span class="n">HDU</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">shifted2</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">FITS_HDU</span><span class="o">.</span><span class="n">header</span><span class="p">)])</span>
+        <span class="n">HDU</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">subdir</span><span class="o">+</span><span class="s">&#39;/&#39;</span><span class="o">+</span><span class="n">dset2</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">frame_num</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;.shifted.sci.s.fits&#39;</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        </div>
+<span class="k">def</span> <span class="nf">get_nulled_frames</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">dset</span><span class="p">,</span><span class="n">null_state</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span><span class="n">n_skip</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">over_clock</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    example:</span>
+<span class="sd">    #note! the first 3 values are skipped because they usually aren&#39;t really nulling</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+            
+    <span class="n">nulled</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci_header&#39;</span><span class="p">][</span><span class="s">&#39;STATE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">==</span><span class="n">null_state</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">good_sci_data</span><span class="o">=</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci&#39;</span><span class="p">][:,:</span><span class="o">-</span><span class="n">over_clock</span><span class="p">,</span><span class="n">nulled</span><span class="p">[</span><span class="n">n_skip</span><span class="p">]:</span><span class="n">nulled</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">dims</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">good_sci_data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span><span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;output not square,  applying </span><span class="si">%i</span><span class="s"> overclock to second dimension (x), resulting dimension:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">())</span>
+    <span class="n">median</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">good_sci_data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">std</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">good_sci_data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">good_sci_data</span><span class="p">,</span><span class="n">median</span><span class="p">,</span><span class="n">std</span>
+    
+
+<div class="viewcode-block" id="get_nulled_frame_headers"><a class="viewcode-back" href="../../../api/picreduce.utils.get_nulled_frame_headers.html#picreduce.utils.get_nulled_frame_headers">[docs]</a><span class="k">def</span> <span class="nf">get_nulled_frame_headers</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">dset</span><span class="p">,</span><span class="n">null_state</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span><span class="n">n_skip</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    example:</span>
+<span class="sd">    #note! the first 3 values are skipped because they usually aren&#39;t really nulling</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">nulled</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci_header&#39;</span><span class="p">][</span><span class="s">&#39;STATE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">==</span><span class="n">null_state</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">headers</span><span class="o">=</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci_header&#39;</span><span class="p">][</span><span class="n">nulled</span><span class="p">[</span><span class="n">n_skip</span><span class="p">]:</span><span class="n">nulled</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">headers</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right"> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

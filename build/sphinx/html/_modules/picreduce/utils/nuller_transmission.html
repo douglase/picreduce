@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>picreduce.utils.nuller_transmission &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../../../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../../../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../../../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../../../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for picreduce.utils.nuller_transmission</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>	
+
+<div class="viewcode-block" id="trans_func"><a class="viewcode-back" href="../../../api/picreduce.utils.trans_func.html#picreduce.utils.trans_func">[docs]</a><span class="k">def</span> <span class="nf">trans_func</span><span class="p">(</span><span class="n">arcsec</span><span class="p">,</span><span class="n">wave</span><span class="o">=</span><span class="mf">6.75e-7</span><span class="p">,</span><span class="n">shear</span><span class="o">=</span><span class="mf">0.15</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    creates a transmission function for a shearing nuller</span>
+<span class="sd">    inputs:</span>
+<span class="sd">        wave : wavelength (meters)</span>
+<span class="sd">        shear : pupil shear (meters)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">shear</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">arcsec</span><span class="o">/</span><span class="mf">206265.0</span><span class="p">)</span><span class="o">/</span><span class="n">wave</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="trans_2d"><a class="viewcode-back" href="../../../api/picreduce.utils.trans_2d.html#picreduce.utils.trans_2d">[docs]</a><span class="k">def</span> <span class="nf">trans_2d</span><span class="p">(</span><span class="n">detx</span><span class="p">,</span><span class="n">dety</span><span class="p">,</span><span class="n">PIXELSCL</span><span class="p">,</span><span class="n">transpose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    makes a square transmission function array.</span>
+
+<span class="sd">    inputs:</span>
+<span class="sd">       detx : length of x axis</span>
+<span class="sd">       dety : length of y axis</span>
+<span class="sd">       PIXELSCL : detector platescale in arcseconds</span>
+<span class="sd">       **kwargs : keywords arguments passed to trans_funct</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">trans_array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">detx</span><span class="p">])</span>
+    <span class="n">center</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">trans_array</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span><span class="o">-.</span><span class="mi">5</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">detx</span><span class="p">):</span>
+        <span class="n">arcsec</span><span class="o">=</span><span class="p">(</span><span class="n">center</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">PIXELSCL</span><span class="c">#*inFITS[0].header[&#39;PIXELSCL&#39;]</span>
+        <span class="n">trans_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans_func</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">arcsec</span><span class="p">),</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">trans2d</span><span class="o">=</span> <span class="n">trans_array</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">dety</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">detx</span><span class="p">,</span><span class="n">dety</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">transpose</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">trans2d</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span>  <span class="n">trans2d</span>
+
+</div>
+<div class="viewcode-block" id="symm_gauss_2d"><a class="viewcode-back" href="../../../api/picreduce.utils.symm_gauss_2d.html#picreduce.utils.symm_gauss_2d">[docs]</a><span class="k">def</span> <span class="nf">symm_gauss_2d</span><span class="p">(</span><span class="n">x_dim</span><span class="p">,</span><span class="n">y_dim</span><span class="p">,</span><span class="n">sigma</span><span class="p">,</span><span class="n">truncation_radius</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;an array consisting of a centered  (symmetrical) gaussian distribution, set to zero beyond the (optional) truncation_radius&#39;&#39;&#39;</span>
+    <span class="n">m_gauss</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">x_dim</span><span class="p">,</span><span class="n">y_dim</span><span class="p">])</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">x_dim</span><span class="o">/</span><span class="mf">2.0</span><span class="c"># - 0.5</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">y_dim</span><span class="o">/</span><span class="mf">2.0</span><span class="c"># - 0.5</span>
+    <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">sigma</span><span class="p">]</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;center x,y, sigma&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_dim</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_dim</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">col</span><span class="o">+</span><span class="mf">0.5</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span><span class="o">+</span><span class="mf">0.5</span><span class="o">-</span><span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">truncation_radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span>  <span class="n">r</span> <span class="o">&lt;</span> <span class="n">truncation_radius</span><span class="p">:</span>
+                    <span class="c">#print(r,truncation_radius)</span>
+                    <span class="n">m_gauss</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">m_gauss</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+
+    <span class="c">#m_gauss=m_gauss/m_gauss.sum()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">m_gauss</span><span class="p">,</span><span class="n">params</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="symm_circle"><a class="viewcode-back" href="../../../api/picreduce.utils.symm_circle.html#picreduce.utils.symm_circle">[docs]</a><span class="k">def</span> <span class="nf">symm_circle</span><span class="p">(</span><span class="n">x_dim</span><span class="p">,</span><span class="n">y_dim</span><span class="p">,</span><span class="n">sigma</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;a symmetrical circle&#39;&#39;&#39;</span>
+    <span class="n">m_box</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">x_dim</span><span class="p">,</span><span class="n">y_dim</span><span class="p">])</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">x_dim</span><span class="o">/</span><span class="mf">2.0</span><span class="c"># - 0.5</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">y_dim</span><span class="o">/</span><span class="mf">2.0</span><span class="c"># - 0.5</span>
+    <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">sigma</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;center x,y,half width,&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_dim</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_dim</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">col</span><span class="o">+</span><span class="mf">0.5</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span><span class="o">+</span><span class="mf">0.5</span><span class="o">-</span><span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span><span class="n">sigma</span><span class="p">:</span>
+                <span class="n">m_box</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="c">#normalize:</span>
+    <span class="c">#m_box=m_box/m_box.sum()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">m_box</span><span class="p">,</span><span class="n">params</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right"> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

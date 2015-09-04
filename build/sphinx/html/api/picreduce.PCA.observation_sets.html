@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>observation_sets &mdash; picreduce v0.0.dev15</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.dev15',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
+    <link rel="top" title="picreduce v0.0.dev15" href="../index.html" />
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="../_static/copybutton.js"></script>
+
+
+  </head>
+  <body>
+<div class="topbar">
+  <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
+  <ul>
+    <li><a class="homelink" title="Astropy Homepage" href="http://www.astropy.org"></a></li>
+    <li><a title="General Index" href="../genindex.html">Index</a></li>
+    <li><a title="Module Index" href="../py-modindex.html">Modules</a></li>
+    <li>
+      
+      
+<form action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      
+    </li>
+  </ul>
+</div>
+
+<div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+	<a href="../index.html">picreduce v0.0.dev15</a>
+	 &raquo;
+      </li>
+      
+       
+    </ul>
+</div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="observation-sets">
+<h1>observation_sets<a class="headerlink" href="#observation-sets" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="picreduce.PCA.observation_sets">
+<em class="property">class </em><tt class="descclassname">picreduce.PCA.</tt><tt class="descname">observation_sets</tt><big>(</big><em>image_dir</em>, <em>basis_dir</em>, <em>ran_sub=None</em>, <em>stackave=1</em>, <em>cent_size=0.0</em>, <em>prep_data=True</em>, <em>recent=False</em>, <em>resize=True</em>, <em>smooth_kernel=None</em><big>)</big><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Methods Summary</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#picreduce.PCA.observation_sets.conv_frames" title="picreduce.PCA.observation_sets.conv_frames"><tt class="xref py py-obj docutils literal"><span class="pre">conv_frames</span></tt></a>(kernel,&nbsp;**kwargs)</td>
+<td>Description: This function smooths each image frame by the input kernel via FFT convolution,  it can dramatically improve median subtraction but doesn&#8217;t seem to be helping PCA,   it may also be that it&#8217;s not being applied at the correct point in the PCA workflow,   because of the normalization that occurs in Pynpoint,  test would be how it works to have this smoothing applied on the raw fits files first.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#picreduce.PCA.observation_sets.pynpoint_contrast" title="picreduce.PCA.observation_sets.pynpoint_contrast"><tt class="xref py py-obj docutils literal"><span class="pre">pynpoint_contrast</span></tt></a>([plate_scale,&nbsp;n_pix,&nbsp;...])</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Documentation</p>
+<dl class="method">
+<dt id="picreduce.PCA.observation_sets.conv_frames">
+<tt class="descname">conv_frames</tt><big>(</big><em>kernel</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets.conv_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets.conv_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description:
+This function smooths each image frame by the input kernel via FFT convolution,</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>it can dramatically improve median subtraction but doesn&#8217;t seem to be helping PCA,</dt>
+<dd>it may also be that it&#8217;s not being applied at the correct point in the PCA workflow,
+because of the normalization that occurs in Pynpoint,</dd>
+</dl>
+<p>test would be how it works to have this smoothing applied on the raw fits files first.</p>
+<blockquote>
+<div>Parameters:</div></blockquote>
+</div></blockquote>
+<p>astropy.convolution.kernel</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="picreduce.PCA.observation_sets.pynpoint_contrast">
+<tt class="descname">pynpoint_contrast</tt><big>(</big><em>plate_scale=0.158</em>, <em>n_pix=128</em>, <em>max_coeff=100</em>, <em>plot_all_pca=False</em>, <em>smooth_option=None</em>, <em>high_color='orange'</em>, <em>low_color='black'</em>, <em>angular_units='arcsec'</em><big>)</big><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets.pynpoint_contrast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets.pynpoint_contrast" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>angular_units: string</strong></p>
+<blockquote>
+<div><p>&#8216;arcsec&#8217; or &#8216;lambdaD&#8217;, changes xlabel.</p>
+</div></blockquote>
+<p><strong>ran_sub: Bool</strong></p>
+<blockquote>
+<div><p>None or false gives glob() ordered set, -1 shuffles, N&lt;N_files gives smaller set of images</p>
+</div></blockquote>
+<p><strong>smooth_option: string</strong></p>
+<blockquote>
+<div><p>values: None, &#8216;before&#8217;, &#8216;after&#8217;, smooth with the bright_psf_kernel before or after the PCA analysis.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict containing the &#8216;residual&#8217;, the radial residual, &#8216;radial_res&#8217;, ploting axis:&#8217;ax&#8217;:ax,center of image: &#8216;center&#8217;:center}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
+<ul>
+<li><a class="reference internal" href="#">observation_sets</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<footer class="footer">
+  <p class="pull-right">
+    <a href="../_sources/api/picreduce.PCA.observation_sets.txt"
+       rel="nofollow">Page Source</a> &nbsp;
+    <a href="#">Back to Top</a></p>
+  <p>
+    &copy; Copyright 2015, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
+    Last built 04 Sep 2015. <br/>
+  </p>
+</footer>
+  </body>
+</html>

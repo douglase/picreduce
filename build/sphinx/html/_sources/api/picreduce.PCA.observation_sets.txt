@@ -1,0 +1,46 @@
+
+
+observation_sets
+==============================
+
+.. currentmodule:: picreduce.PCA
+
+.. autoclass:: observation_sets
+   :show-inheritance:
+
+   
+     
+   
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+   
+      ~observation_sets.conv_frames
+      ~observation_sets.pynpoint_contrast
+
+   
+   
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods Documentation
+
+   
+   .. automethod:: conv_frames
+   .. automethod:: pynpoint_contrast
+
+   
+   

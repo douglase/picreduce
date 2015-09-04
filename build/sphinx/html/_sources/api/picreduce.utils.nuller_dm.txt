@@ -1,0 +1,8 @@
+
+
+nuller_dm
+=========================
+
+.. currentmodule:: picreduce.utils
+
+.. autofunction:: nuller_dm

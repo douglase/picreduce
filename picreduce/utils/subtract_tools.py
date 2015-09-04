@@ -57,6 +57,7 @@ def opt_shift(image1,image2,return_array=True,globalmin=True,x0=(0,0), method='P
                if True returns a shifted copy of array 2
     Returns:
             the output of the optimization, unless return array keyword is set True (the default).
+            
     '''
     if not globalmin:
         opt=scipy.optimize.minimize(shift_and_sub,[x0],args=(image1,image2),
@@ -86,6 +87,7 @@ def general_opt(image1,image2,function,globalmin=True,x0=1.0, method='Powell', n
                if True returns the optimized copy of array 2
     Returns:
             the output of the optimization, unless return array keyword is set True (the default).
+
     '''
     if not globalmin:
         opt=scipy.optimize.minimize(function,[x0],args=(image1,image2),
@@ -101,15 +103,10 @@ def general_opt(image1,image2,function,globalmin=True,x0=1.0, method='Powell', n
     
 def ZoomSameShape(input_array,zoom,oversample=1,**kwargs):
     '''
-    uses 
     Rescales input_array by a factor zoom, centered on the center of the array, 
     and returns the scaled array with the same dimensions as the input
+
     '''
-    '''   zoomed=interpolation.zoom(input_array,zoom)
-    if zoomed.shape == input_array.shape:
-        return zoomed
-    else:
-        '''
     #rescale an array without changing it's size:
     if oversample !=1:
         input_array=scipy.ndimage.zoom(input_array,oversample)
@@ -128,15 +125,19 @@ def ZoomSameShape(input_array,zoom,oversample=1,**kwargs):
 
 
 
-def optimally_shift_and_save(f,dset1,dset2,null_state=34,n_skip=5,sequence_dir='',para_angle=0,kernel=None,
-                             dark_fits_name=None,subtract_corner=True,
+def optimally_shift_and_save(f,
+                             dset1,
+                             dset2,
+                             null_state=34,
+                             n_skip=5,
+                             sequence_dir=''
+                             ,para_angle=0,
+                             kernel=None,
+                             dark_fits_name=None,
+                             subtract_corner=True,
                              **kwargs):
-    
     '''
-
-    
     align the frames of dset2 to dset1 using opt_shift() and save in a subfolder of dset1
-
 
     inputs:
     f:
@@ -145,7 +146,7 @@ def optimally_shift_and_save(f,dset1,dset2,null_state=34,n_skip=5,sequence_dir='
         first hdf5 dataset.
     dset2:
         first hdf5 dataset.
-
+    
     null_state:
         the PICTURE FSM state indicating the instrument is nulling
     n_skip:
@@ -156,6 +157,7 @@ def optimally_shift_and_save(f,dset1,dset2,null_state=34,n_skip=5,sequence_dir='
         rotation angle of both datasets, defaults to zero.
     kernel:
          astropy smoothing kernel, default is None.
+    
     '''
     from os import mkdir
     from os.path import exists, isdir,expanduser
@@ -236,7 +238,6 @@ def optimally_shift_and_save(f,dset1,dset2,null_state=34,n_skip=5,sequence_dir='
         HDU.writeto(subdir+'/'+dset2+str(frame_num[0]).zfill(8)+'.shifted.sci.s.fits', clobber=True)
         
 def get_nulled_frames(f,dset,null_state=34,n_skip=5,over_clock=2):
-    
     '''
     example:
     #note! the first 3 values are skipped because they usually aren't really nulling
@@ -255,7 +256,6 @@ def get_nulled_frames(f,dset,null_state=34,n_skip=5,over_clock=2):
     
 
 def get_nulled_frame_headers(f,dset,null_state=34,n_skip=5):
-    
     '''
     example:
     #note! the first 3 values are skipped because they usually aren't really nulling

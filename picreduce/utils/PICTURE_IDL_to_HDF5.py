@@ -1,3 +1,7 @@
+'''
+Utilities for handling the conversion between IDL save files and HDF5
+'''
+
 import glob
 import scipy.io
 import numpy as np
@@ -16,14 +20,14 @@ def load_or_create(data_directory,
     r"""Function for loading a HDF5 dataset generated from PICTURE IDL save files.
     Checks if `fname exists`, and if not, creates a file, `fname`,
     in `data_directory` with datasets from `dset_list`
-     (corresponding to subdirectories inside data_directory)
-     
+    (corresponding to subdirectories inside data_directory)
+    
     .. warning:: if dset_list is not set, the new file will not be created.
 
     Parameters
     ----------
     data_directory : string
-        
+    
     dset_list : list
        list of datasets (e.g. jplgse.20071101.11111)
     fname : string, optional
@@ -33,31 +37,30 @@ def load_or_create(data_directory,
     -------
     f:
         An h5py file object.
-       
+    
     Raises
     ------
+    
     ValueError
-        forgot to pass a list?
+    forgot to pass a list?
+    
     See Also
     --------
     PICTURE_IDL_to_HDF5 : the heavy lifting parsing function.
+    
     Notes
+    ----------
+
     References
     ----------
-    Cite the relevant literature, e.g. [1]_.  You may also cite these
-    references in the notes section above.
-    .. h5py documentation: 
+    5py documentation:
+    
     Examples
     --------
+    
     >>> data_directory=expanduser('~')+'/projects/picture/data/wcs_multi_color_nulling/'
-    >>>dset_list=['jplgse.20141202.63381',
-            'jplgse.20141202.63531',
-           'jplgse.20141202.63737',
-             'jplgse.20141202.63960',
-           'jplgse.20141202.64119',
-            'jplgse.20141202.64294',
-            'jplgse.20141202.64497']
-    >>>IDL_to_HDF5.load_or_create(data_directory,dset_list=dset_list) 
+    >>> dset_list=['jplgse.20141202.63381','jplgse.20141202.63531','jplgse.20141202.63737','jplgse.20141202.63960','jplgse.20141202.64119','jplgse.20141202.64294','jplgse.20141202.64497']
+    >>> IDL_to_HDF5.load_or_create(data_directory,dset_list=dset_list)
     
     """
     print("Checking for hdf5 file:"+data_directory+fname)
@@ -78,8 +81,9 @@ def load_or_create(data_directory,
     return f
 
 def PICTURE_IDL_to_HDF5(f,base_dir,sub_dir):
-    '''
-
+    r'''
+    Function for parsing a directory idl save files produced by jplgse.
+    
     Parameters
     ----------
     f : an HDF5 file or group
@@ -111,11 +115,12 @@ def PICTURE_IDL_to_HDF5(f,base_dir,sub_dir):
         >>> #process data
         >>>f.close()
         
-    Single subdirectory
+    Single subdirectory:
+    
     >>> f = h5py.File(data_directory+'data.hdf5','w')
     >>>for dset in datasets:
            PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[0])
-          if len(dset)==3:
+           if len(dset)==3:
                PICTURE_IDL_to_HDF5.PICTURE_IDL_to_HDF5(f,data_directory,dset[1])
     >>> f.close()
     
@@ -211,7 +216,9 @@ def PICTURE_IDL_to_HDF5(f,base_dir,sub_dir):
 
 
 def collect_data_and_headers(globbed_list):
-    ''' this function should replace seperate sections for WFS and sci'''
+    ''' this function should replace seperate sections for WFS and sci
+
+    '''
     try:
         first=scipy.io.readsav(globbed_list[0])
         header=first["header"]
@@ -253,7 +260,10 @@ def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
 
     Raises
     ----------
-          ValueError
+
+    ValueError
+    ----------
+    
     '''
     if hdu == None:
         hdu=fits.PrimaryHDU()
@@ -316,6 +326,7 @@ def attribute_to_FITS_header(attrs,hdu=None):
 def get_dsets(sequence_dir):
     '''
     Find all the the subdirectories in `sequence_dir` and return as a sorted list
+    
     '''
     dsets=[path.split('/')[-2] for path in glob.glob(sequence_dir+"/*/")]
     dsets.sort()

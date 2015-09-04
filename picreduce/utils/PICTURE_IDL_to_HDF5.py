@@ -83,7 +83,8 @@ def load_or_create(data_directory,
 def jplgse_to_HDF5(f,base_dir,sub_dir):
     '''
     Function for parsing a directory idl save files produced by jplgse.
-    
+
+    .. warning:: currently data.d is not added to the HDF5 file, additional parsing needs to be added.
     Parameters
     ----------
     f : an HDF5 file or group
@@ -95,14 +96,10 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
     ----------
     f : the input HDF5 file or group.
     
-    CAVEATS: 
-    currently data.d is not added to the HDF5 file, additional parsing needs to be added.
-
-    
-    Example
+    Examples
     ----------
-     MULTIPLE SUBDIRECTORIES in a single file:
     
+     MULTIPLE SUBDIRECTORIES in a single file:
     >>> data_directory="~/projects/PICTURE/data/todays_run"
     >>> datasets=[["gsedata.idl.20140703.59076","showat.20140703.59067"," #test 1 bright, white light"],
     ["gsedata.idl.20140703.59453","showat.20140703.59431","test 2: dim, white light"]]

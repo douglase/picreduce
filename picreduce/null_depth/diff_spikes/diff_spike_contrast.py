@@ -1,13 +1,6 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
-
-# <markdowncell>
-
-# functions necessary to calculate diffraction spike contrast (and return it as an radial average?)
-
-# <codecell>
-
-import sys
+"""
+for calculating contrast given a region of an image containing a DM diffraction spike 
+"""import sys
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +11,7 @@ import astropy.io.fits as fits
 import scipy.ndimage
 
 def measure_spike(subregion,subregion_err,title_string="",ratio=20,ratio_err=10,rot_guess=90):    
-    '''
+    """
     
     inputs:
         subregion: A approximately square slice of the science image around the diffraction spike of interest.
@@ -32,7 +25,7 @@ def measure_spike(subregion,subregion_err,title_string="",ratio=20,ratio_err=10,
         diffspik, diffspike_err=diff_spike_contrast.measure_spike(median[30:50,0:30],median_std[30:50,0:30],
                                                                     ratio=20,ratio_err=10,title_string=im_dset)
 
-    '''
+    """
     fig=plt.figure(figsize=[16,4]) 
     gs1 = gridspec.GridSpec(1, 2)
     ax_list = [fig.add_subplot(ss) for ss in gs1]

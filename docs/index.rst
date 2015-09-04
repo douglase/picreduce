@@ -34,8 +34,10 @@ User Documentation
 ******************
 
 .. only:: html
-
-    :doc:`whatsnew/1.0`
+	  :doc:`PCA`
+	  :doc:`utils`
+       :doc:`null_depth`
+       :doc:`plotting`
     -------------------
 
 .. only:: latex

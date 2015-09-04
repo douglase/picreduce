@@ -1,0 +1,254 @@
+import glob
+import scipy.io
+import numpy as np
+import h5py
+import matplotlib.mlab
+import os.path
+import astropy.io.fits as fits
+
+def get_dsets(sequence_dir):
+    return [path.split('/')[-2] for path in glob.glob(sequence_dir+"/*/")]
+
+def load_or_create(data_directory,dset_list=[],fname='/data.hdf5',readwrite='r'):
+    print("hdf5 file:"+data_directory+fname)
+    '''
+    checks if fname exists, and if not, creates a file, fname,
+    in data_directory with datasets from dset_list
+     (corresponding to subdirectories inside data_directory)
+    if dset_list is not set, the new file will not be created.
+    '''
+    if not os.path.isfile(data_directory+fname):
+        with h5py.File(data_directory+fname,'w') as f:
+            if dset_list:
+                for dset in dset_list:
+                    print("creating: "+dset+" in "+fname+" in "+ data_directory)
+                    run(f,data_directory,dset)
+                #f.close()
+            else:
+                raise ValueError("invalid dset list: "+str(dset_list))
+    f = h5py.File(data_directory+fname,readwrite)
+    return f
+
+def run(f,base_dir,sub_dir):
+    '''
+    douglase@bu.edu, 2 august 2014
+    inputs:
+    f -an hdf file or group
+    base_dir -the path to the data directory
+    sub_dir - the the subdirectory the files of interest are stored in within base_dir,
+    this will also be the name of the HDF data group added to f.
+    
+    returns f
+    
+    CAVEATS: 
+    currently data.d is not added to the HDF5 file, additional parsing needs to be added.
+
+    Example, MULTIPLE SUBDIRECTORIES in a single file:
+    
+data_directory="~/projects/PICTURE/data/todays_run"
+datasets=[["gsedata.idl.20140703.59076","showat.20140703.59067"," #test 1 bright, white light"],
+    ["gsedata.idl.20140703.59453","showat.20140703.59431","test 2: dim, white light"]]
+
+f = h5py.File(data_directory+'data.hdf5','w')
+for dset in datasets:
+    PICTURE_IDL_to_HDF5.run(f,data_directory,dset[0])
+    if len(dset)==3:
+        PICTURE_IDL_to_HDF5.run(f,data_directory,dset[1])
+    f.close()
+    
+    f = h5py.File(data_directory+'data.hdf5','w')
+for dset in datasets:
+    PICTURE_IDL_to_HDF5.run(f,data_directory,dset[0])
+    if len(dset)==3:
+        PICTURE_IDL_to_HDF5.run(f,data_directory,dset[1])
+f.close()
+    
+    '''
+    grp = f.create_group(str(sub_dir))
+    directory=base_dir+"/"+sub_dir
+
+
+    #first look for science camera frames:
+    sci_files=glob.glob(directory+"/*.s.idl")
+    sci_files.sort()
+
+    if len(sci_files)>1:
+        try:
+            sci_1st=scipy.io.readsav(sci_files[0])
+            sciheader=sci_1st["header"]
+            scidateframes=sci_1st["data"]
+            sci_frame=sci_1st["data"]
+        except Exception, err:
+            print("error finding SCI camera files")
+            print(err)
+    
+        for i,sci_sav in enumerate(sci_files[1:]):
+            try:
+                sci=scipy.io.readsav(sci_sav)
+            except Exception,err:
+                print(err)
+                print('readsave error')
+                continue
+            sciheader=np.vstack([sciheader,sci['header']])
+            sci_frame=np.dstack([sci_frame,sci['data']])
+        
+        grp.create_dataset("sci", data=sci_frame,compression="gzip",fletcher32=True,track_times=True)
+        grp.create_dataset("sci_header", data=sciheader,compression="gzip",fletcher32=True,track_times=True)
+    #now try to find wavefront sensor data
+    wfs_types = ["phase.i.idl","phase.v.idl","phase.r.idl","phase.m.idl",
+                 "phase.p.idl","phase.u.idl","frame.a.idl",#"data.d.idl",
+                 "frame.b.idl","frame.c.idl","frame.d.idl"]
+    for wfs_extension in wfs_types:
+        wfs_files=glob.glob(directory+"/*"+wfs_extension)
+        wfs_files.sort()
+        if len(wfs_files)>1:
+            try:
+                wfs_1st=scipy.io.readsav(wfs_files[0])
+                wfsheader=wfs_1st["header"]
+                wfsdateframes=wfs_1st["data"]
+                wfs_frame=wfs_1st["data"]
+            except Exception, err:
+                print("error finding WFS files")
+                print(err)
+            for i,wfs_sav in enumerate(wfs_files[1:]):
+                try:
+                    wfs=scipy.io.readsav(wfs_sav)
+                except Exception,err:
+                    print(err)
+                    print('readsave error')
+                    continue
+                wfsheader=np.vstack([wfsheader,wfs['header']])
+                wfs_frame=np.dstack([wfs_frame,wfs['data']])
+            grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
+            grp.create_dataset(wfs_extension+".header", data=wfsheader,compression="gzip",fletcher32=True,track_times=True)
+    #finally, try looking for angle tracker data:
+    
+    at_files=glob.glob(directory+"/atfull.*.idl")
+    if len(at_files)>1:
+        #at_header,at_frame=collect_data_and_headers(at_files)
+        try:
+            at_first=scipy.io.readsav(at_files[0])
+            #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it out:
+            if at_first['imagepkt']["IMAGE"].dtype==np.dtype('O'):
+                if len(at_first['imagepkt']["IMAGE"]) ==1:
+                    at_frame=at_first['imagepkt']["IMAGE"][0]
+                    at_header=matplotlib.mlab.rec_drop_fields(at_first['imagepkt'],["IMAGE"])     #http://stackoverflow.com/a/15577562/2142498
+            else:
+                at_frame=at_first["imagepkt"]
+    
+        except Exception, err:
+            print("error finding files")
+            print(err)
+        for i,sav in enumerate(at_files[1:]):
+            try:
+                data=scipy.io.readsav(sav)
+                #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it out:
+                at_frame=np.dstack([at_frame,data['imagepkt']["IMAGE"][0]])
+                at_header=np.vstack([at_header,matplotlib.mlab.rec_drop_fields(data['imagepkt'],["IMAGE"])])
+            except Exception,err:
+                print("angle tracker frame stacking problem")
+                print(err)
+                continue
+        grp.create_dataset("at", data=at_frame,compression="gzip",fletcher32=True,track_times=True)
+        grp.create_dataset("at_header", data=at_header,compression="gzip",fletcher32=True,track_times=True)
+
+
+
+def collect_data_and_headers(globbed_list):
+    ''' this function should replace seperate sections for WFS and sci'''
+    try:
+        first=scipy.io.readsav(globbed_list[0])
+        header=first["header"]
+        frame=first["data"]
+    except Exception, err:
+        print("error finding files")
+        print(err)
+    for i,sav in enumerate(globbed_list[1:]):
+        try:
+            data=scipy.io.readsav(sav)
+            header=np.vstack([header,data['header']])
+            frame=np.dstack([frame,data['data']])
+        except Exception,err:
+            print(err)
+            continue
+   
+    return [header,frame]
+
+
+
+
+
+def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
+    '''
+    takes input header and parse into a FITS header
+
+    keywords:
+    'hdf5' structured numpy array  from a custom PICTURE hdf5 file. 
+    'idlsave' header from a custom IDLSAV file opened with scipy.io
+
+    returns:
+    astropy.io.fits.PrimaryHDU
+    
+    example:
+    
+    hdu=  header_to_FITS_header(f[im_dset]['sci_header'][0],input='hdf5')
+
+    '''
+    if hdu == None:
+        hdu=fits.PrimaryHDU()
+    elif not isinstance(hdu,fits.PrimaryHDU):
+        raise ValueError("unexpected object, "+str(type(hdu)))
+
+    header=hdu.header
+
+    if fmt == 'hdf5':
+        for field in inputHeader.dtype.fields.keys():
+            #print([field[0],input[field[0]][0]])
+            header[str(field)]=inputHeader[field][0]
+
+    if fmt == 'idlsave':
+        raise ValueError("not yet implemented")
+    #else:
+    #     raise ValueError("set a valid format type.")
+ 
+    return hdu
+
+def attribute_to_FITS_header(attrs,hdu=None):
+    '''takes HDF5 dsets attributes and parses it's attributes into a FITS header
+
+    returns:
+    astropy.io.fits.PrimaryHDU
+    
+    example:
+    
+    hdu=  header_to_FITS_header(f[im_dset]['sci_header'][0],input='hdf5')
+
+    '''
+    if hdu==None:
+        HDUout=fits.PrimaryHDU()
+    elif not isinstance(hdu,fits.PrimaryHDU):
+        raise ValueError("unexpected object, "+str(type(HDUout)))
+    
+    keys=attrs.keys()
+    
+    if len(keys) == 0:
+        print("no attributes")
+        return hdu
+    
+    for attrib in keys:
+        attrib_val=attrs[attrib]
+        
+        #make ASCII for fits compatiblity:
+        #print(attrib,type(attrib_val))
+        if (isinstance(attrib_val,np.string_)) or  (isinstance(attrib_val,str)):
+             attrib_val =   attrib_val.encode('utf-8').decode('ascii', 'replace').replace('\n', ' ')
+
+        hdu.header[str(attrib)]= attrib_val
+    
+    return hdu
+
+
+def get_dsets(sequence_dir):
+    dsets=[path.split('/')[-2] for path in glob.glob(sequence_dir+"/*/")]
+    dsets.sort()
+    return dsets

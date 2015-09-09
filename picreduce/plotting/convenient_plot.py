@@ -3,7 +3,7 @@ from matplotlib.colors import LogNorm, SymLogNorm  # for log scaling of images, 
 import numpy as np
 import poppy
 import astropy.io.fits as fits
-import max_cen_phot
+from . utils import max_cen_phot
 import matplotlib.gridspec
 from scipy import signal
 cmap=matplotlib.cm.get_cmap(name='gnuplot', lut=None)
@@ -47,7 +47,7 @@ def null_diagnostic_plot(cube,background,wfs_cube=None,exp_time=1.0,name='',
     #for i in range(statscube.shape[2]):
     #    plt.figure()
     #    plt.imshow(statscube[:,:,i])
-    phot=np.array([max_cen_phot.max_cen_phot(statscube[:,:,i],radius_pixels=5,fixed_center=None,verbose=False,boxsize=5)
+    phot=np.array([max_cen_phot(statscube[:,:,i],radius_pixels=5,fixed_center=None,verbose=True,boxsize=5)
                    for i in range(statscube.shape[2])])
     ax1.plot(x,max_vs_time/max_bright,label='max')
     ax1.set_xticklabels([]) #remove y axis labels

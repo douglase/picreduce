@@ -1,16 +1,6 @@
-# Licensed under a 3-clause BSD style license - see LICENSE.rst
-
 """
-This is an Astropy affiliated package.
+This module contains plotting tools
 """
 
-# Affiliated packages may add whatever they like to this file, but
-# should keep this content at the top.
-# ----------------------------------------------------------------------------
-from poppy import *
-# ----------------------------------------------------------------------------
-
-# For egg_info test builds to pass, put package imports here.
-if not _ASTROPY_SETUP_:
-    pass
-from convenient_plot import * 
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)

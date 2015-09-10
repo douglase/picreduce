@@ -1,6 +1,7 @@
 """
 for calculating contrast given a region of an image containing a DM diffraction spike 
-"""import sys
+"""
+import sys
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt

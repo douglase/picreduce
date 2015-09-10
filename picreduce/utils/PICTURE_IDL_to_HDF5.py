@@ -73,7 +73,11 @@ def load_or_create(data_directory,
                     jplgse_to_HDF5(f,data_directory,dset)
                 #f.close()
             else:
-                raise ValueError("invalid dset list: "+str(dset_list))
+                dset_list=get_dsets(data_directory)
+                for dset in dset_list:
+                    print("creating: "+dset+" in "+fname+" in "+ data_directory)
+                    jplgse_to_HDF5(f,data_directory,dset)
+                #raise ValueError("invalid dset list: "+str(dset_list))
     else:
         print("Found hdf5 file:"+data_directory+fname)
 

@@ -6,7 +6,6 @@ import scipy.optimize
 import PICTURE_IDL_to_HDF5
 import astropy.convolution as conv
 
-
 def recenter(in_array,newcntr,verbose=True,**kwargs):
     '''
     uses the POPPY centroid measuring routine to find the center of an PSF,
@@ -130,34 +129,42 @@ def optimally_shift_and_save(f,
                              dset2,
                              null_state=34,
                              n_skip=5,
-                             sequence_dir=''
-                             ,para_angle=0,
+                             sequence_dir='',
+                             para_angle=0,
                              kernel=None,
                              dark_fits_name=None,
                              subtract_corner=True,
                              **kwargs):
     '''
-    align the frames of dset2 to dset1 using opt_shift() and save in a subfolder of dset1
+    Align the frames of `dset2` to `dset1` using `opt_shift()` and save in a subfolder of `dset1`
 
-    inputs:
-    f:
+    Parameters
+    ----------
+    f: HDF5 file object
         input hdf5 file
-    dset1:
+    dset1: string
         first hdf5 dataset.
-    dset2:
+    dset2: string
         first hdf5 dataset.
     
-    null_state:
+    null_state: int
         the PICTURE FSM state indicating the instrument is nulling
-    n_skip:
+    n_skip: int
         the number of nulling frames to skip at the beginning of the data cube.
-    sequence_dir:
+    sequence_dir: string
         where outputs go, should be the parent diretory of the file.
-    para_angl:
+    para_angl: float
         rotation angle of both datasets, defaults to zero.
-    kernel:
+    kernel: astropy.convolution.kernel
          astropy smoothing kernel, default is None.
-    
+    subtract_corner: bool
+         if set to True the mean value of a 10x10 pixel box in the corner of the all the images will be subtracted as a background signal
+    dark_fits_name: None or string
+         Default is none, otherwise a fits file which will be subtracted from each frame prior to shifting.
+    **kwargs:
+         keyword arguments passed to opt_shift().
+    Examples
+    ----------
     '''
     from os import mkdir
     from os.path import exists, isdir,expanduser

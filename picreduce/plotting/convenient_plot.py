@@ -1,3 +1,7 @@
+'''
+tools for optimally plotting PICTURE datasets.
+'''
+
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm, SymLogNorm  # for log scaling of images, with automatic colorbar support
 import numpy as np

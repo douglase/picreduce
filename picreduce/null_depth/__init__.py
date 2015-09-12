@@ -2,3 +2,4 @@
 """
 This packages contains affiliated package tests.
 """
+from .diff_spike_contrast import *

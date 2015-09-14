@@ -171,8 +171,8 @@ class observation_sets:
         center=poppy.measure_centroid(HDUlist_or_filename=raw,boxsize=10)[::-1]
 
 
-        phot1=max_cen_phot.max_cen_phot(raw[0].data,radius_pixels=5,verbose=True,boxsize=5)
-        phot2=max_cen_phot.max_cen_phot(raw_basis[0].data,radius_pixels=5,verbose=True,boxsize=5)
+        phot1 = max_cen_phot(raw[0].data,radius_pixels=5,verbose=True,boxsize=5)
+        phot2 = max_cen_phot(raw_basis[0].data,radius_pixels=5,verbose=True,boxsize=5)
   
         mean_subbed_contrast = astropy.io.fits.HDUList([astropy.io.fits.PrimaryHDU((raw[0].data - raw_basis[0].data*phot1/phot2)/max_bright)])
         # if self.smooth_option == 'after' and self.smooth_kernel is not None: 

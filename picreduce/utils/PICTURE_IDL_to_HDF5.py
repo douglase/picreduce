@@ -113,8 +113,8 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
             PICTURE_IDL_to_HDF5.jplgse_to_HDF5(f,data_directory,dset[0])
             if len(dset)==3:
                 PICTURE_IDL_to_HDF5.jplgse_to_HDF5(f,data_directory,dset[1])
-        >>> #process data
-        >>>f.close()
+    >>> #process data
+    >>>f.close()
 
     
     >>> f = h5py.File(data_directory+'data.hdf5','w')

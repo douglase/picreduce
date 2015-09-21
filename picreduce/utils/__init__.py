@@ -16,7 +16,6 @@ from . import max_cen_phot
 from . import radial_profile
 
 
-from .PICTURE_IDL_to_HDF5 import *
 from .nuller_transmission import *
 from .subtract_tools import *
 from .PICTURE_nuller import *
@@ -24,3 +23,4 @@ from .congrid import *
 from .picbslices import *
 from .max_cen_phot import *
 from .radial_profile import *
+from .PICTURE_IDL_to_HDF5 import *

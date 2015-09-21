@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>optimally_shift_and_save &mdash; picreduce v0.0.dev15</title>
+    <title>optimally_shift_and_save &mdash; picreduce v0.0.dev30</title>
     
     <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.dev15',
+        VERSION:     '0.0.dev30',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev15" href="../index.html" />
+    <link rel="top" title="picreduce v0.0.dev30" href="../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../_static/copybutton.js"></script>
 
@@ -55,7 +55,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../index.html">picreduce v0.0.dev15</a>
+	<a href="../index.html">picreduce v0.0.dev30</a>
 	 &raquo;
       </li>
       
@@ -74,27 +74,61 @@
 <dl class="function">
 <dt id="picreduce.utils.optimally_shift_and_save">
 <tt class="descclassname">picreduce.utils.</tt><tt class="descname">optimally_shift_and_save</tt><big>(</big><em>f</em>, <em>dset1</em>, <em>dset2</em>, <em>null_state=34</em>, <em>n_skip=5</em>, <em>sequence_dir=''</em>, <em>para_angle=0</em>, <em>kernel=None</em>, <em>dark_fits_name=None</em>, <em>subtract_corner=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/picreduce/utils/subtract_tools.html#optimally_shift_and_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.optimally_shift_and_save" title="Permalink to this definition">¶</a></dt>
-<dd><p>align the frames of dset2 to dset1 using opt_shift() and save in a subfolder of dset1</p>
-<p>inputs:
-f:</p>
+<dd><p>Align the frames of <tt class="xref py py-obj docutils literal"><span class="pre">dset2</span></tt> to <tt class="xref py py-obj docutils literal"><span class="pre">dset1</span></tt> using <a class="reference internal" href="picreduce.utils.opt_shift.html#picreduce.utils.opt_shift" title="picreduce.utils.opt_shift"><tt class="xref py py-obj docutils literal"><span class="pre">opt_shift()</span></tt></a> and save in a subfolder of <tt class="xref py py-obj docutils literal"><span class="pre">dset1</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>f: HDF5 file object</strong></p>
 <blockquote>
-<div>input hdf5 file</div></blockquote>
-<dl class="docutils">
-<dt>dset1:</dt>
-<dd>first hdf5 dataset.</dd>
-<dt>dset2:</dt>
-<dd>first hdf5 dataset.</dd>
-<dt>null_state:</dt>
-<dd>the PICTURE FSM state indicating the instrument is nulling</dd>
-<dt>n_skip:</dt>
-<dd>the number of nulling frames to skip at the beginning of the data cube.</dd>
-<dt>sequence_dir:</dt>
-<dd>where outputs go, should be the parent diretory of the file.</dd>
-<dt>para_angl:</dt>
-<dd>rotation angle of both datasets, defaults to zero.</dd>
-<dt>kernel:</dt>
-<dd>astropy smoothing kernel, default is None.</dd>
-</dl>
+<div><p>input hdf5 file</p>
+</div></blockquote>
+<p><strong>dset1: string</strong></p>
+<blockquote>
+<div><p>first hdf5 dataset.</p>
+</div></blockquote>
+<p><strong>dset2: string</strong></p>
+<blockquote>
+<div><p>first hdf5 dataset.</p>
+</div></blockquote>
+<p><strong>null_state: int</strong></p>
+<blockquote>
+<div><p>the PICTURE FSM state indicating the instrument is nulling</p>
+</div></blockquote>
+<p><strong>n_skip: int</strong></p>
+<blockquote>
+<div><p>the number of nulling frames to skip at the beginning of the data cube.</p>
+</div></blockquote>
+<p><strong>sequence_dir: string</strong></p>
+<blockquote>
+<div><p>where outputs go, should be the parent diretory of the file.</p>
+</div></blockquote>
+<p><strong>para_angl: float</strong></p>
+<blockquote>
+<div><p>rotation angle of both datasets, defaults to zero.</p>
+</div></blockquote>
+<p><strong>kernel: astropy.convolution.kernel</strong></p>
+<blockquote>
+<div><p>astropy smoothing kernel, default is None.</p>
+</div></blockquote>
+<p><strong>subtract_corner: bool</strong></p>
+<blockquote>
+<div><p>if set to True the mean value of a 10x10 pixel box in the corner of the all the images will be subtracted as a background signal</p>
+</div></blockquote>
+<p><strong>dark_fits_name: None or string</strong></p>
+<blockquote>
+<div><p>Default is none, otherwise a fits file which will be subtracted from each frame prior to shifting.</p>
+</div></blockquote>
+<p><strong>**kwargs:</strong></p>
+<blockquote>
+<div><p>keyword arguments passed to opt_shift().</p>
+</div></blockquote>
+<p><strong>Examples</strong></p>
+<p class="last"><strong>&#8212;&#8212;&#8212;-</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -122,7 +156,7 @@ f:</p>
   <p>
     &copy; Copyright 2015, douglase.<br/>
     Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
-    Last built 04 Sep 2015. <br/>
+    Last built 21 Sep 2015. <br/>
   </p>
 </footer>
   </body>

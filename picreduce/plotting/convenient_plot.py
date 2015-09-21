@@ -173,7 +173,8 @@ def convergence(f,dset,
                 re_gen_mask=True):
     '''
     make a time series plot of the wavefront error for a particular dataset.
-
+    
+    -----------
     Parameters:
         f: HDF5 file object
         dset: string
@@ -192,7 +193,7 @@ def convergence(f,dset,
             indicating find packet mode
         rms: Boolean
             if True, plot the root-mean-square of the phase in addition to the standard deviation.
-            '''
+    '''
 
     
     fig=plt.figure(figsize=[6,3],dpi=320)

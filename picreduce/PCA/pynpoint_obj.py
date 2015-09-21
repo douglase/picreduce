@@ -32,34 +32,36 @@ from matplotlib.colors import SymLogNorm  # for log scaling of images, with auto
 mpl.rcParams['image.interpolation'] = 'none'
 mpl.rcParams['image.origin']='lower'
 
-# <codecell>
-
-# <codecell>
-
-
-# <codecell>
 
 #PynPoint Requires the paralytic angle be stored in the FITS header, set to zero so it doesn't try to derotate
-'''for filen in glob.glob(data_dir+'*'):
-    hdulist=fits.open(filen,mode='update')
-    
-    print(filen)
-    print(hdulist[0].header)
-    hdulist[0].header['NEW_PARA']=0
-
-    hdulist.flush()
-    hdulist.close(verbose=True)
-'''
-
-# <markdowncell>
-
-# 
-# 
-
-# <codecell>
 
 class observation_sets:
-    def __init__(self,image_dir,
+    """
+    a class of observations to process with PynPoint Exoplanet module.
+
+    Parameters
+    
+    ----------
+    image_dir: str
+        directory where target FITS file are stored 
+    basis_dir: str
+        directory where basis FITS file are stored
+    ran_sub: Float or None
+        the size of a random subset of image and basis images to use. default None.
+        
+        
+    stackave=1: int
+        number of frames to stack before analysis
+    cent_size: float
+        size of center mask, default is 0.00.
+    
+    prep_data=True,
+    recent=False,
+    resize=True,
+    smooth_kernel=None
+    """
+    def __init__(self,
+                 image_dir,
                 basis_dir,
                 ran_sub=None,
                 stackave=1,
@@ -85,16 +87,17 @@ class observation_sets:
             self.convolution_counter = 0
     def conv_frames(self,kernel,**kwargs):
         '''
-        Description:
         This function smooths each image frame by the input kernel via FFT convolution,
          it can dramatically improve median subtraction but doesn't seem to be helping PCA,
           it may also be that it's not being applied at the correct point in the PCA workflow,
           because of the normalization that occurs in Pynpoint,
          test would be how it works to have this smoothing applied on the raw fits files first.
 
-          Parameters:
+        Parameters
+        ----------
         astropy.convolution.kernel
-
+        
+        kwargs are passed to astropy.convolution.convolve_fft
         
         '''
         if self.convolution_counter > 0:
@@ -121,6 +124,16 @@ class observation_sets:
 
         Parameters
         ----------
+        Plate scale: float
+            the number of pixels to assign to one angular unit.
+        max_coeff: int 
+            the maximum number of principle components to allow.
+        plot_all_pca:
+            plots every 10 principle components, useful for convergence.
+        high_color=str
+            color indicating positive values in the contrast map.
+        low_color=str
+            color indicating negative values in contrast map.
         angular_units: string
             'arcsec' or 'lambdaD', changes xlabel.
         ran_sub: Bool 

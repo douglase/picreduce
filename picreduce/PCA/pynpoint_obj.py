@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
-
-# <codecell>
+"""
+tools for interacting with Pynpoint PCA routines.
+"""
 
 #%matplotlib inline
 import matplotlib.pyplot as plt
@@ -33,14 +32,15 @@ mpl.rcParams['image.interpolation'] = 'none'
 mpl.rcParams['image.origin']='lower'
 
 
-#PynPoint Requires the paralytic angle be stored in the FITS header, set to zero so it doesn't try to derotate
 
 class observation_sets:
     """
     a class of observations to process with PynPoint Exoplanet module.
+    
+    ..warning: PynPoint Requires the paralytic angle be stored in the FITS header, if you don't have ADI images,
+     set this keyword to zero so it doesn't try to de-rotate and fail.
 
     Parameters
-    
     ----------
     image_dir: str
         directory where target FITS file are stored 
@@ -48,17 +48,19 @@ class observation_sets:
         directory where basis FITS file are stored
     ran_sub: Float or None
         the size of a random subset of image and basis images to use. default None.
-        
-        
     stackave=1: int
         number of frames to stack before analysis
     cent_size: float
         size of center mask, default is 0.00.
-    
-    prep_data=True,
-    recent=False,
-    resize=True,
-    smooth_kernel=None
+    prep_data: bool
+        if True data will be resized and recentered
+    recent: bool
+        False by default. Only works if resize is also True (Pynpoint v. 0.2.0)
+    resize:True
+        Resample the data, doubling array dimensions, default is True.
+    smooth_kernel:
+        kernel to use for convolution if convolution is used.
+
     """
     def __init__(self,
                  image_dir,
@@ -110,7 +112,8 @@ class observation_sets:
             
         for i_num in range(self.basis.im_arr.shape[0]):
             self.basis.im_arr[i_num,:,:] =  conv.convolve_fft(self.basis.im_arr[i_num,:,:], kernel, **kwargs)
-        self.convolution_counter =  self.convolution_counter + 1 
+        self.convolution_counter =  self.convolution_counter + 1
+        
     def pynpoint_contrast(self,
                       plate_scale=0.158,
                       n_pix=128,
@@ -121,7 +124,8 @@ class observation_sets:
                       low_color = 'black',
                       angular_units='arcsec'):
         '''
-
+        A catch all function that finds the residual and generates a variety of diagnostic plots.
+        
         Parameters
         ----------
         Plate scale: float
@@ -141,11 +145,9 @@ class observation_sets:
         smooth_option: string
              values: None, 'before', 'after', smooth with the bright_psf_kernel before or after the PCA analysis.
 
-             
         Returns
-        -------
-        dict containing the 'residual', the radial residual, 'radial_res', ploting axis:'ax':ax,center of image: 'center':center}
-
+        ----------
+        a dictionary containing the 'residual', the radial residual, 'radial_res', ploting axis:'ax':ax,center of image: 'center':center}
 
         '''
         self.smooth_option=smooth_option
@@ -156,7 +158,7 @@ class observation_sets:
         norm=SymLogNorm(5e-6,vmin=vmin,vmax=vmax)#, vmax=5e-3)
         tick_levels = [-1e-3, -1e-4, -1e-5, 0.0, 1e-5, 1e-4, 1e-3]
 
-  
+
         first_file=self.images.files[0]
         print(first_file)
         max_bright = astropy.io.fits.open(first_file)[0].header['MAXBRITE']

@@ -8,6 +8,9 @@ import numpy as np
 import poppy
 import astropy.io.fits as fits
 from ..utils import max_cen_phot
+import poppy.fwcentroid
+
+
 import matplotlib.gridspec
 from scipy import signal
 cmap=matplotlib.cm.get_cmap(name='gnuplot', lut=None)
@@ -67,12 +70,12 @@ def null_diagnostic_plot(cube,
     #for i in range(statscube.shape[2]):
     #    plt.figure()
     #    plt.imshow(statscube[:,:,i])
-    center=poppy.utils.fwcentroid(statscube[:,:,i])
-    phot=np.array([max_cen_phot(statscube[:,:,i],
-                                radius_pixels=radius_pixels,
-                                fixed_center=center,
-                                verbose=True,
-                                boxsize=boxsize,
+    center = poppy.fwcentroid.fwcentroid(np.median(statscube,axis=2))
+    phot = np.array([max_cen_phot(statscube[:,:,i],
+                                radius_pixels = radius_pixels,
+                                fixed_center = center,
+                                verbose = True,
+                                boxsize = boxsize,
                                 **kwargs)
                    for i in range(statscube.shape[2])])
     ax1.plot(x,max_vs_time/max_bright,label='max')

@@ -46,16 +46,24 @@ def rms(array):
 
 def opt_shift(image1,image2,return_array=True,globalmin=True,x0=(0,0), method='Powell', niter=1000,stepsize=0.1,**kwargs):
     '''
-    globalmin:
-              Use MonteCarlo (basinhopping) to
-     jump between local minima found, otherwise, use method alone.
-     method:
-            e.g. 'Nelder-Mead','Powell'
-     x0: starting offset
-    return_array:
-               if True returns a shifted copy of array 2
-    Returns:
-            the output of the optimization, unless return array keyword is set True (the default).
+    Find the optimal shift of `image2` that minimizes the residual when `image1` is  subtracted.
+    
+    Parameters
+    ----------
+    
+    globalmin: bool
+        if True use Monte Carlo basinhopping to jump between local minima, otherwise, use method alone.
+    method:
+        e.g. 'Nelder-Mead','Powell'
+    x0: tuple
+        starting offset in x and y.
+    
+    return_array: bool
+        if True returns a shifted copy of array 2
+               
+    Returns
+    ----------
+    the output of the optimization, unless return array keyword is set True (the default).
             
     '''
     if not globalmin:
@@ -76,16 +84,20 @@ def opt_shift(image1,image2,return_array=True,globalmin=True,x0=(0,0), method='P
 
 def general_opt(image1,image2,function,globalmin=True,x0=1.0, method='Powell', niter=1000,stepsize=0.1,**kwargs):
     '''
+    a general function for optimizing a function with two images as the arguments.
+
+    Parameters
+    ----------
     globalmin:
-              Use MonteCarlo (basinhopping) to
-     jump between local minima found, otherwise, use method alone.
-     method:
-            e.g. 'Nelder-Mead','Powell'
-     x0: starting offset
-    return_array:
-               if True returns the optimized copy of array 2
+        Use MonteCarlo (basinhopping) to jump between local minima found, otherwise, use method alone.
+    method:
+        e.g. 'Nelder-Mead','Powell'
+    x0: tuple
+        starting offset
+    return_array: bool
+        if True returns the optimized copy of array 2
     Returns:
-            the output of the optimization, unless return array keyword is set True (the default).
+        the output of the optimization, unless return array keyword is set True (the default).
 
     '''
     if not globalmin:

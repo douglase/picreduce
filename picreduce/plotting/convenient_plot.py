@@ -14,14 +14,28 @@ cmap=matplotlib.cm.get_cmap(name='gnuplot', lut=None)
 import astropy.convolution as conv
 import matplotlib.patches as patches
 import scipy.stats
-def null_diagnostic_plot(cube,background,wfs_cube=None,exp_time=1.0,name='',
-                         xlo=0,xhi=-1,ylo=0,yhi=-1,
+def null_diagnostic_plot(cube,
+                         background,
+                         wfs_cube=None,
+                         exp_time=1.0,
+                         name='',
+                         xlo=0,
+                         xhi=-1,
+                         ylo=0,
+                         yhi=-1,
                          radius_pixels=5,
                          boxsize=5,
                          max_bright=1,
                          **kwargs):
     '''
-    xlo,xhi,ylo,yhi : define the region where statistics are performed, NOT plotting limits
+    show times series and power spectra of the brightest pixel,
+    the central star photometry and the mean vs time.
+    Plot the mean and median image.
+
+    Parameters
+    ----------
+    xlo,xhi,ylo,yhi :int
+       define the region where statistics are performed, NOT plotting limits
     '''
         #    if fig is None:
     plt.figure(figsize=[22,4.5])
@@ -53,7 +67,13 @@ def null_diagnostic_plot(cube,background,wfs_cube=None,exp_time=1.0,name='',
     #for i in range(statscube.shape[2]):
     #    plt.figure()
     #    plt.imshow(statscube[:,:,i])
-    phot=np.array([max_cen_phot(statscube[:,:,i],radius_pixels=radius_pixels,fixed_center=None,verbose=True,boxsize=boxsize,**kwargs)
+    center=poppy.utils.fwcentroid(statscube[:,:,i])
+    phot=np.array([max_cen_phot(statscube[:,:,i],
+                                radius_pixels=radius_pixels,
+                                fixed_center=center,
+                                verbose=True,
+                                boxsize=boxsize,
+                                **kwargs)
                    for i in range(statscube.shape[2])])
     ax1.plot(x,max_vs_time/max_bright,label='max')
     ax1.set_xticklabels([]) #remove y axis labels
@@ -128,14 +148,18 @@ def null_diagnostic_plot(cube,background,wfs_cube=None,exp_time=1.0,name='',
     plt.suptitle(name)
 
 def plot_contrast(raw_array,ax=None,PIXELSCL=0.158,center=None):
-    '''raw_array: np.array 
-             2-D of contrast values 
-        ax:
-            plotting axis
-        PIXESCL: float
-            plate scale, (as/pixel)
-        center:
-              (x,y) coordinates of central pixel.
+    '''
+    
+    Parameters
+    ----------
+    raw_array: np.array 
+        2-D of contrast values 
+    ax:
+        plotting axis
+    PIXESCL: float
+        plate scale, (as/pixel)
+    center:
+        (x,y) coordinates of central pixel.
     '''
     if ax == None:
         fig=plt.figure()
@@ -175,7 +199,9 @@ def convergence(f,dset,
     make a time series plot of the wavefront error for a particular dataset.
     
     -----------
-    Parameters:
+    
+    Parameters
+    -----------
         f: HDF5 file object
         dset: string
              indicating the PICTURE dataset (i.e. jplgse.20141216.51805)
@@ -193,6 +219,7 @@ def convergence(f,dset,
             indicating find packet mode
         rms: Boolean
             if True, plot the root-mean-square of the phase in addition to the standard deviation.
+
     '''
 
     
@@ -330,6 +357,10 @@ def fine_mode_character(f,
     '''
     plot wfs phase measurements while in fine mode and compare performance to spatial frequencies below boxcar width via convolution with a boxcar function
     kwargs are passed to conv_fft
+
+    Parameters
+    -----------
+
     '''
     fig=plt.figure(figsize=figsize,dpi=320)
     dset_wfs_shape=f[dset]['phase.u.idl.data'].shape

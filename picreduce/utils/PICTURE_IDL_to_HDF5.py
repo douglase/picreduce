@@ -331,3 +331,37 @@ def get_dsets(sequence_dir):
     dsets=[path.split('/')[-2] for path in glob.glob(sequence_dir+"/*/")]
     dsets.sort()
     return dsets
+
+
+def split_dset(f, d_group, end_target_1,begin_target_2)
+'''
+    split a d_group and retain all ancillary info.
+    creates two new groups within the original datafile.
+
+'''
+    
+x=f[d_group]
+split_time=1
+# 0. require empty groups for each target in the dataset
+
+grp1 = f.require_group(d_group + "_target1")
+grp2 = f.require_group(d_group + "_target2")
+
+if begin_target_2 < end_target_1:
+    raise ValueError("the second target should be after the first.")
+
+for dset in f[d_group].keys():
+    print(dset)
+    if dset.find("header") == -1:
+        continue
+    # 2. find that timestamp in headers for the science and wfs data
+    # 3. copy the portions of each dataset into the new groups by slicing the 
+    # datasets using indices that correspond to the header time stamps which define the split
+
+    grp1.create_dataset(dset, data=x[x[dset][...]["TIMESTAMP"] < end_target_1],
+                        compression="gzip",fletcher32=True,track_times=True)
+
+    grp12.create_dataset(dset, data=x[x[dset][...]["TIMESTAMP"] > begin_target_2],
+                        compression="gzip",fletcher32=True,track_times=True)
+
+

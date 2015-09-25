@@ -333,35 +333,67 @@ def get_dsets(sequence_dir):
     return dsets
 
 
-def split_dset(f, d_group, end_target_1,begin_target_2)
-'''
-    split a d_group and retain all ancillary info.
+def split_dset(f, obs, timestamp_end_target_1, timestamp_begin_target_2):
+    '''
+    split an observation data group and retain all ancillary info.
+    
     creates two new groups within the original datafile.
 
-'''
+    It would be nice to be able to do this with pointers. right now they are duplicates.
+
+    ..warning: implementation assumes data arrays are 2D.
     
-x=f[d_group]
-split_time=1
-# 0. require empty groups for each target in the dataset
+    '''
 
-grp1 = f.require_group(d_group + "_target1")
-grp2 = f.require_group(d_group + "_target2")
+    split_time = 1
+    # 0. require empty groups for each target in the dataset
+    grp1 = f.require_group(obs + "_target1")
+    grp2 = f.require_group(obs + "_target2")
 
-if begin_target_2 < end_target_1:
-    raise ValueError("the second target should be after the first.")
-
-for dset in f[d_group].keys():
-    print(dset)
-    if dset.find("header") == -1:
-        continue
-    # 2. find that timestamp in headers for the science and wfs data
-    # 3. copy the portions of each dataset into the new groups by slicing the 
-    # datasets using indices that correspond to the header time stamps which define the split
-
-    grp1.create_dataset(dset, data=x[x[dset][...]["TIMESTAMP"] < end_target_1],
-                        compression="gzip",fletcher32=True,track_times=True)
-
-    grp12.create_dataset(dset, data=x[x[dset][...]["TIMESTAMP"] > begin_target_2],
-                        compression="gzip",fletcher32=True,track_times=True)
+    if timestamp_begin_target_2 < timestamp_end_target_1:
+        raise ValueError("the second target should be after the first.")
+        
+    for dset in f[obs].keys():
+        #print(dset)
+        
+        # 2. find that timestamp in headers for the science and wfs data
+        # 3. copy the portions of each dataset into the new groups by slicing the
+        # datasets using indices that correspond to the header time stamps which define the split
 
 
+        if dset.find(".header") != -1:
+            data_str = dset.replace(".header",".data")
+        elif dset.find("sci_header") != -1:
+            data_str = "sci"
+        else:
+            continue
+        print(data_str)
+        start_index = (f[obs][dset][...]["TIMESTAMP"]  < timestamp_end_target_1).flatten()
+        end_index = (f[obs][dset][...]["TIMESTAMP"] >= timestamp_begin_target_2).flatten()
+        print([f[obs][dset].shape,end_index])
+
+
+        grp1data= f[obs][data_str][:,:,start_index]
+        grp2data= f[obs][data_str][:,:,end_index]
+        grp2header= f[obs][dset][end_index,0]
+        grp1header= f[obs][dset][start_index,0]
+
+
+
+        try:
+            grp1.require_dataset(data_str, grp1data.shape, grp1data.dtype, exact=False, compression = "gzip", fletcher32 = True, track_times = True)
+            grp2.require_dataset(data_str, grp2data.shape, grp2data.dtype, exact=False, compression = "gzip", fletcher32 = True, track_times = True)
+            
+            grp1.require_dataset(dset, grp1header.shape, grp1header.dtype, exact=False, compression = "gzip", fletcher32 = True, track_times = True)
+            grp2.require_dataset(dset, grp2header.shape, grp2header.dtype, exact=False, compression = "gzip", fletcher32 = True, track_times = True)
+
+
+            grp1[data_str][...] = grp1data
+            grp2[data_str][...] = grp2data
+            grp1[dset][...] = grp1header
+            grp2[dset][...] = grp2header
+
+
+            
+        except RuntimeError, err:
+            print(err)

@@ -201,8 +201,9 @@ def optimally_shift_and_save(f,
 
     
     if kernel is not None:
-        conv.convolve_fft(median1,kernel)
-        conv.convolve_fft(median2,kernel)
+        print("smoothing with: "+str(kernel))
+        conv.convolve_fft(median1,kernel,normalize_kernel=True, ignore_edge_zeros=True)
+        conv.convolve_fft(median2,kernel,normalize_kernel=True, ignore_edge_zeros=True)
         
 
     opt = opt_shift(median1,median2,return_array=False,**kwargs)
@@ -249,7 +250,8 @@ def optimally_shift_and_save(f,
    
         
         if kernel is not None:
-            shifted2 = conv.convolve_fft(shifted2,kernel)
+            print("smoothing")
+            shifted2 = conv.convolve_fft(shifted2,kernel,normalize_kernel=True, ignore_edge_zeros=True)
             print(type(shifted2))
             FITS_HDU.header["HISTORY"]="Applied convolution:"+str(kernel.model).replace('\n','')
             

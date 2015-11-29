@@ -187,7 +187,7 @@ def plot_contrast(raw_array,ax=None,PIXELSCL=0.158,center=None):
 def convergence(f,dset,
                 plot_modes=[5,4,3],
                 skip_frames=7,
-                 fine_only=True,
+                fine_only=True,
                 fine_mode=5,
                 lost=0,
                 findp_mode=1,
@@ -247,7 +247,8 @@ def convergence(f,dset,
         not_nulling = np.where(f[dset]['phase.u.idl.header']['STATE'] == 5)[0]
 
     not_nulling=not_nulling[skip_frames:]
-    if np.max(in_fine_mode[1:-1]-in_fine_mode[0:-2])>1:
+    
+    if (fine_only) and (np.max(in_fine_mode[1:-1]-in_fine_mode[0:-2])>1):
         raise ValueError("multiple periods of fine mode in selected dataset.")
     #clip first 4 frames of fine mode:
     in_fine_mode=in_fine_mode[skip_frames:]

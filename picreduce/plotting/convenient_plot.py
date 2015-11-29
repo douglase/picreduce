@@ -285,7 +285,8 @@ def convergence(f,dset,
 
     fig=plt.figure(figsize=[3.5,3])
     wfs_exp_t=f[dset]['frame.a.idl.header'][0]['EXPTIME'][0]
-    t_series=wfs_exp_t*np.arange(masked_phase.shape[2])
+    t_series = 4* wfs_exp_t*np.arange(masked_phase.shape[2])
+    print("WARNING, wfs_t_exp assumes no overhead")
     print(masked_phase.shape)
     flat_ims=masked_phase.reshape(masked_phase.shape[0]*masked_phase.shape[1],masked_phase.shape[2])
     print(flat_ims.shape)

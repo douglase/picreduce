@@ -167,7 +167,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 datad_grp=grp.create_group(wfs_extension+".data")
             try:
                 wfs_1st=scipy.io.readsav(wfs_files[0])
-                wfsheader=wfs_1st["header"]
+                wfs_header=wfs_1st["header"]
                 wfsdateframes=wfs_1st["data"]
                 wfs_frame=wfs_1st["data"]
                 if wfs_extension == "data.d.idl":
@@ -181,6 +181,8 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
             for i,wfs_sav in enumerate(wfs_files[1:]):
                 try:
                     wfs = scipy.io.readsav(wfs_sav)
+                    wfs_frame=np.dstack([wfs_frame,wfs['data']])
+                    wfs_header=np.vstack([wfs_header,wfs['header']])
                 except Exception,err:
                     print(err)
                     print('readsave error')
@@ -203,14 +205,11 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                             field_name=field
                             new_array = wfs_data[field]
                             _update_data_d(wfs_files,datad_grp,field,field_name,new_array,i)
-                            
-                wfs_frame=np.dstack([wfs_frame,wfs['data']])
-                wfs_header=np.vstack([wfsheader,wfs['header']])
 
+            grp.create_dataset(wfs_extension+".header", data=wfs_header,compression="gzip",fletcher32=True,track_times=True)
             if wfs_extension != "data.d.idl":
                 grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
 
-            grp.create_dataset(wfs_extension+".header", data=wfs_header,compression="gzip",fletcher32=True,track_times=True)
             
     #finally, try looking for angle tracker data:
     at_files=glob.glob(directory+"/atfull.*.idl")

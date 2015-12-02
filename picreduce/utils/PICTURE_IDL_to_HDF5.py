@@ -157,33 +157,67 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
         grp.create_dataset("sci_header", data=sciheader,compression="gzip",fletcher32=True,track_times=True)
     #now try to find wavefront sensor data
     wfs_types = ["phase.i.idl","phase.v.idl","phase.r.idl","phase.m.idl",
-                 "phase.p.idl","phase.u.idl","frame.a.idl",#"data.d.idl",
+                 "phase.p.idl","phase.u.idl","frame.a.idl","data.d.idl",
                  "frame.b.idl","frame.c.idl","frame.d.idl"]
     for wfs_extension in wfs_types:
         wfs_files=glob.glob(directory+"/*"+wfs_extension)
         wfs_files.sort()
         if len(wfs_files)>1:
+            if wfs_extension == "data.d.idl":
+                datad_grp=grp.create_group(wfs_extension+".data")
             try:
                 wfs_1st=scipy.io.readsav(wfs_files[0])
                 wfsheader=wfs_1st["header"]
                 wfsdateframes=wfs_1st["data"]
                 wfs_frame=wfs_1st["data"]
+                if wfs_extension == "data.d.idl":
+                    for field in wfs_frame.dtype.fields:
+                        datad_grp.create_group(field)
+
+                    
             except Exception, err:
                 print("error finding WFS files")
                 print(err)
             for i,wfs_sav in enumerate(wfs_files[1:]):
                 try:
-                    wfs=scipy.io.readsav(wfs_sav)
+                    wfs = scipy.io.readsav(wfs_sav)
                 except Exception,err:
                     print(err)
                     print('readsave error')
                     continue
-                wfsheader=np.vstack([wfsheader,wfs['header']])
+                if wfs_extension == "data.d.idl":
+                    #because some of the data.d arrays are numpy objects they need to be an extra layer
+                    #this probably ones works for 1D data
+                    wfs_data=wfs['data']
+                    for field in wfs_data.dtype.fields:
+                        #break object fields up
+                        if (wfs_data[field].dtype == np.dtype(object)):
+                            for i,inner_field in enumerate(wfs_data[field][0].dtype.fields):
+                                field_name = field+"-"+inner_field
+                                inner_array = np.array(wfs_data[field][0][inner_field][0],
+                                             dtype=wfs_data[field][0][inner_field][0].dtype)
+                                
+                        else:
+                            field_name=field
+                            new_array = wfs_data[field]
+                        try:
+                            dset = datad_grp[field][field_name]
+                            #print(dset, dset[-1],new_array)
+                            dset[:,i] = new_array
+                        except KeyError, err:
+                            print("Adding missing key."+ str(err))
+                            datad_grp[field].create_dataset(field_name,shape=(new_array.shape[0],len(wfs_files)),compression="gzip",fletcher32=True,track_times=True,maxshape=(None,None))
+                            datad_grp[field][field_name][:,i] = new_array
+                            
                 wfs_frame=np.dstack([wfs_frame,wfs['data']])
-            grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
-            grp.create_dataset(wfs_extension+".header", data=wfsheader,compression="gzip",fletcher32=True,track_times=True)
+                wfs_header=np.vstack([wfsheader,wfs['header']])
+
+            if wfs_extension != "data.d.idl":
+                grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
+
+            grp.create_dataset(wfs_extension+".header", data=wfs_header,compression="gzip",fletcher32=True,track_times=True)
+            
     #finally, try looking for angle tracker data:
-    
     at_files=glob.glob(directory+"/atfull.*.idl")
     if len(at_files)>1:
         #at_header,at_frame=collect_data_and_headers(at_files)
@@ -213,8 +247,20 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
         grp.create_dataset("at", data=at_frame,compression="gzip",fletcher32=True,track_times=True)
         grp.create_dataset("at_header", data=at_header,compression="gzip",fletcher32=True,track_times=True)
 
-
-
+def _update_data_d(wfs_files,datad_grp,field,field_name,new_array):
+        try:
+            dset = datad_grp[field][field_name]
+            dset[:,i] = new_array
+        except KeyError, err:
+            print("Adding missing key." + str(err))
+            datad_grp[field].create_dataset(field_name,
+                                            shape=(new_array.shape[0],len(wfs_files)),
+                                            compression="gzip",
+                                            fletcher32=True,
+                                            track_times=True,
+                                            maxshape=(None,None))
+            datad_grp[field][field_name][:,i] = new_array
+            
 def collect_data_and_headers(globbed_list):
     ''' this function should replace seperate sections for WFS and sci
 

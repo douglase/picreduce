@@ -187,27 +187,22 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                     continue
                 if wfs_extension == "data.d.idl":
                     #because some of the data.d arrays are numpy objects they need to be an extra layer
-                    #this probably ones works for 1D data
+                    #this currently only works for 1D data
                     wfs_data=wfs['data']
                     for field in wfs_data.dtype.fields:
                         #break object fields up
                         if (wfs_data[field].dtype == np.dtype(object)):
-                            for i,inner_field in enumerate(wfs_data[field][0].dtype.fields):
+                            for inner_field in wfs_data[field][0].dtype.fields:
                                 field_name = field+"-"+inner_field
                                 inner_array = np.array(wfs_data[field][0][inner_field][0],
-                                             dtype=wfs_data[field][0][inner_field][0].dtype)
-                                
+                                             dtype = wfs_data[field][0][inner_field][0].dtype)
+                                #print([field_name,inner_array])
+                                #add data to appropriate dataset:
+                                _update_data_d(wfs_files,datad_grp,field,field_name,inner_array,i)
                         else:
                             field_name=field
                             new_array = wfs_data[field]
-                        try:
-                            dset = datad_grp[field][field_name]
-                            #print(dset, dset[-1],new_array)
-                            dset[:,i] = new_array
-                        except KeyError, err:
-                            print("Adding missing key."+ str(err))
-                            datad_grp[field].create_dataset(field_name,shape=(new_array.shape[0],len(wfs_files)),compression="gzip",fletcher32=True,track_times=True,maxshape=(None,None))
-                            datad_grp[field][field_name][:,i] = new_array
+                            _update_data_d(wfs_files,datad_grp,field,field_name,new_array,i)
                             
                 wfs_frame=np.dstack([wfs_frame,wfs['data']])
                 wfs_header=np.vstack([wfsheader,wfs['header']])
@@ -247,20 +242,25 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
         grp.create_dataset("at", data=at_frame,compression="gzip",fletcher32=True,track_times=True)
         grp.create_dataset("at_header", data=at_header,compression="gzip",fletcher32=True,track_times=True)
 
-def _update_data_d(wfs_files,datad_grp,field,field_name,new_array):
+def _update_data_d(wfs_files,datad_grp,field,field_name,new_array,index):
+        '''
+        function to write 1D data to a dset within a group, and create dataset if it does not yet exist.
+        '''
         try:
             dset = datad_grp[field][field_name]
-            dset[:,i] = new_array
+            dset[index,:] = new_array
+            #if new_array.size > 1:
+            #print([field],[field_name],dset[index,:],new_array)
         except KeyError, err:
-            print("Adding missing key." + str(err))
+            print("Adding missing key. (" + str(err)+")")
             datad_grp[field].create_dataset(field_name,
-                                            shape=(new_array.shape[0],len(wfs_files)),
+                                            shape=(len(wfs_files),new_array.shape[0]),
                                             compression="gzip",
                                             fletcher32=True,
                                             track_times=True,
                                             maxshape=(None,None))
-            datad_grp[field][field_name][:,i] = new_array
-            
+            datad_grp[field][field_name][index,:] = new_array
+
 def collect_data_and_headers(globbed_list):
     ''' this function should replace seperate sections for WFS and sci
 

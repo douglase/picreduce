@@ -418,9 +418,14 @@ def fine_mode_character(f,
         
     mean_phase = np.mean(masked_phase,axis=2)
 
-    phase_im = plt.imshow(mean_phase,vmin=mean_phase.min(),vmax=mean_phase.max())
+    phase_im = plt.imshow(mean_phase,vmin=mean_phase.min(),vmax=mean_phase.max(),interpolation='none')
     plt.title("%.4g$\pm$%.2g "%(np.mean(masked_phase),
                                                np.std(masked_phase)),fontsize=12)
+    cax1 = fig.add_axes([0.95, 0.575, 0.1, 0.3]) #left,bottom,width,height
+    cax1.set_title(units,size=12)
+    cax1.tick_params(labelsize=10)
+    plt.colorbar(phase_im,cax=cax1)#,orientation='horizontal')
+    
     ax2 = plt.subplot(212)
     nan_mean_phase = np.ma.filled(mean_phase,fill_value=np.nan)
     phaseconvolved = np.ma.masked_array(conv.convolve_fft(nan_mean_phase,
@@ -433,7 +438,7 @@ def fine_mode_character(f,
     smooth_phase = np.ma.masked_array(phaseconvolved,mask=phaseconvolved==0)
         
     #print(smooth_phase.shape,mean_phase.shape)
-    phase__smoth_im = plt.imshow(smooth_phase,vmin=mean_phase.min(),vmax=mean_phase.max())
+    phase_smoth_im = plt.imshow(smooth_phase,interpolation='none')#,vmin=mean_phase.min(),vmax=mean_phase.max())
 
     ax2.set_xticklabels("")
     ax2.set_yticklabels("")
@@ -441,10 +446,10 @@ def fine_mode_character(f,
 
     plt.title("%.4g$\pm$%.2g "%(np.mean(smooth_phase),
                                                np.std(smooth_phase)),fontsize=12)
-    cax = fig.add_axes([0.95, 0.05, 0.1, 0.9])
-    cax.set_title(units,size=12)
-    cax.tick_params(labelsize=12)
-    plt.colorbar(phase_im,cax=cax)#,orientation='horizontal')
+    cax2 = fig.add_axes([0.95, 0.1, 0.1, 0.30]) #left,bottom,width,height
+    cax2.set_title(units,size=12)
+    cax2.tick_params(labelsize=10)
+    plt.colorbar(phase_smoth_im, cax=cax2)#,orientation='horizontal')
     #hatch the masked regions:
     #https://stackoverflow.com/questions/18390068/hatch-a-nan-region-in-a-contourplot-in-matplotlib
     #(Isn't working yet, only hatches ax2?)
@@ -452,11 +457,14 @@ def fine_mode_character(f,
     #ax1.add_patch(p)
     #ax2.add_patch(p)
 
-    #plt.tight_layout()
+    plt.tight_layout()
     wfe_std = np.std(smooth_phase)
     wfe_rms = np.sqrt(wfe_std**2+np.mean(smooth_phase)**2)
     return {"stddev smoothed":wfe_std,
             "rms":wfe_rms,
+            "mean smoothed": np.mean(smooth_phase),
+            "raw mean":np.mean(masked_phase),
+            "raw std":np.std(masked_phase),
             "bayes_mvs":scipy.stats.bayes_mvs(smooth_phase),
             "e-/p/sec":np.mean(masked_int)*G_e_per_count/wfs_exp_t/npix,
             "array_shape":dset_wfs_shape}

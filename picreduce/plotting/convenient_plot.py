@@ -197,7 +197,7 @@ def convergence(f,dset,
                 min_V=.8,
                 min_I_bg_scale=2.5,
                 rms=True,
-                re_gen_mask=True):
+                re_gen_mask=True,ax=None):
     '''
     make a time series plot of the wavefront error for a particular dataset.
     
@@ -283,7 +283,9 @@ def convergence(f,dset,
     plt.colorbar()
     plt.tight_layout()
 
-    fig=plt.figure(figsize=[3.5,3])
+    if ax is None:
+        fig=plt.figure(figsize=[3.5,3])
+        ax=plt.subplot(111)
     wfs_exp_t=f[dset]['frame.a.idl.header'][0]['EXPTIME'][0]
     t_series = 4* wfs_exp_t*np.arange(masked_phase.shape[2])
     print("WARNING, wfs_t_exp assumes no overhead")
@@ -298,11 +300,11 @@ def convergence(f,dset,
         #plt.ylabel("$\mathrm{RMS({\mathrm{WFE}}})$ [nm]")
 
     #else:
-    plt.plot(t_series,wfe_std,linewidth=2.5,label="$\sigma(\Delta\phi)$")
-    plt.ylabel("WFE [nm]")
+    ax.plot(t_series,wfe_std,linewidth=2.5,label="$\sigma(\Delta\phi)$")
+    ax.ylabel("WFE [nm]")
 
     if baseline is not None:
-        plt.plot(t_series,baseline*np.ones(len(t_series)),'--')
+        ax.plot(t_series,baseline*np.ones(len(t_series)),'--')
     #if fine_only:
     #    plt.title("Fine Mode")
     # else:
@@ -467,7 +469,9 @@ def fine_mode_character(f,
             "raw std":np.std(masked_phase),
             "bayes_mvs":scipy.stats.bayes_mvs(smooth_phase),
             "e-/p/sec":np.mean(masked_int)*G_e_per_count/wfs_exp_t/npix,
-            "array_shape":dset_wfs_shape}
+            "array_shape":dset_wfs_shape,
+            "wfs_t_exp":wfs_exp_t
+            }
 
 
 def std_weighted(array, weights):

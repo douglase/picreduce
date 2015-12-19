@@ -149,6 +149,7 @@ def null_diagnostic_plot(cube,
     ax4.set_title("median")
     #plt.tight_layout()
     plt.suptitle(name)
+    
 
 def plot_contrast(raw_array,ax=None,PIXELSCL=0.158,center=None):
     '''
@@ -197,7 +198,11 @@ def convergence(f,dset,
                 min_V=.8,
                 min_I_bg_scale=2.5,
                 rms=True,
-                re_gen_mask=True,ax=None):
+                legend=True,
+                re_gen_mask=True,
+                hist_ax=None,
+                hist_skip_frames=0,
+                ax=None):
     '''
     make a time series plot of the wavefront error for a particular dataset.
     
@@ -269,18 +274,18 @@ def convergence(f,dset,
     masked_phase=np.ma.masked_array(data=f[dset]['phase.u.idl.data'][:,:,in_fine_mode]*675.0/(2*np.pi),mask=fine_mode_mask)
     masked_int=np.ma.masked_array(  data=f[dset]['phase.i.idl.data'][:,:,in_fine_mode],mask=fine_mode_mask)
     masked_V=np.ma.masked_array(    data=f[dset]['phase.v.idl.data'][:,:,in_fine_mode],mask=fine_mode_mask)
-    plt.subplot(121)
-    plt.title("Intensity, mask  OK?")
+    ax1=plt.subplot(121)
+    plt.title("Intensity, masked")
 
-    plt.imshow(np.mean(masked_int,axis=2))
-    plt.colorbar()
+    masked_int_plot=ax1.imshow(np.mean(masked_int,axis=2))
+    plt.colorbar(masked_int_plot)
 
-    plt.subplot(122)
+    ax2=plt.subplot(122)
 
-    plt.imshow(np.mean(masked_V,axis=2))
-
+    masked_plot=ax2.imshow(np.mean(masked_phase,axis=2))
+    plt.title("masked phase")
     plt.suptitle("mask  OK?")
-    plt.colorbar()
+    plt.colorbar(masked_plot)
     plt.tight_layout()
 
     if ax is None:
@@ -293,15 +298,20 @@ def convergence(f,dset,
     flat_ims=masked_phase.reshape(masked_phase.shape[0]*masked_phase.shape[1],masked_phase.shape[2])
     print(flat_ims.shape)
     wfe_std=np.std(flat_ims,axis=0)
-    wfe_rms=np.sqrt(np.mean(flat_ims,axis=0)**2+(wfe_std**2))
+    wfe_mean=np.mean(flat_ims,axis=0)
+    wfe_rms=np.sqrt(wfe_mean**2+(wfe_std**2))
     print(np.mean(wfe_std),np.std(wfe_rms))
-    if rms==True:
-        plt.plot(t_series,wfe_rms,'.',linewidth=2.5,label="$\sqrt{<\Delta\phi^2>}$")
-        #plt.ylabel("$\mathrm{RMS({\mathrm{WFE}}})$ [nm]")
+
 
     #else:
-    ax.plot(t_series,wfe_std,linewidth=2.5,label="$\sigma(\Delta\phi)$")
-    ax.ylabel("WFE [nm]")
+    ax.plot(t_series,wfe_std,linewidth=2.5,label="$\sigma(\Delta\phi)$",color='gray')
+
+    if rms==True:
+        ax.plot(t_series,wfe_rms,'.',linewidth=2.5,label="$RMS, \sqrt{<\Delta\phi^2>}$",color='black')
+        ax.plot(t_series,wfe_mean,'-',linewidth=1.5,label="$<\Delta\phi>}$",color='black')
+
+        #plt.ylabel("$\mathrm{RMS({\mathrm{WFE}}})$ [nm]")
+    ax.set_ylabel("nm")
 
     if baseline is not None:
         ax.plot(t_series,baseline*np.ones(len(t_series)),'--')
@@ -312,13 +322,31 @@ def convergence(f,dset,
     #    plt.annotate('Fine Mode', (t_series[not_nulling[0]-in_fine_mode[0]]+.1,np.array([90])),fontsize=8)
     #    print("CHECK THAT FINE MODE ANNOTATION IS IN RIGHT PLACE!")
     #plt.xlim(t_series[in_fine_mode[0]],t_series[in_fine_mode[-1]])
-    plt.xlabel("Time [s]")
+    ax.set_xlabel("Time [s]")
     if logscale:
-        plt.yscale('log')
+        ax.set_yscale('log')
     #plt.ylim([1,150])
-    plt.legend(fontsize=10)
-    plt.tight_layout()
-    return np.array([t_series,wfe_std])
+    if legend:
+        ax.legend(fontsize=10,numpoints=1)
+    if hist_ax is not None:
+        bins=np.arange(-20,20,2)
+        hist_ax.hist(wfe_std[hist_skip_frames:],
+                     bins=bins,
+                     linewidth=2.5,
+                     label="$\sigma(\Delta\phi)$",color='gray')        
+        hist_ax.hist(wfe_mean[hist_skip_frames:],
+                     bins=bins,
+                     histtype=u'step',
+                     label="$<\Delta\phi>}$",
+                     alpha=0.5,color='blue')
+        hist_ax.hist(wfe_rms[hist_skip_frames:],bins=bins,
+                     linewidth=2.5,
+                     label="$RMS, \sqrt{<\Delta\phi^2>}$",
+                     alpha=0.7,color='red')
+
+
+    #plt.tight_layout()
+    return np.array([t_series,wfe_mean])
 
 def get_finemode_index(f,
                         dset,
@@ -360,6 +388,7 @@ def fine_mode_character(f,
                 kernel=conv.Box2DKernel,
                 scaling=675.0/(2*np.pi),
                 ignore_edge_zeros =True,
+                hist_ax=None,
                 **kwargs):
     '''
     plot wfs phase measurements while in fine mode and compare performance to spatial frequencies below boxcar width via convolution with a boxcar function
@@ -418,7 +447,7 @@ def fine_mode_character(f,
     if  measurement == 'phase.v.idl.data':
         masked_phase=np.sqrt(masked_phase/100.0)*100.0
         
-    mean_phase = np.mean(masked_phase,axis=2)
+    mean_phase = np.median(masked_phase,axis=2)
 
     phase_im = plt.imshow(mean_phase,vmin=mean_phase.min(),vmax=mean_phase.max(),interpolation='none')
     plt.title("%.4g$\pm$%.2g "%(np.mean(masked_phase),
@@ -462,6 +491,7 @@ def fine_mode_character(f,
     plt.tight_layout()
     wfe_std = np.std(smooth_phase)
     wfe_rms = np.sqrt(wfe_std**2+np.mean(smooth_phase)**2)
+
     return {"stddev smoothed":wfe_std,
             "rms":wfe_rms,
             "mean smoothed": np.mean(smooth_phase),
@@ -470,7 +500,10 @@ def fine_mode_character(f,
             "bayes_mvs":scipy.stats.bayes_mvs(smooth_phase),
             "e-/p/sec":np.mean(masked_int)*G_e_per_count/wfs_exp_t/npix,
             "array_shape":dset_wfs_shape,
-            "wfs_t_exp":wfs_exp_t
+            "wfs_t_exp":wfs_exp_t,
+            "smooth_array":phaseconvolved,
+            "raw_array":mean_phase,
+            "median_tseries":masked_phase
             }
 
 

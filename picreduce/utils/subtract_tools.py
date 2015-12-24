@@ -212,6 +212,8 @@ def optimally_shift_and_save(f,
         raise ValueError("lengths: %i, %i, do not match"%(len(frame_numbers2), len(good_sci_data2)))
 
     datadir = sequence_dir+'/'+dset1+'/shifted'
+    if kernel is not None:
+        datadir=datadir+'_smoothed'
     if not exists(datadir):
         try:
             mkdir(datadir)
@@ -235,29 +237,32 @@ def optimally_shift_and_save(f,
         PICTURE_IDL_to_HDF5.attribute_to_FITS_header(f[dset2]['sci_header'].attrs,hdu=FITS_HDU)
         FITS_HDU.header["NEW_PARA"]=para_angle
         
-        FITS_HDU.header['HISTORY']="Shift optimization output"+str(opt).encode('utf-8').decode('ascii', 'replace').replace('\n', ' ')
+        #FITS_HDU.header['HISTORY']=strip_str("Shift optimization output: "+str(opt))
 
         if dark_fits_name is not None:
             dark = fits.open(dark_fits_name)[0].data
             shifted2 =shifted2 - dark
-            FITS_HDU.header['DARKFILE']=str(dark_fits_name)
+            FITS_HDU.header['DARKFILE']=strip_str(str(dark_fits_name))
             
         if subtract_corner:
             corner=np.mean(shifted2[0:10,0:10])
             shifted2 = shifted2- corner
-            FITS_HDU.header['HISTORY']="subtracted mean of 100 pixels in corner: %.3g"%(corner)
-
-   
+            FITS_HDU.header['HISTORY'] = strip_str("subtracted mean of 100 pixels in corner: %.3g"%(corner))
         
         if kernel is not None:
             print("smoothing")
             shifted2 = conv.convolve_fft(shifted2,kernel,normalize_kernel=True, ignore_edge_zeros=True)
-            print(type(shifted2))
-            FITS_HDU.header["HISTORY"]="Applied convolution:"+str(kernel.model).replace('\n','')
+            FITS_HDU.header["HISTORY"]="Applied convolution:"+strip_str(str(kernel.model))
             
         HDU = fits.HDUList([fits.PrimaryHDU(data=shifted2, header=FITS_HDU.header)])
+
         HDU.writeto(subdir+'/'+dset2+str(frame_num[0]).zfill(8)+'.shifted.sci.s.fits', clobber=True)
-        
+
+def strip_str(string):
+    if isinstance(string,str):
+        return string.encode('utf-8').decode('ascii', 'replace').replace('\n', '. ').replace('\'','')
+    else:
+        raise ValueError
 def get_nulled_frames(f,dset,null_state=34,n_skip=5,over_clock=2):
     '''
     example:

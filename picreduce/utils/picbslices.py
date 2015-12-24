@@ -16,8 +16,8 @@ def get_nulled_frames(f,dset,
 
     '''
     nulled=np.where(f[dset][u'sci_header']['STATE'].flatten()==null_state)[0]
-    
-    good_sci_data = f[dset][u'sci'][:,:138,nulled[n_skip]:nulled[-1]]
+    nulled=nulled[n_skip:-1]
+    good_sci_data = f[dset][u'sci'][:,:138,nulled]
     original_shape=good_sci_data.shape
     if delete_saturated:
         saturated_frames=np.where(good_sci_data.max(axis=0).max(axis=0) >= sat_val)[0]

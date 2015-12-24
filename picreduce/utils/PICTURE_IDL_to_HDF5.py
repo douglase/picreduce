@@ -286,10 +286,13 @@ def collect_data_and_headers(globbed_list):
 
 
 def strip_str(string):
-    if isinstance(string,str):
-        return string.encode('utf-8').decode('ascii', 'replace').replace('\n', '. ').replace('\'','')
-    else:
-        raise ValueError
+    try:
+        str(string).encode('utf-8').decode('ascii', 'replace').replace('\n', '. ').replace('\'','')
+    except ValueError,err:
+        print("problem stripping string of unicode characters and carriage returns")
+        print(string)
+        print(err)
+        
 
 def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     '''

@@ -127,3 +127,19 @@ def create_randomized_folders(source_dir,num_frames=None,ext='fits'):
             print(err)
             print(cmd)
 
+
+            
+    
+
+def get_nulled_frame_headers(f,dset,null_state=34,n_skip=5):
+    '''
+    example:
+    #note! the first 3 values are skipped because they usually aren't really nulling
+
+    '''
+    nulled=np.where(f[dset][u'sci_header']['STATE'].flatten()==null_state)[0]
+    nulled=nulled[n_skip:-1]
+    headers=f[dset][u'sci_header'][...][nulled]
+    return headers
+
+

@@ -198,6 +198,7 @@ def convergence(f,dset,
                 min_V=.8,
                 min_I_bg_scale=2.5,
                 rms=True,
+                mean=False,
                 legend=True,
                 re_gen_mask=True,
                 hist_ax=None,
@@ -234,7 +235,6 @@ def convergence(f,dset,
     fig=plt.figure(figsize=[6,3],dpi=320)
     dset_wfs_shape=f[dset]['phase.u.idl.data'].shape
     
-    in_fine_mode=np.where(f[dset]['phase.u.idl.header']['STATE']==fine_mode)[0]
 
     '''seperated_plot_modes=[]
     for k, g in itertools.groupby(enumerate(plot_modes), lambda (i,x):i-x):
@@ -245,20 +245,19 @@ def convergence(f,dset,
     '''
     not_nulling_all = np.where((f[dset]['phase.u.idl.header']['STATE'] == 5) |
                           (f[dset]['phase.u.idl.header']['STATE'] == 4) |
-                           (f[dset]['phase.u.idl.header']['STATE'] == 3) )[0]
+                           (f[dset]['phase.u.idl.header']['STATE'] == 3) |
+                             (f[dset]['phase.u.idl.header']['STATE'] == 2))[0]
     if not fine_only:
-        not_nulling = not_nulling_all
+        in_fine_mode = not_nulling_all
     else:
-        not_nulling = np.where(f[dset]['phase.u.idl.header']['STATE'] == 5)[0]
-
-    not_nulling=not_nulling[skip_frames:]
+        in_fine_mode=np.where(f[dset]['phase.u.idl.header']['STATE']==fine_mode)[0]
     
     if (fine_only) and (np.max(in_fine_mode[1:-1]-in_fine_mode[0:-2])>1):
         raise ValueError("multiple periods of fine mode in selected dataset.")
     #clip first 4 frames of fine mode:
     in_fine_mode=in_fine_mode[skip_frames:]
     
-    bg_intensity =  np.mean(f[dset]['phase.i.idl.data'][0:10,0:10,not_nulling])#,axis=2)
+    bg_intensity =  np.mean(f[dset]['phase.i.idl.data'][0:10,0:10,in_fine_mode])#,axis=2)
     intensity = np.mean(f[dset]['phase.i.idl.data'][:,:,in_fine_mode],axis=2) - bg_intensity
     #print(np.mean(intensity),bg_intensity,bg_intensity*min_I_bg_scale)
 
@@ -276,7 +275,6 @@ def convergence(f,dset,
     masked_V=np.ma.masked_array(    data=f[dset]['phase.v.idl.data'][:,:,in_fine_mode],mask=fine_mode_mask)
     ax1=plt.subplot(121)
     plt.title("Intensity, masked")
-
     masked_int_plot=ax1.imshow(np.mean(masked_int,axis=2))
     plt.colorbar(masked_int_plot)
 
@@ -304,10 +302,11 @@ def convergence(f,dset,
 
 
     #else:
-    ax.plot(t_series,wfe_std,linewidth=2.5,label="$\sigma(\Delta\phi)$",color='gray')
+    ax.plot(t_series,wfe_std,linewidth=2.5,label="STDEV, $\sigma(\Delta\phi)$",color='gray')
 
     if rms==True:
-        ax.plot(t_series,wfe_rms,'.',linewidth=2.5,label="$RMS, \sqrt{<\Delta\phi^2>}$",color='black')
+        ax.plot(t_series,wfe_rms,'.',linewidth=2.5,label="RMS, $\sqrt{<\Delta\phi^2>}$",color='black')
+    if mean==True:
         ax.plot(t_series,wfe_mean,'-',linewidth=1.5,label="$<\Delta\phi>}$",color='black')
 
         #plt.ylabel("$\mathrm{RMS({\mathrm{WFE}}})$ [nm]")
@@ -389,6 +388,7 @@ def fine_mode_character(f,
                 scaling=675.0/(2*np.pi),
                 ignore_edge_zeros =True,
                 hist_ax=None,
+                kernel_mode='linear_interp',
                 **kwargs):
     '''
     plot wfs phase measurements while in fine mode and compare performance to spatial frequencies below boxcar width via convolution with a boxcar function
@@ -438,6 +438,8 @@ def fine_mode_character(f,
         
     masked_int =np.ma.masked_array(  data=f[dset]['phase.i.idl.data'][:,:,in_fine_mode], mask=fine_mode_mask)
     masked_V = np.ma.masked_array(    data=f[dset]['phase.v.idl.data'][:,:,in_fine_mode], mask=fine_mode_mask)
+    smoothed_tseries = [conv.convolve_fft(masked_phase[:,:,k],conv.Box2DKernel(4)) for k in range(len(in_fine_mode))]
+
     npix = np.size(masked_phase[masked_phase.mask==False])
     ax1 = plt.subplot(211)
     ax1.set_xticklabels("")
@@ -460,7 +462,7 @@ def fine_mode_character(f,
     ax2 = plt.subplot(212)
     nan_mean_phase = np.ma.filled(mean_phase,fill_value=np.nan)
     phaseconvolved = np.ma.masked_array(conv.convolve_fft(nan_mean_phase,
-                                                        kernel(boxcarwidth),
+                                                        kernel(boxcarwidth,mode=kernel_mode),
                                                         interpolate_nan=True,
                                                         ignore_edge_zeros=ignore_edge_zeros,
                                                         **kwargs),
@@ -503,7 +505,8 @@ def fine_mode_character(f,
             "wfs_t_exp":wfs_exp_t,
             "smooth_array":phaseconvolved,
             "raw_array":mean_phase,
-            "median_tseries":masked_phase
+            "median_tseries":masked_phase,
+            "smoothed_tseries":np.ma.array(np.array(smoothed_tseries).T,mask=fine_mode_mask)
             }
 
 

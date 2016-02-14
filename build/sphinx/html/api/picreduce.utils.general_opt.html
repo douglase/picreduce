@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>general_opt &mdash; picreduce v0.0.dev30</title>
+    <title>general_opt &mdash; picreduce v0.0.dev36</title>
     
     <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.dev30',
+        VERSION:     '0.0.dev36',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev30" href="../index.html" />
+    <link rel="top" title="picreduce v0.0.dev36" href="../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../_static/copybutton.js"></script>
 
@@ -55,7 +55,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../index.html">picreduce v0.0.dev30</a>
+	<a href="../index.html">picreduce v0.0.dev36</a>
 	 &raquo;
       </li>
       
@@ -74,21 +74,35 @@
 <dl class="function">
 <dt id="picreduce.utils.general_opt">
 <tt class="descclassname">picreduce.utils.</tt><tt class="descname">general_opt</tt><big>(</big><em>image1</em>, <em>image2</em>, <em>function</em>, <em>globalmin=True</em>, <em>x0=1.0</em>, <em>method='Powell'</em>, <em>niter=1000</em>, <em>stepsize=0.1</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/picreduce/utils/subtract_tools.html#general_opt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.general_opt" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>globalmin:</dt>
-<dd><blockquote class="first">
-<div>Use MonteCarlo (basinhopping) to</div></blockquote>
-<p>jump between local minima found, otherwise, use method alone.
-method:</p>
+<dd><p>a general function for optimizing a function with two images as the arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>globalmin:</strong></p>
 <blockquote>
-<div>e.g. &#8216;Nelder-Mead&#8217;,&#8217;Powell&#8217;</div></blockquote>
-<p class="last">x0: starting offset</p>
-</dd>
-<dt>return_array:</dt>
-<dd>if True returns the optimized copy of array 2</dd>
-<dt>Returns:</dt>
-<dd>the output of the optimization, unless return array keyword is set True (the default).</dd>
-</dl>
+<div><p>Use MonteCarlo (basinhopping) to jump between local minima found, otherwise, use method alone.</p>
+</div></blockquote>
+<p><strong>method:</strong></p>
+<blockquote>
+<div><p>e.g. &#8216;Nelder-Mead&#8217;,&#8217;Powell&#8217;</p>
+</div></blockquote>
+<p><strong>x0: tuple</strong></p>
+<blockquote>
+<div><p>starting offset</p>
+</div></blockquote>
+<p><strong>return_array: bool</strong></p>
+<blockquote>
+<div><p>if True returns the optimized copy of array 2</p>
+</div></blockquote>
+<p><strong>Returns:</strong></p>
+<blockquote class="last">
+<div><p>the output of the optimization, unless return array keyword is set True (the default).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

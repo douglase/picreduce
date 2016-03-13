@@ -317,32 +317,32 @@ class observation_sets:
         poisson_noise=np.sqrt(raw_avg[1]*np.float(self.images.num_files))/np.float(self.images.num_files)
         
         ax.plot(raw_avg[0],raw_avg[1]/max_bright,'--',
-             label='Dark Fringe Intensity',linewidth=2.4)
+             label='Dark Fringe',linewidth=2.4)
         '''plt.errorbar(raw_avg_std_minmax[0],np.mean(self.images.im_norm)*raw_avg_std_minmax[2]/max_bright,
                  yerr=[np.mean(self.images.im_norm)*raw_avg_std_minmax[3]/max_bright,
                        np.mean(self.images.im_norm)*raw_avg_std_minmax[4]/max_bright],
              label=r'$1\sigma$ contrast',linewidth=2.4,alpha=.2,color='k')'''
         ax.plot(raw_std[0],raw_std[1]/max_bright,
-             label=r'$1\sigma$ Raw Dark Fringe',linewidth=2.4,alpha=.9,color='k')
+             label=r'$1\sigma$ Dark Fringe',linewidth=2.4,alpha=.9,color='k')
         ax.plot(radstd_mean_subbed[0],radstd_mean_subbed[1],
-             '-.',label='$1\sigma$ Median Subtracted',linewidth=3)
+             '-.',label='$1\sigma$ Median Subtracted Dark Fringe',linewidth=3)
         
         ax.plot(raw_avg[0],poisson_noise/max_bright,'--',
-             label=r'$1\sigma$ Poisson Noise',linewidth=4.) #not including photon noise in the PCA Basis.'''
+             label=r'$1\sigma$ Dark Fringe Poisson Noise',linewidth=4.) #not including photon noise in the PCA Basis.'''
         #plot all the PCA residuals:
         if plot_all_pca:
             for i,res_fits in enumerate(reslist):    
                 res_fits[0][0].header['PIXELSCL']=new_plate_scale
                 radial_res=poppy.utils.radial_profile(res_fits[0],center=center,stddev=True)#center[::-1])
                 ax.plot(radial_res[0],radial_res[1],
-                     label=r'$1\sigma$ PCA subtracted',#, n='+str(coeff_range[i]),
+                     label=r'$1\sigma$ PCA subtracted Dark Fringe',#, n='+str(coeff_range[i]),
                      alpha=1-.8/np.sqrt(coeff_range[i]),linewidth=0.5,color='k')
         else:
             res_fits= reslist[-1]
             res_fits[0][0].header['PIXELSCL']=new_plate_scale
             radial_res=poppy.utils.radial_profile(res_fits[0],center=center,stddev=True)#center[::-1])
             ax.plot(radial_res[0],radial_res[1],
-                 label=r'1$\sigma$ PCA subtracted',#, n='+str(coeff_range[-1]),
+                 label=r'1$\sigma$ PCA subtracted Dark Fringe',#, n='+str(coeff_range[-1]),
                  alpha=1-.8/np.sqrt(coeff_range[-1]),linewidth=0.5,color='k')
         #ax.yaxis._set_scale('log10')
         ax.set_yscale('log', nonposy='clip')
@@ -354,11 +354,11 @@ class observation_sets:
         ax.set_xlim([0,35])
         #ax.legend()
         if angular_units == 'arcsecs':
-            ax.plot(np.ones(2)*.49,np.arange(2),'--') #plot IWA
+            ax.plot(np.ones(2)*.49,np.arange(2),'--',color='black') #plot IWA
             ax.set_xlabel("arcsec")
         elif angular_units == 'lambda/D':
             ax.set_xlabel("$\lambda/D$")
-            ax.plot(np.ones(2)*1.7,np.arange(2),'--') #plot IWA    
+            ax.plot(np.ones(2)*1.7,np.arange(2),'--',color='black') #plot IWA    
         ax.set_ylabel("Contrast")
         fig1.savefig(self.image_dir+"PCA_contrast.pdf")
         fig1.savefig(self.image_dir+"PCA_contrast.eps")

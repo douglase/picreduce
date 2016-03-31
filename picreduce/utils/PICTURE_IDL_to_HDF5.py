@@ -210,7 +210,34 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
             if wfs_extension != "data.d.idl":
                 grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
 
-            
+    bu_gse_files = glob.glob(directory+"/bugse.*.idl")
+    if len(bu_gse_files) > 1:
+        try:
+            bu_gse_first=scipy.io.readsav(bu_gse_files[0])
+            #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it ou
+            if at_first['data']["IMAGE"].dtype==np.dtype('O'):
+                if len(at_first['data']["IMAGE"]) ==1:
+                    at_frame=at_first['data']["IMAGE"][0]
+                    at_header=matplotlib.mlab.rec_drop_fields(at_first['data'],["IMAGE"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
+            else:
+                at_frame=at_first["data"]
+
+        except Exception, err:
+            print("error finding files")
+            print(err)
+                 print(err)
+        for i,sav in enumerate(bu_gse_files[1:]):
+            try:
+                data=scipy.io.readsav(sav)
+                #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it out:                                                                                                    
+                at_frame=np.dstack([at_frame,data['data']["IMAGE"][0]])
+                at_header=np.vstack([at_header,matplotlib.mlab.rec_drop_fields(data['data'],["IMAGE"])])
+            except Exception,err:
+                print("BU GSE data parsing error in frame:"+str(sav))
+                print(err)
+                continue
+    
+
     #finally, try looking for angle tracker data:
     at_files=glob.glob(directory+"/atfull.*.idl")
     if len(at_files)>1:

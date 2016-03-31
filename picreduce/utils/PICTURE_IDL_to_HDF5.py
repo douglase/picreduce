@@ -236,7 +236,10 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 print("BU GSE data parsing error in frame:"+str(sav))
                 print(err)
                 continue
-    
+        grp.create_dataset("bugse", data=at_frame,compression="gzip",fletcher32=True,track_times=True)
+        grp.create_dataset("bugse_header", data=at_header,compression="gzip",fletcher32=True,track_times=True)
+
+
 
     #finally, try looking for angle tracker data:
     at_files=glob.glob(directory+"/atfull.*.idl")

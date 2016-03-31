@@ -213,14 +213,14 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
     bu_gse_files = glob.glob(directory+"/bugse.*.idl")
     if len(bu_gse_files) > 1:
         try:
-            bu_gse_first=scipy.io.readsav(bu_gse_files[0])
+            bugse_first=scipy.io.readsav(bu_gse_files[0])
             #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it ou
-            if at_first['data']["IMAGE"].dtype==np.dtype('O'):
-                if len(at_first['data']["IMAGE"]) ==1:
-                    at_frame=at_first['data']["IMAGE"][0]
-                    at_header=matplotlib.mlab.rec_drop_fields(at_first['data'],["IMAGE"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
+            if bugse_first['data']["IMAGE"].dtype==np.dtype('O'):
+                if len(bugse_first['data']["IMAGE"]) ==1:
+                    bugse_frame=bugse_first['data']["IMAGE"][0]
+                    bugse_header=matplotlib.mlab.rec_drop_fields(bugse_first['data'],["IMAGE"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
             else:
-                at_frame=at_first["data"]
+                bugse_frame=bugse_first["data"]
 
         except Exception, err:
             print("error finding files")
@@ -230,14 +230,14 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
             try:
                 data=scipy.io.readsav(sav)
                 #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it out:                                                                                                    
-                at_frame=np.dstack([at_frame,data['data']["IMAGE"][0]])
-                at_header=np.vstack([at_header,matplotlib.mlab.rec_drop_fields(data['data'],["IMAGE"])])
+                bugse_frame=np.dstack([bugse_frame,data['data']["IMAGE"][0]])
+                bugse_header=np.vstack([bugse_header,matplotlib.mlab.rec_drop_fields(data['data'],["IMAGE"])])
             except Exception,err:
                 print("BU GSE data parsing error in frame:"+str(sav))
                 print(err)
                 continue
-        grp.create_dataset("bugse", data=at_frame,compression="gzip",fletcher32=True,track_times=True)
-        grp.create_dataset("bugse_header", data=at_header,compression="gzip",fletcher32=True,track_times=True)
+        grp.create_dataset("bugse", data=bugse_frame,compression="gzip",fletcher32=True,track_times=True)
+        grp.create_dataset("bugse_header", data=bugse_header,compression="gzip",fletcher32=True,track_times=True)
 
 
 

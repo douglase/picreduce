@@ -225,7 +225,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
         except Exception, err:
             print("error finding files")
             print(err)
-                 print(err)
+            print(err)
         for i,sav in enumerate(bu_gse_files[1:]):
             try:
                 data=scipy.io.readsav(sav)

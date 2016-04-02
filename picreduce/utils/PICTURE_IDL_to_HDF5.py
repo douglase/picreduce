@@ -215,28 +215,33 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
         try:
             bugse_first=scipy.io.readsav(bu_gse_files[0])
             #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it ou
-            if bugse_first['data']["IMAGE"].dtype==np.dtype('O'):
-                if len(bugse_first['data']["IMAGE"]) ==1:
-                    bugse_frame=bugse_first['data']["IMAGE"][0]
-                    bugse_header=matplotlib.mlab.rec_drop_fields(bugse_first['data'],["IMAGE"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
-            else:
-                bugse_frame=bugse_first["data"]
+            bugse_frame=bugse_first['data']["IMAGE"][0]
+            bugse_header=matplotlib.mlab.rec_drop_fields(bugse_first['data'],["IMAGE"])     #http://stackoverflow.com/a/15577562/2142498
+
+            bugse_temp_frame=bugse_first['data']["TEMPSENSORS"][0]
+            bugse_header=matplotlib.mlab.rec_drop_fields(bugse_header,["TEMPSENSORS"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
 
         except Exception, err:
-            print("error finding files")
+            prin t("Error finding files.")
             print(err)
             print(err)
         for i,sav in enumerate(bu_gse_files[1:]):
             try:
-                data=scipy.io.readsav(sav)
+                data = scipy.io.readsav(sav)
                 #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it out:                                                                                                    
-                bugse_frame=np.dstack([bugse_frame,data['data']["IMAGE"][0]])
-                bugse_header=np.vstack([bugse_header,matplotlib.mlab.rec_drop_fields(data['data'],["IMAGE"])])
+                bugse_frame = np.dstack([bugse_frame,data['data']["IMAGE"][0]])
+                bugse_temp_frame = np.dstack([bugse_temp_frame,data['data']["TEMPSENSORS"][0]])
+                header = matplotlib.mlab.rec_drop_fields(data['data'],["IMAGE"])
+                header = matplotlib.mlab.rec_drop_fields(header,["TEMPSENSORS"])
+                bugse_header = np.vstack([bugse_header,header])
+                bugse_header = np.vstack([bugse_header,header])
+
             except Exception,err:
                 print("BU GSE data parsing error in frame:"+str(sav))
                 print(err)
                 continue
         grp.create_dataset("bugse", data=bugse_frame,compression="gzip",fletcher32=True,track_times=True)
+        grp.create_dataset("bugse_temp", data=bugse_temp_frame,compression="gzip",fletcher32=True,track_times=True)
         grp.create_dataset("bugse_header", data=bugse_header,compression="gzip",fletcher32=True,track_times=True)
 
 
@@ -315,14 +320,6 @@ def collect_data_and_headers(globbed_list):
 
 
 
-def strip_str(string):
-    try:
-        str(string).encode('utf-8').decode('ascii', 'replace').replace('\n', '. ').replace('\'','')
-    except ValueError,err:
-        print("problem stripping string of unicode characters and carriage returns")
-        print(string)
-        print(err)
-        
 
 def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     '''
@@ -358,7 +355,7 @@ def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     if fmt == 'hdf5':
         for field in inputHeader.dtype.fields.keys():
             #print([field[0],input[field[0]][0]])
-            header[str(field)]=strip_str(inputHeader[field][0])
+            header[str(field)]=inputHeader[field][0]
 
     if fmt == 'idlsave':
         raise ValueError("not yet implemented")

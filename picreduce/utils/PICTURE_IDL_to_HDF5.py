@@ -222,7 +222,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
             bugse_header=matplotlib.mlab.rec_drop_fields(bugse_header,["TEMPSENSORS"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
 
         except Exception, err:
-            prin t("Error finding files.")
+            print("Error finding files.")
             print(err)
             print(err)
         for i,sav in enumerate(bu_gse_files[1:]):

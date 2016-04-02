@@ -66,6 +66,7 @@ class observation_sets:
                  image_dir,
                 basis_dir,
                 ran_sub=None,
+                ran_sub_basis=None,
                 stackave=1,
                 cent_size=0.00,
                 prep_data=True,
@@ -122,7 +123,9 @@ class observation_sets:
                       smooth_option=None,
                       high_color = 'orange',
                       low_color = 'black',
-                      angular_units='arcsec'):
+                      angular_units='arcsec',
+                      bins=np.arange(-5e-5,5e-5,1e-6),
+                      norm=SymLogNorm(1e-5,vmin=-1e-3,vmax=1e-3)):
         '''
         A catch all function that finds the residual and generates a variety of diagnostic plots.
         
@@ -153,10 +156,8 @@ class observation_sets:
         self.smooth_option=smooth_option
         zero_color = 'white'
         semi_sym_cm = LinearSegmentedColormap.from_list('my cmap', [low_color, zero_color,high_color])
-        vmin=-1e-2
-        vmax=1e-2
-        norm=SymLogNorm(5e-6,vmin=vmin,vmax=vmax)#, vmax=5e-3)
-        tick_levels = [-1e-3, -1e-4, -1e-5, 0.0, 1e-5, 1e-4, 1e-3]
+
+        tick_levels = [-1e-3, -1e-4, -1e-5, -1e-6, 1e-6, 1e-5, 1e-4, 1e-3]
 
 
         first_file=self.images.files[0]
@@ -238,7 +239,7 @@ class observation_sets:
         #image_norms=conv['im_arr'][:].sum(axis=1).sum(axis=1)
         reslist=[]
     
-        coeff_range=range(1,np.min([self.basis_images.num_files,max_coeff]),10)
+        coeff_range=range(0,np.min([self.basis_images.num_files,max_coeff]),10)
         if plot_all_pca:
             for coeff in coeff_range:
                 #renorm to contrast units
@@ -280,14 +281,13 @@ class observation_sets:
         plt.ylabel("Pixels")
 
         plt.hist(raw_contrast.flatten(),bins=10,histtype='stepfilled', label="Raw",log=True,alpha=0.3,color='black',linewidth=.5)
-        plt.ylim(1e-1,1e7)
+        plt.ylim(1e-1,1e6)
         plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0),useOffset=False)#
 
 
         plt.legend(fontsize=8)
 
         plt.subplot(212)
-        bins=np.arange(-5e-5,5e-5,5e-6)
         plt.hist(mean_subbed_contrast[0].data.flatten(),bins=bins,linewidth=1.5,
              label="Median",log=True,histtype='step',color=high_color)
         plt.hist(reslist[-1][0][0].data.flatten(),bins=bins,

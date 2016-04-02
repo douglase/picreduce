@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Reduction utilities (picreduce.utils) &mdash; picreduce v0.0.dev30</title>
+    <title>Data Reduction utilities (picreduce.utils) &mdash; picreduce v0.0.dev36</title>
     
     <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.dev30',
+        VERSION:     '0.0.dev36',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev30" href="../index.html" />
+    <link rel="top" title="picreduce v0.0.dev36" href="../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../_static/copybutton.js"></script>
 
@@ -55,7 +55,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../index.html">picreduce v0.0.dev30</a>
+	<a href="../index.html">picreduce v0.0.dev36</a>
 	 &raquo;
       </li>
       
@@ -100,7 +100,7 @@
 <td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../api/picreduce.utils.general_opt.html#picreduce.utils.general_opt" title="picreduce.utils.general_opt"><tt class="xref py py-obj docutils literal"><span class="pre">general_opt</span></tt></a>(image1,&nbsp;image2,&nbsp;function[,&nbsp;...])</td>
-<td>globalmin:</td>
+<td>a general function for optimizing a function with two images as the arguments.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../api/picreduce.utils.get_dsets.html#picreduce.utils.get_dsets" title="picreduce.utils.get_dsets"><tt class="xref py py-obj docutils literal"><span class="pre">get_dsets</span></tt></a>(sequence_dir)</td>
 <td>Find all the the subdirectories in <tt class="xref py py-obj docutils literal"><span class="pre">sequence_dir</span></tt> and return as a sorted list</td>
@@ -130,7 +130,7 @@
 <td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="../api/picreduce.utils.opt_shift.html#picreduce.utils.opt_shift" title="picreduce.utils.opt_shift"><tt class="xref py py-obj docutils literal"><span class="pre">opt_shift</span></tt></a>(image1,&nbsp;image2[,&nbsp;return_array,&nbsp;...])</td>
-<td>globalmin:</td>
+<td>Find the optimal shift of <tt class="xref py py-obj docutils literal"><span class="pre">image2</span></tt> that minimizes the residual when <tt class="xref py py-obj docutils literal"><span class="pre">image1</span></tt> is  subtracted.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../api/picreduce.utils.optimally_shift_and_save.html#picreduce.utils.optimally_shift_and_save" title="picreduce.utils.optimally_shift_and_save"><tt class="xref py py-obj docutils literal"><span class="pre">optimally_shift_and_save</span></tt></a>(f,&nbsp;dset1,&nbsp;dset2[,&nbsp;...])</td>
 <td>Align the frames of <tt class="xref py py-obj docutils literal"><span class="pre">dset2</span></tt> to <tt class="xref py py-obj docutils literal"><span class="pre">dset1</span></tt> using <a class="reference internal" href="../api/picreduce.utils.opt_shift.html#picreduce.utils.opt_shift" title="picreduce.utils.opt_shift"><tt class="xref py py-obj docutils literal"><span class="pre">opt_shift()</span></tt></a> and save in a subfolder of <tt class="xref py py-obj docutils literal"><span class="pre">dset1</span></tt></td>

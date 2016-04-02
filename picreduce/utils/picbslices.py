@@ -1,5 +1,11 @@
 import numpy as np
 
+
+import os
+import shutil
+import glob
+import subprocess
+import numpy as np
 import logging
 _log = logging.getLogger('picb')
 
@@ -16,8 +22,8 @@ def get_nulled_frames(f,dset,
 
     '''
     nulled=np.where(f[dset][u'sci_header']['STATE'].flatten()==null_state)[0]
-    
-    good_sci_data = f[dset][u'sci'][:,:138,nulled[n_skip]:nulled[-1]]
+    nulled=nulled[n_skip:-1]
+    good_sci_data = f[dset][u'sci'][:,:138,nulled]
     original_shape=good_sci_data.shape
     if delete_saturated:
         saturated_frames=np.where(good_sci_data.max(axis=0).max(axis=0) >= sat_val)[0]
@@ -41,4 +47,99 @@ def get_nulled_frames(f,dset,
             
     #median = recenter(median,(68, 68),boxsize=10)
     return good_sci_data,median,std
+
+
+
+
+
+def create_randomized_folders(source_dir,num_frames=None,ext='fits'):
+    '''
+    Takes a directory of files and randomly splits symbolic links to them between two new folders. 
+
+    keywords:
+    'num_frames' default None, the number of files in each directory.
+    'ext' defaults to _fits_ for Flexible Image Transport System
+    
+    
+    Examples
+    ----------
+
+    >>> picreduce.picbslices.create_randomized_folders('path_to_fits')
+
+    Raises
+    ----------
+
+    ValueError
+    ----------
+
+    '''
+
+    files=glob.glob(source_dir+"/*."+ext)
+    #shuffle list of files
+    np.random.shuffle(files)
+    
+    #make subdirectories
+    Adir=source_dir+"randomA"+str(num_frames)
+    Bdir=source_dir+"randomB"+str(num_frames)
+    try:
+        os.mkdir(Adir)
+    except OSError,err:
+        print(err)
+        print("problem creating directory, trying to remove and recreate")
+        try:
+            shutil.rmtree(Adir)
+            os.mkdir(Adir)
+        except OSError,err:
+            print(err)
+            raise ValueError 
+    try:
+        os.mkdir(Bdir)
+    except OSError,err:
+        print(err)
+        print("problem creating directory, trying to remove and recreate")
+        try:
+            shutil.rmtree(Bdir)
+            os.mkdir(Bdir)
+        except OSError,err:
+            print("failed to create directory")
+            print(err)
+            raise ValueError 
+
+    #split deck
+    if num_frames is None:
+        num_frames=int(np.floor(np.size(files)/2.0 -1))
+    list1=files[0:num_frames]
+    list2=files[num_frames+1:(num_frames+1)+num_frames]
+    for fpath in list1:
+        fname=fpath.split("/")[-1]
+        try:
+            cmd="ln -s "+fpath+" /"+Adir+"/"+fname
+            subprocess.call(cmd.split(" "))
+        except OSError,err:
+            print(err)     
+
+    for fpath in list2:
+        fname=fpath.split("/")[-1]
+        try:
+            cmd="ln -s "+fpath+" /"+Bdir+"/"+fname
+            subprocess.call(cmd.split(" "))
+        except OSError,err:
+            print(err)
+            print(cmd)
+
+
+            
+    
+
+def get_nulled_frame_headers(f,dset,null_state=34,n_skip=5):
+    '''
+    example:
+    #note! the first 3 values are skipped because they usually aren't really nulling
+
+    '''
+    nulled=np.where(f[dset][u'sci_header']['STATE'].flatten()==null_state)[0]
+    nulled=nulled[n_skip:-1]
+    headers=f[dset][u'sci_header'][...][nulled]
+    return headers
+
 

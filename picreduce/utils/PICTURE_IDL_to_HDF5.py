@@ -315,6 +315,14 @@ def collect_data_and_headers(globbed_list):
 
 
 
+def strip_str(string):
+    try:
+        str(string).encode('utf-8').decode('ascii', 'replace').replace('\n', '. ').replace('\'','')
+    except ValueError,err:
+        print("problem stripping string of unicode characters and carriage returns")
+        print(string)
+        print(err)
+        
 
 def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     '''
@@ -350,7 +358,7 @@ def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     if fmt == 'hdf5':
         for field in inputHeader.dtype.fields.keys():
             #print([field[0],input[field[0]][0]])
-            header[str(field)]=inputHeader[field][0]
+            header[str(field)]=strip_str(inputHeader[field][0])
 
     if fmt == 'idlsave':
         raise ValueError("not yet implemented")

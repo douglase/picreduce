@@ -211,6 +211,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
 
     bu_gse_files = glob.glob(directory+"/bugse.*.idl")
+    bu.gse_files.sort()
     if len(bu_gse_files) > 1:
         try:
             bugse_first=scipy.io.readsav(bu_gse_files[0])
@@ -250,6 +251,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
 
     #finally, try looking for angle tracker data:
     at_files=glob.glob(directory+"/atfull.*.idl")
+    at_files.sort()
     if len(at_files)>1:
         #at_header,at_frame=collect_data_and_headers(at_files)
         try:

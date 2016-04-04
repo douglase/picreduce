@@ -217,7 +217,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
             #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it ou
             bugse_frame=bugse_first['data']["IMAGE"][0]
             bugse_header=matplotlib.mlab.rec_drop_fields(bugse_first['data'],["IMAGE"])     #http://stackoverflow.com/a/15577562/2142498
-
+            bugse_filename=np.array([bu_gse_files[0]])
             bugse_temp_frame=bugse_first['data']["TEMPSENSORS"][0]
             bugse_header=matplotlib.mlab.rec_drop_fields(bugse_header,["TEMPSENSORS"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
 
@@ -235,6 +235,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 header = matplotlib.mlab.rec_drop_fields(header,["TEMPSENSORS"])
                 bugse_header = np.vstack([bugse_header,header])
                 bugse_header = np.vstack([bugse_header,header])
+                bugse_filename=np.vstack([bugse_filename,[sav]])
 
             except Exception,err:
                 print("BU GSE data parsing error in frame:"+str(sav))
@@ -243,6 +244,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
         grp.create_dataset("bugse", data=bugse_frame,compression="gzip",fletcher32=True,track_times=True)
         grp.create_dataset("bugse_temp", data=bugse_temp_frame,compression="gzip",fletcher32=True,track_times=True)
         grp.create_dataset("bugse_header", data=bugse_header,compression="gzip",fletcher32=True,track_times=True)
+        grp.create_dataset("bugse_filename", data=bugse_filename,compression="gzip",fletcher32=True,track_times=True)
 
 
 

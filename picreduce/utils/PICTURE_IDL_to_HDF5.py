@@ -211,7 +211,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
 
     bu_gse_files = glob.glob(directory+"/bugse.*.idl")
-    bu.gse_files.sort()
+    bu_gse_files.sort()
     if len(bu_gse_files) > 1:
         try:
             bugse_first=scipy.io.readsav(bu_gse_files[0])

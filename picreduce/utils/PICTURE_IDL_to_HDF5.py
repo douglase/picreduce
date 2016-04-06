@@ -170,6 +170,8 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 wfs_header=wfs_1st["header"]
                 wfsdateframes=wfs_1st["data"]
                 wfs_frame=wfs_1st["data"]
+                wfs_filename=np.array([wfs_files[0]])
+
                 if wfs_extension == "data.d.idl":
                     for field in wfs_frame.dtype.fields:
                         datad_grp.create_group(field)
@@ -183,6 +185,8 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                     wfs = scipy.io.readsav(wfs_sav)
                     wfs_frame=np.dstack([wfs_frame,wfs['data']])
                     wfs_header=np.vstack([wfs_header,wfs['header']])
+                    wfs_filename=np.vstack([wfs_filename,[wfs_sav]])
+
                 except Exception,err:
                     print(err)
                     print('readsave error')
@@ -205,7 +209,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                             field_name=field
                             new_array = wfs_data[field]
                             _update_data_d(wfs_files,datad_grp,field,field_name,new_array,i)
-
+            grp.create_dataset("jplgse_filename", data=wfs_filename,compression="gzip",fletcher32=True,track_times=True)
             grp.create_dataset(wfs_extension+".header", data=wfs_header,compression="gzip",fletcher32=True,track_times=True)
             if wfs_extension != "data.d.idl":
                 grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)

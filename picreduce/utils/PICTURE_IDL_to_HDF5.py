@@ -16,6 +16,7 @@ def get_dsets(sequence_dir):
 def load_or_create(data_directory,
                    dset_list=[],
                    fname='/data.hdf5',
+                   special_keys=[],
                    readwrite='r'):
     r"""Function for loading a HDF5 dataset generated from PICTURE IDL save files.
     Checks if `fname exists`, and if not, creates a file, `fname`,
@@ -70,13 +71,13 @@ def load_or_create(data_directory,
             if dset_list:
                 for dset in dset_list:
                     print("creating: "+dset+" in "+fname+" in "+ data_directory)
-                    jplgse_to_HDF5(f,data_directory,dset)
+                    jplgse_to_HDF5(f,data_directory,dset,special_keys=special_keys)
                 #f.close()
             else:
                 dset_list=get_dsets(data_directory)
                 for dset in dset_list:
                     print("creating: "+dset+" in "+fname+" in "+ data_directory)
-                    jplgse_to_HDF5(f,data_directory,dset)
+                    jplgse_to_HDF5(f,data_directory,dset,special_keys=special_keys)
                 #raise ValueError("invalid dset list: "+str(dset_list))
     else:
         print("Found hdf5 file:"+data_directory+fname)
@@ -84,7 +85,7 @@ def load_or_create(data_directory,
     f = h5py.File(data_directory+fname,readwrite)
     return f
 
-def jplgse_to_HDF5(f,base_dir,sub_dir):
+def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
     '''
     Function for parsing a directory idl save files produced by jplgse.
 
@@ -95,7 +96,8 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
     base_dir  : the path to the data directory
     sub_dir :  the the subdirectory the files of interest are stored in
      within `base_dir,` this will also be the name of the HDF data group added to `f`.
-    
+    special_keys: list of extra keywords
+            : files with they keys in name be searched for and added to the jplgse data.
     Returns
     ----------
     f : the input HDF5 file or group.
@@ -155,15 +157,18 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
         
         grp.create_dataset("sci", data=sci_frame,compression="gzip",fletcher32=True,track_times=True)
         grp.create_dataset("sci_header", data=sciheader,compression="gzip",fletcher32=True,track_times=True)
+    if not isinstance(special_keys,list):
+        raise ValueError("special keys must be a list")
     #now try to find wavefront sensor data
-    wfs_types = ["phase.i.idl","phase.v.idl","phase.r.idl","phase.m.idl",
-                 "phase.p.idl","phase.u.idl","frame.a.idl","data.d.idl",
-                 "frame.b.idl","frame.c.idl","frame.d.idl"]
+    wfs_types = ["phase.i.*idl","phase.v.*idl","phase.r.*idl","phase.m.*idl",
+                 "phase.p.*idl","phase.u.*idl","frame.a.*idl","data.d.*idl",
+                 "frame.b.*idl","frame.c.*idl","frame.d.*idl"]+special_keys
     for wfs_extension in wfs_types:
         wfs_files=glob.glob(directory+"/*"+wfs_extension)
         wfs_files.sort()
+        wfs_extension=wfs_extension.replace("*","")#remove * after glob to maintain legacy key names
         if len(wfs_files)>1:
-            if wfs_extension == "data.d.idl":
+            if wfs_extension.find("data") != -1:
                 datad_grp=grp.create_group(wfs_extension+".data")
             try:
                 wfs_1st=scipy.io.readsav(wfs_files[0])
@@ -172,11 +177,10 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                 wfs_frame=wfs_1st["data"]
                 wfs_filename=np.array([str(wfs_files[0])])
 
-                if wfs_extension == "data.d.idl":
+                if wfs_extension.find("data") != -1:
                     for field in wfs_frame.dtype.fields:
                         datad_grp.create_group(field)
 
-                    
             except Exception, err:
                 print("error finding WFS files")
                 print(err)
@@ -191,7 +195,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                     print(err)
                     print('readsave error')
                     continue
-                if wfs_extension == "data.d.idl":
+                if wfs_extension.find("data") != -1:
                     #because some of the data.d arrays are numpy objects they need to be an extra layer
                     #this currently only works for 1D data
                     wfs_data=wfs['data']
@@ -202,16 +206,17 @@ def jplgse_to_HDF5(f,base_dir,sub_dir):
                                 field_name = field+"-"+inner_field
                                 inner_array = np.array(wfs_data[field][0][inner_field][0],
                                              dtype = wfs_data[field][0][inner_field][0].dtype)
-                                #print([field_name,inner_array])
+                                #print([field,field_name,inner_array])
                                 #add data to appropriate dataset:
                                 _update_data_d(wfs_files,datad_grp,field,field_name,inner_array,i)
                         else:
                             field_name=field
+                            #print([field,field_name])
                             new_array = wfs_data[field]
                             _update_data_d(wfs_files,datad_grp,field,field_name,new_array,i)
             grp.create_dataset(wfs_extension+"_filepath", data=wfs_filename,compression="gzip",fletcher32=True,track_times=True)
             grp.create_dataset(wfs_extension+".header", data=wfs_header,compression="gzip",fletcher32=True,track_times=True)
-            if wfs_extension != "data.d.idl":
+            if wfs_extension.find("data") == -1:
                 grp.create_dataset(wfs_extension+".data", data=wfs_frame,compression="gzip",fletcher32=True,track_times=True)
 
     bu_gse_files = glob.glob(directory+"/bugse.*.idl")

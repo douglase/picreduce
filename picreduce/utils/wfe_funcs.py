@@ -22,7 +22,7 @@ class zernike_optic(poppy.optics.AnalyticOpticalElement):
     """
 
     def __init__(self, zern_coeffs=None, 
-                 planetype=poppy.PlaneType.intermediate,
+                 planetype=poppy.poppy_core.PlaneType.intermediate,
                  name='Zernike Optical Element',
                  **kwargs):
         poppy.AnalyticOpticalElement.__init__(self, name=name, planetype=planetype)

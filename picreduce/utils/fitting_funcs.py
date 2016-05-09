@@ -38,6 +38,28 @@ def plane(m_x,m_y,c,x,y):
 #fcdf = Fit(dcdf, mcdf, LeastSq(), LevMar())
 
 
+
+def fit_line_sherpa(c,y,y_error):
+    '''
+    https://github.com/DougBurke/sherpa-standalone-notebooks/blob/master/simulating%20a%202D%20image%20and%20a%20bit%20of%20error%20analysis.ipynb
+    '''    
+    model=Polynom1D('line')
+    sherpa.load_arrays("mydata", x, y, e)
+
+    d = Data1D('y', x.flatten(), y.flatten(), shape=x.shape,staterror=y_error.flatten())
+    model.c0.thaw()
+    model.c1.thaw()
+   
+    fit = Fit(d, model, Chi2(), LevMar())
+    result=fit.fit()
+    meval = d.eval_model(model).reshape(d.shape)
+    fit.estmethod = Covariance()
+    eres= fit.est_errors()
+
+    print(result)
+    return result, eres, meval
+
+
 def fit_plane_sherpa(z,error):
     '''
     https://github.com/DougBurke/sherpa-standalone-notebooks/blob/master/simulating%20a%202D%20image%20and%20a%20bit%20of%20error%20analysis.ipynb
@@ -62,6 +84,35 @@ def fit_plane_sherpa(z,error):
 
     print(result)
     return result, eres, meval
+
+
+
+def fit_plane_sherpa(z,error):
+    '''
+    https://github.com/DougBurke/sherpa-standalone-notebooks/blob/master/simulating%20a%202D%20image%20and%20a%20bit%20of%20error%20analysis.ipynb
+    '''
+    y, x = np.mgrid[:z.shape[0], :z.shape[1]]
+    
+    model=Polynom2D('plane')
+    d = Data2D('z', x.flatten(), y.flatten(), z.flatten(), shape=x.shape,staterror=error.flatten())
+    model.cy2.freeze()
+    model.cx2.freeze()
+    model.cy1.val=1
+    model.cx1.val=-1
+    model.cx1y2.freeze()
+    model.cx2y1.freeze()
+    model.cx1y1.freeze()
+    model.cx2y2.freeze()
+    fit = Fit(d, model, Chi2(), LevMar())
+    result=fit.fit()
+    meval = d.eval_model(model).reshape(d.shape)
+    fit.estmethod = Covariance()
+    eres= fit.est_errors()
+
+    print(result)
+    return result, eres, meval
+
+
 
 def fit_plane(z,plotplane=False):
     '''

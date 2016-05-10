@@ -15,8 +15,8 @@ import scipy.optimize
 import sherpa.image
 
 from sherpa import utils
-from sherpa.models import Polynom2D
-from sherpa.data import Data2D
+from sherpa.models import Polynom2D,Polynom1D
+from sherpa.data import Data2D,Data1D
 
 from sherpa.optmethods import LevMar, NelderMead, MonCar
 from sherpa.stats import Cash, LeastSq,Chi2ConstVar,Chi2
@@ -39,28 +39,26 @@ def plane(m_x,m_y,c,x,y):
 
 
 
-def fit_line_sherpa(c,y,y_error):
+def fit_line_sherpa(x,y,y_error,verbose=True):
     '''
     https://github.com/DougBurke/sherpa-standalone-notebooks/blob/master/simulating%20a%202D%20image%20and%20a%20bit%20of%20error%20analysis.ipynb
     '''    
     model=Polynom1D('line')
-    sherpa.load_arrays("mydata", x, y, e)
-
-    d = Data1D('y', x.flatten(), y.flatten(), shape=x.shape,staterror=y_error.flatten())
+    d = Data1D('data', x.flatten(), y.flatten(),staterror=y_error.flatten())
     model.c0.thaw()
     model.c1.thaw()
    
     fit = Fit(d, model, Chi2(), LevMar())
     result=fit.fit()
-    meval = d.eval_model(model).reshape(d.shape)
+    meval = d.eval_model(model)
     fit.estmethod = Covariance()
     eres= fit.est_errors()
 
-    print(result)
+    if verbose: print(result)
     return result, eres, meval
 
 
-def fit_plane_sherpa(z,error):
+def fit_plane_sherpa(z,error,verbose=True):
     '''
     https://github.com/DougBurke/sherpa-standalone-notebooks/blob/master/simulating%20a%202D%20image%20and%20a%20bit%20of%20error%20analysis.ipynb
     '''
@@ -82,35 +80,12 @@ def fit_plane_sherpa(z,error):
     fit.estmethod = Covariance()
     eres= fit.est_errors()
 
-    print(result)
+    if verbose: print(result)
+
     return result, eres, meval
 
 
 
-def fit_plane_sherpa(z,error):
-    '''
-    https://github.com/DougBurke/sherpa-standalone-notebooks/blob/master/simulating%20a%202D%20image%20and%20a%20bit%20of%20error%20analysis.ipynb
-    '''
-    y, x = np.mgrid[:z.shape[0], :z.shape[1]]
-    
-    model=Polynom2D('plane')
-    d = Data2D('z', x.flatten(), y.flatten(), z.flatten(), shape=x.shape,staterror=error.flatten())
-    model.cy2.freeze()
-    model.cx2.freeze()
-    model.cy1.val=1
-    model.cx1.val=-1
-    model.cx1y2.freeze()
-    model.cx2y1.freeze()
-    model.cx1y1.freeze()
-    model.cx2y2.freeze()
-    fit = Fit(d, model, Chi2(), LevMar())
-    result=fit.fit()
-    meval = d.eval_model(model).reshape(d.shape)
-    fit.estmethod = Covariance()
-    eres= fit.est_errors()
-
-    print(result)
-    return result, eres, meval
 
 
 

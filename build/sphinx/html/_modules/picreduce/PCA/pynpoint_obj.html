@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>picreduce.PCA.pynpoint_obj &mdash; picreduce v0.0.dev36</title>
+    <title>picreduce.PCA.pynpoint_obj &mdash; picreduce v0.0.dev79</title>
     
     <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.0.dev36',
+        VERSION:     '0.0.dev79',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,14 +25,14 @@
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev36" href="../../../index.html" />
+    <link rel="top" title="picreduce v0.0.dev79" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../../../_static/copybutton.js"></script>
 
 
   </head>
-  <body>
+  <body role="document">
 <div class="topbar">
   <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
   <ul>
@@ -56,7 +56,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../../../index.html">picreduce v0.0.dev36</a>
+	<a href="../../../index.html">picreduce v0.0.dev79</a>
 	 &raquo;
       </li>
       <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
@@ -69,13 +69,12 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <h1>Source code for picreduce.PCA.pynpoint_obj</h1><div class="highlight"><pre>
-<span class="c"># -*- coding: utf-8 -*-</span>
-<span class="c"># &lt;nbformat&gt;3.0&lt;/nbformat&gt;</span>
-
-<span class="c"># &lt;codecell&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">tools for interacting with Pynpoint PCA routines.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c">#%matplotlib inline</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
@@ -106,38 +105,42 @@
 <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s">&#39;image.interpolation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;none&#39;</span>
 <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s">&#39;image.origin&#39;</span><span class="p">]</span><span class="o">=</span><span class="s">&#39;lower&#39;</span>
 
-<span class="c"># &lt;codecell&gt;</span>
 
-<span class="c">#ls &#39;/home/douglase/projects/picture/data/flight_sequence_20140530/gsedata.idl.05302014.58866/shifted/gsedata.idl.05302014.58866/&#39;</span>
-
-<span class="c"># &lt;codecell&gt;</span>
-
-
-<span class="c"># &lt;codecell&gt;</span>
-
-<span class="c">#PynPoint Requires the paralytic angle be stored in the FITS header, set to zero so it doesn&#39;t try to derotate</span>
-<span class="sd">&#39;&#39;&#39;for filen in glob.glob(data_dir+&#39;*&#39;):</span>
-<span class="sd">    hdulist=fits.open(filen,mode=&#39;update&#39;)</span>
-<span class="sd">    </span>
-<span class="sd">    print(filen)</span>
-<span class="sd">    print(hdulist[0].header)</span>
-<span class="sd">    hdulist[0].header[&#39;NEW_PARA&#39;]=0</span>
-
-<span class="sd">    hdulist.flush()</span>
-<span class="sd">    hdulist.close(verbose=True)</span>
-<span class="sd">&#39;&#39;&#39;</span>
-
-<span class="c"># &lt;markdowncell&gt;</span>
-
-<span class="c"># </span>
-<span class="c"># </span>
-
-<span class="c"># &lt;codecell&gt;</span>
 
 <div class="viewcode-block" id="observation_sets"><a class="viewcode-back" href="../../../api/picreduce.PCA.observation_sets.html#picreduce.PCA.observation_sets">[docs]</a><span class="k">class</span> <span class="nc">observation_sets</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">image_dir</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    a class of observations to process with PynPoint Exoplanet module.</span>
+<span class="sd">    </span>
+<span class="sd">    ..warning: PynPoint Requires the paralytic angle be stored in the FITS header, if you don&#39;t have ADI images,</span>
+<span class="sd">     set this keyword to zero so it doesn&#39;t try to de-rotate and fail.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_dir: str</span>
+<span class="sd">        directory where target FITS file are stored </span>
+<span class="sd">    basis_dir: str</span>
+<span class="sd">        directory where basis FITS file are stored</span>
+<span class="sd">    ran_sub: Float or None</span>
+<span class="sd">        the size of a random subset of image and basis images to use. default None.</span>
+<span class="sd">    stackave=1: int</span>
+<span class="sd">        number of frames to stack before analysis</span>
+<span class="sd">    cent_size: float</span>
+<span class="sd">        size of center mask, default is 0.00.</span>
+<span class="sd">    prep_data: bool</span>
+<span class="sd">        if True data will be resized and recentered</span>
+<span class="sd">    recent: bool</span>
+<span class="sd">        False by default. Only works if resize is also True (Pynpoint v. 0.2.0)</span>
+<span class="sd">    resize:True</span>
+<span class="sd">        Resample the data, doubling array dimensions, default is True.</span>
+<span class="sd">    smooth_kernel:</span>
+<span class="sd">        kernel to use for convolution if convolution is used.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">image_dir</span><span class="p">,</span>
                 <span class="n">basis_dir</span><span class="p">,</span>
                 <span class="n">ran_sub</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">ran_sub_basis</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                 <span class="n">stackave</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="n">cent_size</span><span class="o">=</span><span class="mf">0.00</span><span class="p">,</span>
                 <span class="n">prep_data</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -161,16 +164,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">convolution_counter</span> <span class="o">=</span> <span class="mi">0</span>
 <div class="viewcode-block" id="observation_sets.conv_frames"><a class="viewcode-back" href="../../../api/picreduce.PCA.observation_sets.html#picreduce.PCA.observation_sets.conv_frames">[docs]</a>    <span class="k">def</span> <span class="nf">conv_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">kernel</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Description:</span>
 <span class="sd">        This function smooths each image frame by the input kernel via FFT convolution,</span>
 <span class="sd">         it can dramatically improve median subtraction but doesn&#39;t seem to be helping PCA,</span>
 <span class="sd">          it may also be that it&#39;s not being applied at the correct point in the PCA workflow,</span>
 <span class="sd">          because of the normalization that occurs in Pynpoint,</span>
 <span class="sd">         test would be how it works to have this smoothing applied on the raw fits files first.</span>
 
-<span class="sd">          Parameters:</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">        astropy.convolution.kernel</span>
-
+<span class="sd">        </span>
+<span class="sd">        kwargs are passed to astropy.convolution.convolve_fft</span>
 <span class="sd">        </span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">convolution_counter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -183,7 +187,8 @@
             
         <span class="k">for</span> <span class="n">i_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">im_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">im_arr</span><span class="p">[</span><span class="n">i_num</span><span class="p">,:,:]</span> <span class="o">=</span>  <span class="n">conv</span><span class="o">.</span><span class="n">convolve_fft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">im_arr</span><span class="p">[</span><span class="n">i_num</span><span class="p">,:,:],</span> <span class="n">kernel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">convolution_counter</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">convolution_counter</span> <span class="o">+</span> <span class="mi">1</span> </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convolution_counter</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">convolution_counter</span> <span class="o">+</span> <span class="mi">1</span>
+        </div>
 <div class="viewcode-block" id="observation_sets.pynpoint_contrast"><a class="viewcode-back" href="../../../api/picreduce.PCA.observation_sets.html#picreduce.PCA.observation_sets.pynpoint_contrast">[docs]</a>    <span class="k">def</span> <span class="nf">pynpoint_contrast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">plate_scale</span><span class="o">=</span><span class="mf">0.158</span><span class="p">,</span>
                       <span class="n">n_pix</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
@@ -192,25 +197,43 @@
                       <span class="n">smooth_option</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                       <span class="n">high_color</span> <span class="o">=</span> <span class="s">&#39;orange&#39;</span><span class="p">,</span>
                       <span class="n">low_color</span> <span class="o">=</span> <span class="s">&#39;black&#39;</span><span class="p">,</span>
-                      <span class="n">angular_units</span><span class="o">=</span><span class="s">&#39;arcsec&#39;</span><span class="p">):</span>
+                      <span class="n">angular_units</span><span class="o">=</span><span class="s">&#39;arcsec&#39;</span><span class="p">,</span>
+                      <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">5e-5</span><span class="p">,</span><span class="mf">5e-5</span><span class="p">,</span><span class="mf">1e-6</span><span class="p">),</span>
+                      <span class="n">norm</span><span class="o">=</span><span class="n">SymLogNorm</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span><span class="n">vmin</span><span class="o">=-</span><span class="mf">1e-3</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    </span>
-<span class="sd">        angular_units:</span>
+<span class="sd">        A catch all function that finds the residual and generates a variety of diagnostic plots.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        Plate scale: float</span>
+<span class="sd">            the number of pixels to assign to one angular unit.</span>
+<span class="sd">        max_coeff: int </span>
+<span class="sd">            the maximum number of principle components to allow.</span>
+<span class="sd">        plot_all_pca:</span>
+<span class="sd">            plots every 10 principle components, useful for convergence.</span>
+<span class="sd">        high_color=str</span>
+<span class="sd">            color indicating positive values in the contrast map.</span>
+<span class="sd">        low_color=str</span>
+<span class="sd">            color indicating negative values in contrast map.</span>
+<span class="sd">        angular_units: string</span>
 <span class="sd">            &#39;arcsec&#39; or &#39;lambdaD&#39;, changes xlabel.</span>
-<span class="sd">        ran_sub:</span>
+<span class="sd">        ran_sub: Bool </span>
 <span class="sd">             None or false gives glob() ordered set, -1 shuffles, N&lt;N_files gives smaller set of images</span>
-<span class="sd">        smooth_option:</span>
+<span class="sd">        smooth_option: string</span>
 <span class="sd">             values: None, &#39;before&#39;, &#39;after&#39;, smooth with the bright_psf_kernel before or after the PCA analysis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a dictionary containing the &#39;residual&#39;, the radial residual, &#39;radial_res&#39;, ploting axis:&#39;ax&#39;:ax,center of image: &#39;center&#39;:center}</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">smooth_option</span><span class="o">=</span><span class="n">smooth_option</span>
         <span class="n">zero_color</span> <span class="o">=</span> <span class="s">&#39;white&#39;</span>
         <span class="n">semi_sym_cm</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="s">&#39;my cmap&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">low_color</span><span class="p">,</span> <span class="n">zero_color</span><span class="p">,</span><span class="n">high_color</span><span class="p">])</span>
-        <span class="n">vmin</span><span class="o">=-</span><span class="mf">1e-2</span>
-        <span class="n">vmax</span><span class="o">=</span><span class="mf">1e-2</span>
-        <span class="n">norm</span><span class="o">=</span><span class="n">SymLogNorm</span><span class="p">(</span><span class="mf">5e-6</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span><span class="c">#, vmax=5e-3)</span>
-        <span class="n">tick_levels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">]</span>
 
-  
+        <span class="n">tick_levels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-6</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">]</span>
+
+
         <span class="n">first_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">print</span><span class="p">(</span><span class="n">first_file</span><span class="p">)</span>
         <span class="n">max_bright</span> <span class="o">=</span> <span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">first_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;MAXBRITE&#39;</span><span class="p">]</span>
@@ -238,8 +261,8 @@
         <span class="n">center</span><span class="o">=</span><span class="n">poppy</span><span class="o">.</span><span class="n">measure_centroid</span><span class="p">(</span><span class="n">HDUlist_or_filename</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span><span class="n">boxsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 
-        <span class="n">phot1</span><span class="o">=</span><span class="n">max_cen_phot</span><span class="o">.</span><span class="n">max_cen_phot</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">radius_pixels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">boxsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-        <span class="n">phot2</span><span class="o">=</span><span class="n">max_cen_phot</span><span class="o">.</span><span class="n">max_cen_phot</span><span class="p">(</span><span class="n">raw_basis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">radius_pixels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">boxsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">phot1</span> <span class="o">=</span> <span class="n">max_cen_phot</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">radius_pixels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">boxsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">phot2</span> <span class="o">=</span> <span class="n">max_cen_phot</span><span class="p">(</span><span class="n">raw_basis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">radius_pixels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">boxsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
   
         <span class="n">mean_subbed_contrast</span> <span class="o">=</span> <span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">astropy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">((</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">raw_basis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">*</span><span class="n">phot1</span><span class="o">/</span><span class="n">phot2</span><span class="p">)</span><span class="o">/</span><span class="n">max_bright</span><span class="p">)])</span>
         <span class="c"># if self.smooth_option == &#39;after&#39; and self.smooth_kernel is not None: </span>
@@ -290,7 +313,7 @@
         <span class="c">#image_norms=conv[&#39;im_arr&#39;][:].sum(axis=1).sum(axis=1)</span>
         <span class="n">reslist</span><span class="o">=</span><span class="p">[]</span>
     
-        <span class="n">coeff_range</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">basis_images</span><span class="o">.</span><span class="n">num_files</span><span class="p">,</span><span class="n">max_coeff</span><span class="p">]),</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">coeff_range</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">basis_images</span><span class="o">.</span><span class="n">num_files</span><span class="p">,</span><span class="n">max_coeff</span><span class="p">]),</span><span class="mi">10</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">plot_all_pca</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">coeff</span> <span class="ow">in</span> <span class="n">coeff_range</span><span class="p">:</span>
                 <span class="c">#renorm to contrast units</span>
@@ -332,14 +355,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Pixels&quot;</span><span class="p">)</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">raw_contrast</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">histtype</span><span class="o">=</span><span class="s">&#39;stepfilled&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Raw&quot;</span><span class="p">,</span><span class="n">log</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mf">1e-1</span><span class="p">,</span><span class="mf">1e7</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mf">1e-1</span><span class="p">,</span><span class="mf">1e6</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ticklabel_format</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s">&#39;sci&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">scilimits</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">useOffset</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="c">#</span>
 
 
         <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">)</span>
-        <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">5e-5</span><span class="p">,</span><span class="mf">5e-5</span><span class="p">,</span><span class="mf">5e-6</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">mean_subbed_contrast</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
              <span class="n">label</span><span class="o">=</span><span class="s">&quot;Median&quot;</span><span class="p">,</span><span class="n">log</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">histtype</span><span class="o">=</span><span class="s">&#39;step&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">high_color</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">reslist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
@@ -369,32 +391,32 @@
         <span class="n">poisson_noise</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">raw_avg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">num_files</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">num_files</span><span class="p">)</span>
         
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raw_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">raw_avg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">max_bright</span><span class="p">,</span><span class="s">&#39;--&#39;</span><span class="p">,</span>
-             <span class="n">label</span><span class="o">=</span><span class="s">&#39;Dark Fringe Intensity&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">2.4</span><span class="p">)</span>
+             <span class="n">label</span><span class="o">=</span><span class="s">&#39;Dark Fringe&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">2.4</span><span class="p">)</span>
         <span class="sd">&#39;&#39;&#39;plt.errorbar(raw_avg_std_minmax[0],np.mean(self.images.im_norm)*raw_avg_std_minmax[2]/max_bright,</span>
 <span class="sd">                 yerr=[np.mean(self.images.im_norm)*raw_avg_std_minmax[3]/max_bright,</span>
 <span class="sd">                       np.mean(self.images.im_norm)*raw_avg_std_minmax[4]/max_bright],</span>
 <span class="sd">             label=r&#39;$1\sigma$ contrast&#39;,linewidth=2.4,alpha=.2,color=&#39;k&#39;)&#39;&#39;&#39;</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raw_std</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">raw_std</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">max_bright</span><span class="p">,</span>
-             <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$1\sigma$ Raw Dark Fringe&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">2.4</span><span class="p">,</span><span class="n">alpha</span><span class="o">=.</span><span class="mi">9</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+             <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$1\sigma$ Dark Fringe&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">2.4</span><span class="p">,</span><span class="n">alpha</span><span class="o">=.</span><span class="mi">9</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">radstd_mean_subbed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">radstd_mean_subbed</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-             <span class="s">&#39;-.&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;$1\sigma$ Median Subtracted&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+             <span class="s">&#39;-.&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;$1\sigma$ Median Subtracted Dark Fringe&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
         
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raw_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">poisson_noise</span><span class="o">/</span><span class="n">max_bright</span><span class="p">,</span><span class="s">&#39;--&#39;</span><span class="p">,</span>
-             <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$1\sigma$ Poisson Noise&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">4.</span><span class="p">)</span> <span class="c">#not including photon noise in the PCA Basis.&#39;&#39;&#39;</span>
+             <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$1\sigma$ Dark Fringe Poisson Noise&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">4.</span><span class="p">)</span> <span class="c">#not including photon noise in the PCA Basis.&#39;&#39;&#39;</span>
         <span class="c">#plot all the PCA residuals:</span>
         <span class="k">if</span> <span class="n">plot_all_pca</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">res_fits</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reslist</span><span class="p">):</span>    
                 <span class="n">res_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;PIXELSCL&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">new_plate_scale</span>
                 <span class="n">radial_res</span><span class="o">=</span><span class="n">poppy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">radial_profile</span><span class="p">(</span><span class="n">res_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span><span class="n">stddev</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="c">#center[::-1])</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">radial_res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">radial_res</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                     <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$1\sigma$ PCA subtracted&#39;</span><span class="p">,</span><span class="c">#, n=&#39;+str(coeff_range[i]),</span>
+                     <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$1\sigma$ PCA subtracted Dark Fringe&#39;</span><span class="p">,</span><span class="c">#, n=&#39;+str(coeff_range[i]),</span>
                      <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="o">-.</span><span class="mi">8</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">coeff_range</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">res_fits</span><span class="o">=</span> <span class="n">reslist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">res_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;PIXELSCL&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">new_plate_scale</span>
             <span class="n">radial_res</span><span class="o">=</span><span class="n">poppy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">radial_profile</span><span class="p">(</span><span class="n">res_fits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span><span class="n">stddev</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="c">#center[::-1])</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">radial_res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">radial_res</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                 <span class="n">label</span><span class="o">=</span><span class="s">r&#39;1$\sigma$ PCA subtracted&#39;</span><span class="p">,</span><span class="c">#, n=&#39;+str(coeff_range[-1]),</span>
+                 <span class="n">label</span><span class="o">=</span><span class="s">r&#39;1$\sigma$ PCA subtracted Dark Fringe&#39;</span><span class="p">,</span><span class="c">#, n=&#39;+str(coeff_range[-1]),</span>
                  <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="o">-.</span><span class="mi">8</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">coeff_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
         <span class="c">#ax.yaxis._set_scale(&#39;log10&#39;)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s">&#39;log&#39;</span><span class="p">,</span> <span class="n">nonposy</span><span class="o">=</span><span class="s">&#39;clip&#39;</span><span class="p">)</span>
@@ -406,11 +428,11 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">35</span><span class="p">])</span>
         <span class="c">#ax.legend()</span>
         <span class="k">if</span> <span class="n">angular_units</span> <span class="o">==</span> <span class="s">&#39;arcsecs&#39;</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*.</span><span class="mi">49</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="s">&#39;--&#39;</span><span class="p">)</span> <span class="c">#plot IWA</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*.</span><span class="mi">49</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="s">&#39;--&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">)</span> <span class="c">#plot IWA</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&quot;arcsec&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">angular_units</span> <span class="o">==</span> <span class="s">&#39;lambda/D&#39;</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&quot;$\lambda/D$&quot;</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mf">1.7</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="s">&#39;--&#39;</span><span class="p">)</span> <span class="c">#plot IWA    </span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mf">1.7</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="s">&#39;--&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">)</span> <span class="c">#plot IWA    </span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&quot;Contrast&quot;</span><span class="p">)</span>
         <span class="n">fig1</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_dir</span><span class="o">+</span><span class="s">&quot;PCA_contrast.pdf&quot;</span><span class="p">)</span>
         <span class="n">fig1</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_dir</span><span class="o">+</span><span class="s">&quot;PCA_contrast.eps&quot;</span><span class="p">)</span>
@@ -437,7 +459,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
 
 
@@ -449,9 +471,9 @@
   <p class="pull-right"> &nbsp;
     <a href="#">Back to Top</a></p>
   <p>
-    &copy; Copyright 2015, douglase.<br/>
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
-    Last built 21 Sep 2015. <br/>
+    &copy; Copyright 2016, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1. &nbsp;
+    Last built 05 Sep 2016. <br/>
   </p>
 </footer>
   </body>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>jplgse_to_HDF5 &mdash; picreduce v0.0.dev36</title>
+    <title>jplgse_to_HDF5 &mdash; picreduce v0.0.dev79</title>
     
     <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.dev36',
+        VERSION:     '0.0.dev79',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,13 +25,13 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev36" href="../index.html" />
+    <link rel="top" title="picreduce v0.0.dev79" href="../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../_static/copybutton.js"></script>
 
 
   </head>
-  <body>
+  <body role="document">
 <div class="topbar">
   <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
   <ul>
@@ -55,7 +55,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../index.html">picreduce v0.0.dev36</a>
+	<a href="../index.html">picreduce v0.0.dev79</a>
 	 &raquo;
       </li>
       
@@ -67,13 +67,13 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="jplgse-to-hdf5">
 <h1>jplgse_to_HDF5<a class="headerlink" href="#jplgse-to-hdf5" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="picreduce.utils.jplgse_to_HDF5">
-<tt class="descclassname">picreduce.utils.</tt><tt class="descname">jplgse_to_HDF5</tt><big>(</big><em>f</em>, <em>base_dir</em>, <em>sub_dir</em><big>)</big><a class="headerlink" href="#picreduce.utils.jplgse_to_HDF5" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">picreduce.utils.</code><code class="descname">jplgse_to_HDF5</code><span class="sig-paren">(</span><em>f</em>, <em>base_dir</em>, <em>sub_dir</em>, <em>special_keys=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/picreduce/utils/PICTURE_IDL_to_HDF5.html#jplgse_to_HDF5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.jplgse_to_HDF5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for parsing a directory idl save files produced by jplgse.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -83,15 +83,12 @@
 base_dir  : the path to the data directory
 sub_dir :  the the subdirectory the files of interest are stored in</p>
 <blockquote>
-<div>within <tt class="xref py py-obj docutils literal"><span class="pre">base_dir,</span></tt> this will also be the name of the HDF data group added to <tt class="xref py py-obj docutils literal"><span class="pre">f</span></tt>.</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>f</strong> : the input HDF5 file or group.</td>
-</tr>
-</tbody>
-</table>
+<div>within <code class="xref py py-obj docutils literal"><span class="pre">base_dir,</span></code> this will also be the name of the HDF data group added to <code class="xref py py-obj docutils literal"><span class="pre">f</span></code>.</div></blockquote>
+<dl class="docutils">
+<dt>special_keys: list of extra keywords</dt>
+<dd>: files with they keys in name be searched for and added to the jplgse data.</dd>
+</dl>
+<p>f : the input HDF5 file or group.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">#MULTIPLE SUBDIRECTORIES in a single file:</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_directory</span><span class="o">=</span><span class="s">&quot;~/projects/PICTURE/data/todays_run&quot;</span>
@@ -124,7 +121,7 @@ sub_dir :  the the subdirectory the files of interest are stored in</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
 <ul>
 <li><a class="reference internal" href="#">jplgse_to_HDF5</a></li>
@@ -141,9 +138,9 @@ sub_dir :  the the subdirectory the files of interest are stored in</p>
        rel="nofollow">Page Source</a> &nbsp;
     <a href="#">Back to Top</a></p>
   <p>
-    &copy; Copyright 2015, douglase.<br/>
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
-    Last built 21 Sep 2015. <br/>
+    &copy; Copyright 2016, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1. &nbsp;
+    Last built 05 Sep 2016. <br/>
   </p>
 </footer>
   </body>

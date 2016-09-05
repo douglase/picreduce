@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>picreduce.utils.picbslices &mdash; picreduce v0.0.dev36</title>
+    <title>picreduce.utils.picbslices &mdash; picreduce v0.0.dev79</title>
     
     <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.0.dev36',
+        VERSION:     '0.0.dev79',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,14 +25,14 @@
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev36" href="../../../index.html" />
+    <link rel="top" title="picreduce v0.0.dev79" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../../../_static/copybutton.js"></script>
 
 
   </head>
-  <body>
+  <body role="document">
 <div class="topbar">
   <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
   <ul>
@@ -56,7 +56,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../../../index.html">picreduce v0.0.dev36</a>
+	<a href="../../../index.html">picreduce v0.0.dev79</a>
 	 &raquo;
       </li>
       <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
@@ -69,11 +69,17 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <h1>Source code for picreduce.utils.picbslices</h1><div class="highlight"><pre>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;picb&#39;</span><span class="p">)</span>
 
@@ -90,8 +96,8 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">nulled</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci_header&#39;</span><span class="p">][</span><span class="s">&#39;STATE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">==</span><span class="n">null_state</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    
-    <span class="n">good_sci_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci&#39;</span><span class="p">][:,:</span><span class="mi">138</span><span class="p">,</span><span class="n">nulled</span><span class="p">[</span><span class="n">n_skip</span><span class="p">]:</span><span class="n">nulled</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">nulled</span><span class="o">=</span><span class="n">nulled</span><span class="p">[</span><span class="n">n_skip</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">good_sci_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci&#39;</span><span class="p">][:,:</span><span class="mi">138</span><span class="p">,</span><span class="n">nulled</span><span class="p">]</span>
     <span class="n">original_shape</span><span class="o">=</span><span class="n">good_sci_data</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="n">delete_saturated</span><span class="p">:</span>
         <span class="n">saturated_frames</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">good_sci_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">sat_val</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -115,12 +121,106 @@
             
     <span class="c">#median = recenter(median,(68, 68),boxsize=10)</span>
     <span class="k">return</span> <span class="n">good_sci_data</span><span class="p">,</span><span class="n">median</span><span class="p">,</span><span class="n">std</span>
+
+
+
+
+</div>
+<div class="viewcode-block" id="create_randomized_folders"><a class="viewcode-back" href="../../../api/picreduce.utils.create_randomized_folders.html#picreduce.utils.create_randomized_folders">[docs]</a><span class="k">def</span> <span class="nf">create_randomized_folders</span><span class="p">(</span><span class="n">source_dir</span><span class="p">,</span><span class="n">num_frames</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">ext</span><span class="o">=</span><span class="s">&#39;fits&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Takes a directory of files and randomly splits symbolic links to them between two new folders. </span>
+
+<span class="sd">    keywords:</span>
+<span class="sd">    &#39;num_frames&#39; default None, the number of files in each directory.</span>
+<span class="sd">    &#39;ext&#39; defaults to _fits_ for Flexible Image Transport System</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    &gt;&gt;&gt; picreduce.picbslices.create_randomized_folders(&#39;path_to_fits&#39;)</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    ValueError</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">files</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">source_dir</span><span class="o">+</span><span class="s">&quot;/*.&quot;</span><span class="o">+</span><span class="n">ext</span><span class="p">)</span>
+    <span class="c">#shuffle list of files</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    
+    <span class="c">#make subdirectories</span>
+    <span class="n">Adir</span><span class="o">=</span><span class="n">source_dir</span><span class="o">+</span><span class="s">&quot;randomA&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">num_frames</span><span class="p">)</span>
+    <span class="n">Bdir</span><span class="o">=</span><span class="n">source_dir</span><span class="o">+</span><span class="s">&quot;randomB&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">num_frames</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">Adir</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;problem creating directory, trying to remove and recreate&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">Adir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">Adir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span> 
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">Bdir</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;problem creating directory, trying to remove and recreate&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">Bdir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">Bdir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;failed to create directory&quot;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span> 
+
+    <span class="c">#split deck</span>
+    <span class="k">if</span> <span class="n">num_frames</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">num_frames</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">list1</span><span class="o">=</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">num_frames</span><span class="p">]</span>
+    <span class="n">list2</span><span class="o">=</span><span class="n">files</span><span class="p">[</span><span class="n">num_frames</span><span class="o">+</span><span class="mi">1</span><span class="p">:(</span><span class="n">num_frames</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">num_frames</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="n">list1</span><span class="p">:</span>
+        <span class="n">fname</span><span class="o">=</span><span class="n">fpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s">&quot;ln -s &quot;</span><span class="o">+</span><span class="n">fpath</span><span class="o">+</span><span class="s">&quot; /&quot;</span><span class="o">+</span><span class="n">Adir</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">fname</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>     
+
+    <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="n">list2</span><span class="p">:</span>
+        <span class="n">fname</span><span class="o">=</span><span class="n">fpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s">&quot;ln -s &quot;</span><span class="o">+</span><span class="n">fpath</span><span class="o">+</span><span class="s">&quot; /&quot;</span><span class="o">+</span><span class="n">Bdir</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">fname</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+
+            
+    
+</div>
+<div class="viewcode-block" id="get_nulled_frame_headers"><a class="viewcode-back" href="../../../api/picreduce.utils.get_nulled_frame_headers.html#picreduce.utils.get_nulled_frame_headers">[docs]</a><span class="k">def</span> <span class="nf">get_nulled_frame_headers</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">dset</span><span class="p">,</span><span class="n">null_state</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span><span class="n">n_skip</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    example:</span>
+<span class="sd">    #note! the first 3 values are skipped because they usually aren&#39;t really nulling</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">nulled</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci_header&#39;</span><span class="p">][</span><span class="s">&#39;STATE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">==</span><span class="n">null_state</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nulled</span><span class="o">=</span><span class="n">nulled</span><span class="p">[</span><span class="n">n_skip</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">headers</span><span class="o">=</span><span class="n">f</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="s">u&#39;sci_header&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">][</span><span class="n">nulled</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">headers</span>
 </pre></div></div>
 
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
 
 
@@ -132,9 +232,9 @@
   <p class="pull-right"> &nbsp;
     <a href="#">Back to Top</a></p>
   <p>
-    &copy; Copyright 2015, douglase.<br/>
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
-    Last built 21 Sep 2015. <br/>
+    &copy; Copyright 2016, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1. &nbsp;
+    Last built 05 Sep 2016. <br/>
   </p>
 </footer>
   </body>

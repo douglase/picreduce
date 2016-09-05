@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>observation_sets &mdash; picreduce v0.0.dev36</title>
+    <title>observation_sets &mdash; picreduce v0.0.dev79</title>
     
     <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.dev36',
+        VERSION:     '0.0.dev79',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,13 +25,13 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev36" href="../index.html" />
+    <link rel="top" title="picreduce v0.0.dev79" href="../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../_static/copybutton.js"></script>
 
 
   </head>
-  <body>
+  <body role="document">
 <div class="topbar">
   <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
   <ul>
@@ -55,7 +55,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../index.html">picreduce v0.0.dev36</a>
+	<a href="../index.html">picreduce v0.0.dev79</a>
 	 &raquo;
       </li>
       
@@ -67,13 +67,13 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="observation-sets">
 <h1>observation_sets<a class="headerlink" href="#observation-sets" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="picreduce.PCA.observation_sets">
-<em class="property">class </em><tt class="descclassname">picreduce.PCA.</tt><tt class="descname">observation_sets</tt><big>(</big><em>image_dir</em>, <em>basis_dir</em>, <em>ran_sub=None</em>, <em>stackave=1</em>, <em>cent_size=0.0</em>, <em>prep_data=True</em>, <em>recent=False</em>, <em>resize=True</em>, <em>smooth_kernel=None</em><big>)</big><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">picreduce.PCA.</code><code class="descname">observation_sets</code><span class="sig-paren">(</span><em>image_dir</em>, <em>basis_dir</em>, <em>ran_sub=None</em>, <em>ran_sub_basis=None</em>, <em>stackave=1</em>, <em>cent_size=0.0</em>, <em>prep_data=True</em>, <em>recent=False</em>, <em>resize=True</em>, <em>smooth_kernel=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets" title="Permalink to this definition">¶</a></dt>
 <dd><p>a class of observations to process with PynPoint Exoplanet module.</p>
 <dl class="docutils">
 <dt>..warning: PynPoint Requires the paralytic angle be stored in the FITS header, if you don&#8217;t have ADI images,</dt>
@@ -130,18 +130,12 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#picreduce.PCA.observation_sets.conv_frames" title="picreduce.PCA.observation_sets.conv_frames"><tt class="xref py py-obj docutils literal"><span class="pre">conv_frames</span></tt></a>(kernel,&nbsp;**kwargs)</td>
-<td>This function smooths each image frame by the input kernel via FFT convolution,  it can dramatically improve median subtraction but doesn&#8217;t seem to be helping PCA,   it may also be that it&#8217;s not being applied at the correct point in the PCA workflow,   because of the normalization that occurs in Pynpoint,  test would be how it works to have this smoothing applied on the raw fits files first.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#picreduce.PCA.observation_sets.pynpoint_contrast" title="picreduce.PCA.observation_sets.pynpoint_contrast"><tt class="xref py py-obj docutils literal"><span class="pre">pynpoint_contrast</span></tt></a>([plate_scale,&nbsp;n_pix,&nbsp;...])</td>
-<td>A catch all function that finds the residual and generates a variety of diagnostic plots.</td>
-</tr>
 </tbody>
 </table>
 <p class="rubric">Methods Documentation</p>
 <dl class="method">
 <dt id="picreduce.PCA.observation_sets.conv_frames">
-<tt class="descname">conv_frames</tt><big>(</big><em>kernel</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets.conv_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets.conv_frames" title="Permalink to this definition">¶</a></dt>
+<code class="descname">conv_frames</code><span class="sig-paren">(</span><em>kernel</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets.conv_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets.conv_frames" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>This function smooths each image frame by the input kernel via FFT convolution,</dt>
 <dd><dl class="first docutils">
@@ -166,7 +160,7 @@ because of the normalization that occurs in Pynpoint,</dd>
 
 <dl class="method">
 <dt id="picreduce.PCA.observation_sets.pynpoint_contrast">
-<tt class="descname">pynpoint_contrast</tt><big>(</big><em>plate_scale=0.158</em>, <em>n_pix=128</em>, <em>max_coeff=100</em>, <em>plot_all_pca=False</em>, <em>smooth_option=None</em>, <em>high_color='orange'</em>, <em>low_color='black'</em>, <em>angular_units='arcsec'</em><big>)</big><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets.pynpoint_contrast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets.pynpoint_contrast" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pynpoint_contrast</code><span class="sig-paren">(</span><em>plate_scale=0.158</em>, <em>n_pix=128</em>, <em>max_coeff=100</em>, <em>plot_all_pca=False</em>, <em>smooth_option=None</em>, <em>high_color='orange'</em>, <em>low_color='black'</em>, <em>angular_units='arcsec'</em>, <em>bins=array([ -5.00000000e-05</em>, <em>-4.90000000e-05</em>, <em>-4.80000000e-05</em>, <em>-4.70000000e-05</em>, <em>-4.60000000e-05</em>, <em>-4.50000000e-05</em>, <em>-4.40000000e-05</em>, <em>-4.30000000e-05</em>, <em>-4.20000000e-05</em>, <em>-4.10000000e-05</em>, <em>-4.00000000e-05</em>, <em>-3.90000000e-05</em>, <em>-3.80000000e-05</em>, <em>-3.70000000e-05</em>, <em>-3.60000000e-05</em>, <em>-3.50000000e-05</em>, <em>-3.40000000e-05</em>, <em>-3.30000000e-05</em>, <em>-3.20000000e-05</em>, <em>-3.10000000e-05</em>, <em>-3.00000000e-05</em>, <em>-2.90000000e-05</em>, <em>-2.80000000e-05</em>, <em>-2.70000000e-05</em>, <em>-2.60000000e-05</em>, <em>-2.50000000e-05</em>, <em>-2.40000000e-05</em>, <em>-2.30000000e-05</em>, <em>-2.20000000e-05</em>, <em>-2.10000000e-05</em>, <em>-2.00000000e-05</em>, <em>-1.90000000e-05</em>, <em>-1.80000000e-05</em>, <em>-1.70000000e-05</em>, <em>-1.60000000e-05</em>, <em>-1.50000000e-05</em>, <em>-1.40000000e-05</em>, <em>-1.30000000e-05</em>, <em>-1.20000000e-05</em>, <em>-1.10000000e-05</em>, <em>-1.00000000e-05</em>, <em>-9.00000000e-06</em>, <em>-8.00000000e-06</em>, <em>-7.00000000e-06</em>, <em>-6.00000000e-06</em>, <em>-5.00000000e-06</em>, <em>-4.00000000e-06</em>, <em>-3.00000000e-06</em>, <em>-2.00000000e-06</em>, <em>-1.00000000e-06</em>, <em>-1.42301535e-19</em>, <em>1.00000000e-06</em>, <em>2.00000000e-06</em>, <em>3.00000000e-06</em>, <em>4.00000000e-06</em>, <em>5.00000000e-06</em>, <em>6.00000000e-06</em>, <em>7.00000000e-06</em>, <em>8.00000000e-06</em>, <em>9.00000000e-06</em>, <em>1.00000000e-05</em>, <em>1.10000000e-05</em>, <em>1.20000000e-05</em>, <em>1.30000000e-05</em>, <em>1.40000000e-05</em>, <em>1.50000000e-05</em>, <em>1.60000000e-05</em>, <em>1.70000000e-05</em>, <em>1.80000000e-05</em>, <em>1.90000000e-05</em>, <em>2.00000000e-05</em>, <em>2.10000000e-05</em>, <em>2.20000000e-05</em>, <em>2.30000000e-05</em>, <em>2.40000000e-05</em>, <em>2.50000000e-05</em>, <em>2.60000000e-05</em>, <em>2.70000000e-05</em>, <em>2.80000000e-05</em>, <em>2.90000000e-05</em>, <em>3.00000000e-05</em>, <em>3.10000000e-05</em>, <em>3.20000000e-05</em>, <em>3.30000000e-05</em>, <em>3.40000000e-05</em>, <em>3.50000000e-05</em>, <em>3.60000000e-05</em>, <em>3.70000000e-05</em>, <em>3.80000000e-05</em>, <em>3.90000000e-05</em>, <em>4.00000000e-05</em>, <em>4.10000000e-05</em>, <em>4.20000000e-05</em>, <em>4.30000000e-05</em>, <em>4.40000000e-05</em>, <em>4.50000000e-05</em>, <em>4.60000000e-05</em>, <em>4.70000000e-05</em>, <em>4.80000000e-05</em>, <em>4.90000000e-05</em>, <em>5.00000000e-05])</em>, <em>norm=&lt;matplotlib.colors.SymLogNorm object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/picreduce/PCA/pynpoint_obj.html#observation_sets.pynpoint_contrast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.PCA.observation_sets.pynpoint_contrast" title="Permalink to this definition">¶</a></dt>
 <dd><p>A catch all function that finds the residual and generates a variety of diagnostic plots.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -221,7 +215,7 @@ because of the normalization that occurs in Pynpoint,</dd>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
 <ul>
 <li><a class="reference internal" href="#">observation_sets</a></li>
@@ -238,9 +232,9 @@ because of the normalization that occurs in Pynpoint,</dd>
        rel="nofollow">Page Source</a> &nbsp;
     <a href="#">Back to Top</a></p>
   <p>
-    &copy; Copyright 2015, douglase.<br/>
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
-    Last built 21 Sep 2015. <br/>
+    &copy; Copyright 2016, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1. &nbsp;
+    Last built 05 Sep 2016. <br/>
   </p>
 </footer>
   </body>

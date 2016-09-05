@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>load_or_create &mdash; picreduce v0.0.dev36</title>
+    <title>load_or_create &mdash; picreduce v0.0.dev79</title>
     
     <link rel="stylesheet" href="../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.dev36',
+        VERSION:     '0.0.dev79',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,13 +25,13 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev36" href="../index.html" />
+    <link rel="top" title="picreduce v0.0.dev79" href="../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../_static/copybutton.js"></script>
 
 
   </head>
-  <body>
+  <body role="document">
 <div class="topbar">
   <a class="brand" title="Documentation Home" href="../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
   <ul>
@@ -55,7 +55,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../index.html">picreduce v0.0.dev36</a>
+	<a href="../index.html">picreduce v0.0.dev79</a>
 	 &raquo;
       </li>
       
@@ -67,16 +67,16 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="load-or-create">
 <h1>load_or_create<a class="headerlink" href="#load-or-create" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="picreduce.utils.load_or_create">
-<tt class="descclassname">picreduce.utils.</tt><tt class="descname">load_or_create</tt><big>(</big><em>data_directory</em>, <em>dset_list=[]</em>, <em>fname='/data.hdf5'</em>, <em>readwrite='r'</em><big>)</big><a class="reference internal" href="../_modules/picreduce/utils/PICTURE_IDL_to_HDF5.html#load_or_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.load_or_create" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">picreduce.utils.</code><code class="descname">load_or_create</code><span class="sig-paren">(</span><em>data_directory</em>, <em>dset_list=[]</em>, <em>fname='/data.hdf5'</em>, <em>special_keys=[]</em>, <em>readwrite='r'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/picreduce/utils/PICTURE_IDL_to_HDF5.html#load_or_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#picreduce.utils.load_or_create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for loading a HDF5 dataset generated from PICTURE IDL save files.
-Checks if <tt class="xref py py-obj docutils literal"><span class="pre">fname</span> <span class="pre">exists</span></tt>, and if not, creates a file, <tt class="xref py py-obj docutils literal"><span class="pre">fname</span></tt>,
-in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory</span></tt> with datasets from <tt class="xref py py-obj docutils literal"><span class="pre">dset_list</span></tt>
+Checks if <code class="xref py py-obj docutils literal"><span class="pre">fname</span> <span class="pre">exists</span></code>, and if not, creates a file, <code class="xref py py-obj docutils literal"><span class="pre">fname</span></code>,
+in <code class="xref py py-obj docutils literal"><span class="pre">data_directory</span></code> with datasets from <code class="xref py py-obj docutils literal"><span class="pre">dset_list</span></code>
 (corresponding to subdirectories inside data_directory)</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -95,7 +95,7 @@ in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory<
 <blockquote>
 <div><dl class="docutils">
 <dt>filename of the output HDF5 file</dt>
-<dd><p class="first last">defaults to creating <tt class="xref py py-obj docutils literal"><span class="pre">data.hdf5</span></tt>  in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory</span></tt> when ommited.</p>
+<dd><p class="first last">defaults to creating <code class="xref py py-obj docutils literal"><span class="pre">data.hdf5</span></code>  in <code class="xref py py-obj docutils literal"><span class="pre">data_directory</span></code> when ommited.</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -116,7 +116,7 @@ in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory<
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="picreduce.utils.jplgse_to_HDF5.html#picreduce.utils.jplgse_to_HDF5" title="picreduce.utils.jplgse_to_HDF5"><tt class="xref py py-obj docutils literal"><span class="pre">jplgse_to_HDF5</span></tt></a></dt>
+<dt><a class="reference internal" href="picreduce.utils.jplgse_to_HDF5.html#picreduce.utils.jplgse_to_HDF5" title="picreduce.utils.jplgse_to_HDF5"><code class="xref py py-obj docutils literal"><span class="pre">jplgse_to_HDF5</span></code></a></dt>
 <dd>the heavy lifting parsing function.</dd>
 </dl>
 </div>
@@ -136,7 +136,7 @@ in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory<
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
 <ul>
 <li><a class="reference internal" href="#">load_or_create</a></li>
@@ -153,9 +153,9 @@ in <tt class="xref py py-obj docutils literal"><span class="pre">data_directory<
        rel="nofollow">Page Source</a> &nbsp;
     <a href="#">Back to Top</a></p>
   <p>
-    &copy; Copyright 2015, douglase.<br/>
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
-    Last built 21 Sep 2015. <br/>
+    &copy; Copyright 2016, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1. &nbsp;
+    Last built 05 Sep 2016. <br/>
   </p>
 </footer>
   </body>

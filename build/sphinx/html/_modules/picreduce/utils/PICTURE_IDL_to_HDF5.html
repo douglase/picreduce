@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>picreduce.utils.PICTURE_IDL_to_HDF5 &mdash; picreduce v0.0.dev36</title>
+    <title>picreduce.utils.PICTURE_IDL_to_HDF5 &mdash; picreduce v0.0.dev79</title>
     
     <link rel="stylesheet" href="../../../_static/bootstrap-astropy.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.0.dev36',
+        VERSION:     '0.0.dev79',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,14 +25,14 @@
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/sidebar.js"></script>
     <link rel="shortcut icon" href="../../../_static/astropy_logo.ico"/>
-    <link rel="top" title="picreduce v0.0.dev36" href="../../../index.html" />
+    <link rel="top" title="picreduce v0.0.dev79" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" />
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'/>
 <script type="text/javascript" src="../../../_static/copybutton.js"></script>
 
 
   </head>
-  <body>
+  <body role="document">
 <div class="topbar">
   <a class="brand" title="Documentation Home" href="../../../index.html"><span id="logotext1">astro</span><span id="logotext2">py</span><span id="logotext3">:docs</span></a>
   <ul>
@@ -56,7 +56,7 @@
     <h3>Navigation</h3>
     <ul>
       <li>
-	<a href="../../../index.html">picreduce v0.0.dev36</a>
+	<a href="../../../index.html">picreduce v0.0.dev79</a>
 	 &raquo;
       </li>
       <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li>
@@ -69,9 +69,13 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <h1>Source code for picreduce.utils.PICTURE_IDL_to_HDF5</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Utilities for handling the conversion between IDL save files and HDF5</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -83,59 +87,118 @@
 <span class="k">def</span> <span class="nf">get_dsets</span><span class="p">(</span><span class="n">sequence_dir</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">sequence_dir</span><span class="o">+</span><span class="s">&quot;/*/&quot;</span><span class="p">)]</span>
 
-<div class="viewcode-block" id="load_or_create"><a class="viewcode-back" href="../../../api/picreduce.utils.load_or_create.html#picreduce.utils.load_or_create">[docs]</a><span class="k">def</span> <span class="nf">load_or_create</span><span class="p">(</span><span class="n">data_directory</span><span class="p">,</span><span class="n">dset_list</span><span class="o">=</span><span class="p">[],</span><span class="n">fname</span><span class="o">=</span><span class="s">&#39;/data.hdf5&#39;</span><span class="p">,</span><span class="n">readwrite</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">):</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&quot;hdf5 file:&quot;</span><span class="o">+</span><span class="n">data_directory</span><span class="o">+</span><span class="n">fname</span><span class="p">)</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    checks if fname exists, and if not, creates a file, fname,</span>
-<span class="sd">    in data_directory with datasets from dset_list</span>
-<span class="sd">     (corresponding to subdirectories inside data_directory)</span>
-<span class="sd">    if dset_list is not set, the new file will not be created.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="load_or_create"><a class="viewcode-back" href="../../../api/picreduce.utils.load_or_create.html#picreduce.utils.load_or_create">[docs]</a><span class="k">def</span> <span class="nf">load_or_create</span><span class="p">(</span><span class="n">data_directory</span><span class="p">,</span>
+                   <span class="n">dset_list</span><span class="o">=</span><span class="p">[],</span>
+                   <span class="n">fname</span><span class="o">=</span><span class="s">&#39;/data.hdf5&#39;</span><span class="p">,</span>
+                   <span class="n">special_keys</span><span class="o">=</span><span class="p">[],</span>
+                   <span class="n">readwrite</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Function for loading a HDF5 dataset generated from PICTURE IDL save files.</span>
+<span class="sd">    Checks if `fname exists`, and if not, creates a file, `fname`,</span>
+<span class="sd">    in `data_directory` with datasets from `dset_list`</span>
+<span class="sd">    (corresponding to subdirectories inside data_directory)</span>
+<span class="sd">    </span>
+<span class="sd">    .. warning:: if dset_list is not set, the new file will not be created.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_directory : string</span>
+<span class="sd">    </span>
+<span class="sd">    dset_list : list</span>
+<span class="sd">       list of datasets (e.g. jplgse.20071101.11111)</span>
+<span class="sd">    fname : string, optional</span>
+<span class="sd">        filename of the output HDF5 file</span>
+<span class="sd">         defaults to creating `data.hdf5`  in `data_directory` when ommited.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    f:</span>
+<span class="sd">        An h5py file object.</span>
+<span class="sd">    </span>
+<span class="sd">    Raises</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    ValueError</span>
+<span class="sd">    forgot to pass a list?</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    ----------</span>
+<span class="sd">    jplgse_to_HDF5 : the heavy lifting parsing function.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    5py documentation:</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; data_directory=expanduser(&#39;~&#39;)+&#39;/projects/picture/data/wcs_multi_color_nulling/&#39;</span>
+<span class="sd">    &gt;&gt;&gt; dset_list=[&#39;jplgse.20141202.63381&#39;,&#39;jplgse.20141202.63531&#39;,&#39;jplgse.20141202.63737&#39;,&#39;jplgse.20141202.63960&#39;,&#39;jplgse.20141202.64119&#39;,&#39;jplgse.20141202.64294&#39;,&#39;jplgse.20141202.64497&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; IDL_to_HDF5.load_or_create(data_directory,dset_list=dset_list)</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Checking for hdf5 file:&quot;</span><span class="o">+</span><span class="n">data_directory</span><span class="o">+</span><span class="n">fname</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_directory</span><span class="o">+</span><span class="n">fname</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data_directory</span><span class="o">+</span><span class="n">fname</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dset_list</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">dset_list</span><span class="p">:</span>
                     <span class="k">print</span><span class="p">(</span><span class="s">&quot;creating: &quot;</span><span class="o">+</span><span class="n">dset</span><span class="o">+</span><span class="s">&quot; in &quot;</span><span class="o">+</span><span class="n">fname</span><span class="o">+</span><span class="s">&quot; in &quot;</span><span class="o">+</span> <span class="n">data_directory</span><span class="p">)</span>
-                    <span class="n">run</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">data_directory</span><span class="p">,</span><span class="n">dset</span><span class="p">)</span>
+                    <span class="n">jplgse_to_HDF5</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">data_directory</span><span class="p">,</span><span class="n">dset</span><span class="p">,</span><span class="n">special_keys</span><span class="o">=</span><span class="n">special_keys</span><span class="p">)</span>
                 <span class="c">#f.close()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;invalid dset list: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">dset_list</span><span class="p">))</span>
+                <span class="n">dset_list</span><span class="o">=</span><span class="n">get_dsets</span><span class="p">(</span><span class="n">data_directory</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">dset_list</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;creating: &quot;</span><span class="o">+</span><span class="n">dset</span><span class="o">+</span><span class="s">&quot; in &quot;</span><span class="o">+</span><span class="n">fname</span><span class="o">+</span><span class="s">&quot; in &quot;</span><span class="o">+</span> <span class="n">data_directory</span><span class="p">)</span>
+                    <span class="n">jplgse_to_HDF5</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">data_directory</span><span class="p">,</span><span class="n">dset</span><span class="p">,</span><span class="n">special_keys</span><span class="o">=</span><span class="n">special_keys</span><span class="p">)</span>
+                <span class="c">#raise ValueError(&quot;invalid dset list: &quot;+str(dset_list))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Found hdf5 file:&quot;</span><span class="o">+</span><span class="n">data_directory</span><span class="o">+</span><span class="n">fname</span><span class="p">)</span>
+
     <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data_directory</span><span class="o">+</span><span class="n">fname</span><span class="p">,</span><span class="n">readwrite</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">f</span>
 </div>
-<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../api/picreduce.utils.run.html#picreduce.utils.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">base_dir</span><span class="p">,</span><span class="n">sub_dir</span><span class="p">):</span>
+<div class="viewcode-block" id="jplgse_to_HDF5"><a class="viewcode-back" href="../../../api/picreduce.utils.jplgse_to_HDF5.html#picreduce.utils.jplgse_to_HDF5">[docs]</a><span class="k">def</span> <span class="nf">jplgse_to_HDF5</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">base_dir</span><span class="p">,</span><span class="n">sub_dir</span><span class="p">,</span><span class="n">special_keys</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    douglase@bu.edu, 2 august 2014</span>
-<span class="sd">    inputs:</span>
-<span class="sd">    f -an hdf file or group</span>
-<span class="sd">    base_dir -the path to the data directory</span>
-<span class="sd">    sub_dir - the the subdirectory the files of interest are stored in within base_dir,</span>
-<span class="sd">    this will also be the name of the HDF data group added to f.</span>
-<span class="sd">    </span>
-<span class="sd">    returns f</span>
-<span class="sd">    </span>
-<span class="sd">    CAVEATS: </span>
-<span class="sd">    currently data.d is not added to the HDF5 file, additional parsing needs to be added.</span>
+<span class="sd">    Function for parsing a directory idl save files produced by jplgse.</span>
 
-<span class="sd">    Example, MULTIPLE SUBDIRECTORIES in a single file:</span>
+<span class="sd">    .. warning:: currently data.d is not added to the HDF5 file, additional parsing needs to be added.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    f : an HDF5 file or group</span>
+<span class="sd">    base_dir  : the path to the data directory</span>
+<span class="sd">    sub_dir :  the the subdirectory the files of interest are stored in</span>
+<span class="sd">     within `base_dir,` this will also be the name of the HDF data group added to `f`.</span>
+<span class="sd">    special_keys: list of extra keywords</span>
+<span class="sd">            : files with they keys in name be searched for and added to the jplgse data.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    f : the input HDF5 file or group.</span>
 <span class="sd">    </span>
-<span class="sd">data_directory=&quot;~/projects/PICTURE/data/todays_run&quot;</span>
-<span class="sd">datasets=[[&quot;gsedata.idl.20140703.59076&quot;,&quot;showat.20140703.59067&quot;,&quot; #test 1 bright, white light&quot;],</span>
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; #MULTIPLE SUBDIRECTORIES in a single file:</span>
+<span class="sd">    &gt;&gt;&gt; data_directory=&quot;~/projects/PICTURE/data/todays_run&quot;</span>
+<span class="sd">    &gt;&gt;&gt; datasets=[[&quot;gsedata.idl.20140703.59076&quot;,&quot;showat.20140703.59067&quot;,&quot; #test 1 bright, white light&quot;],</span>
 <span class="sd">    [&quot;gsedata.idl.20140703.59453&quot;,&quot;showat.20140703.59431&quot;,&quot;test 2: dim, white light&quot;]]</span>
 
-<span class="sd">f = h5py.File(data_directory+&#39;data.hdf5&#39;,&#39;w&#39;)</span>
-<span class="sd">for dset in datasets:</span>
-<span class="sd">    PICTURE_IDL_to_HDF5.run(f,data_directory,dset[0])</span>
-<span class="sd">    if len(dset)==3:</span>
-<span class="sd">        PICTURE_IDL_to_HDF5.run(f,data_directory,dset[1])</span>
-<span class="sd">    f.close()</span>
+<span class="sd">    &gt;&gt;&gt; f = h5py.File(data_directory+&#39;data.hdf5&#39;,&#39;w&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; for dset in datasets:</span>
+<span class="sd">            PICTURE_IDL_to_HDF5.jplgse_to_HDF5(f,data_directory,dset[0])</span>
+<span class="sd">            if len(dset)==3:</span>
+<span class="sd">                PICTURE_IDL_to_HDF5.jplgse_to_HDF5(f,data_directory,dset[1])</span>
+<span class="sd">    &gt;&gt;&gt; #process data</span>
+<span class="sd">    &gt;&gt;&gt;f.close()</span>
+
 <span class="sd">    </span>
-<span class="sd">    f = h5py.File(data_directory+&#39;data.hdf5&#39;,&#39;w&#39;)</span>
-<span class="sd">for dset in datasets:</span>
-<span class="sd">    PICTURE_IDL_to_HDF5.run(f,data_directory,dset[0])</span>
-<span class="sd">    if len(dset)==3:</span>
-<span class="sd">        PICTURE_IDL_to_HDF5.run(f,data_directory,dset[1])</span>
-<span class="sd">f.close()</span>
+<span class="sd">    &gt;&gt;&gt; f = h5py.File(data_directory+&#39;data.hdf5&#39;,&#39;w&#39;)</span>
+<span class="sd">    &gt;&gt;&gt;for dset in datasets:</span>
+<span class="sd">           PICTURE_IDL_to_HDF5.jplgse_to_HDF5(f,data_directory,dset[0])</span>
+<span class="sd">           if len(dset)==3:</span>
+<span class="sd">               PICTURE_IDL_to_HDF5.jplgse_to_HDF5(f,data_directory,dset[1])</span>
+<span class="sd">    &gt;&gt;&gt; f.close()</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">grp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sub_dir</span><span class="p">))</span>
@@ -168,36 +231,110 @@
         
         <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;sci&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sci_frame</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;sci_header&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sciheader</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">special_keys</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;special keys must be a list&quot;</span><span class="p">)</span>
     <span class="c">#now try to find wavefront sensor data</span>
-    <span class="n">wfs_types</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;phase.i.idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.v.idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.r.idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.m.idl&quot;</span><span class="p">,</span>
-                 <span class="s">&quot;phase.p.idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.u.idl&quot;</span><span class="p">,</span><span class="s">&quot;frame.a.idl&quot;</span><span class="p">,</span><span class="c">#&quot;data.d.idl&quot;,</span>
-                 <span class="s">&quot;frame.b.idl&quot;</span><span class="p">,</span><span class="s">&quot;frame.c.idl&quot;</span><span class="p">,</span><span class="s">&quot;frame.d.idl&quot;</span><span class="p">]</span>
+    <span class="n">wfs_types</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;phase.i.*idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.v.*idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.r.*idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.m.*idl&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;phase.p.*idl&quot;</span><span class="p">,</span><span class="s">&quot;phase.u.*idl&quot;</span><span class="p">,</span><span class="s">&quot;frame.a.*idl&quot;</span><span class="p">,</span><span class="s">&quot;data.d.*idl&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;frame.b.*idl&quot;</span><span class="p">,</span><span class="s">&quot;frame.c.*idl&quot;</span><span class="p">,</span><span class="s">&quot;frame.d.*idl&quot;</span><span class="p">]</span><span class="o">+</span><span class="n">special_keys</span>
     <span class="k">for</span> <span class="n">wfs_extension</span> <span class="ow">in</span> <span class="n">wfs_types</span><span class="p">:</span>
         <span class="n">wfs_files</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">directory</span><span class="o">+</span><span class="s">&quot;/*&quot;</span><span class="o">+</span><span class="n">wfs_extension</span><span class="p">)</span>
         <span class="n">wfs_files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">wfs_extension</span><span class="o">=</span><span class="n">wfs_extension</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="c">#remove * after glob to maintain legacy key names</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">wfs_extension</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">datad_grp</span><span class="o">=</span><span class="n">grp</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">wfs_extension</span><span class="o">+</span><span class="s">&quot;.data&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">wfs_1st</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="n">wfsheader</span><span class="o">=</span><span class="n">wfs_1st</span><span class="p">[</span><span class="s">&quot;header&quot;</span><span class="p">]</span>
+                <span class="n">wfs_header</span><span class="o">=</span><span class="n">wfs_1st</span><span class="p">[</span><span class="s">&quot;header&quot;</span><span class="p">]</span>
                 <span class="n">wfsdateframes</span><span class="o">=</span><span class="n">wfs_1st</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">]</span>
                 <span class="n">wfs_frame</span><span class="o">=</span><span class="n">wfs_1st</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">]</span>
+                <span class="n">wfs_filename</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+                <span class="k">if</span> <span class="n">wfs_extension</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">wfs_frame</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+                        <span class="n">datad_grp</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
                 <span class="k">print</span><span class="p">(</span><span class="s">&quot;error finding WFS files&quot;</span><span class="p">)</span>
                 <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">wfs_sav</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">wfs</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="n">wfs_sav</span><span class="p">)</span>
+                    <span class="n">wfs</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="n">wfs_sav</span><span class="p">)</span>
+                    <span class="n">wfs_frame</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">([</span><span class="n">wfs_frame</span><span class="p">,</span><span class="n">wfs</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]])</span>
+                    <span class="n">wfs_header</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">wfs_header</span><span class="p">,</span><span class="n">wfs</span><span class="p">[</span><span class="s">&#39;header&#39;</span><span class="p">]])</span>
+                    <span class="n">wfs_filename</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">wfs_filename</span><span class="p">,[</span><span class="nb">str</span><span class="p">(</span><span class="n">wfs_sav</span><span class="p">)]])</span>
+
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
                     <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
                     <span class="k">print</span><span class="p">(</span><span class="s">&#39;readsave error&#39;</span><span class="p">)</span>
                     <span class="k">continue</span>
-                <span class="n">wfsheader</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">wfsheader</span><span class="p">,</span><span class="n">wfs</span><span class="p">[</span><span class="s">&#39;header&#39;</span><span class="p">]])</span>
-                <span class="n">wfs_frame</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">([</span><span class="n">wfs_frame</span><span class="p">,</span><span class="n">wfs</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]])</span>
-            <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">wfs_extension</span><span class="o">+</span><span class="s">&quot;.data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">wfs_frame</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-            <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">wfs_extension</span><span class="o">+</span><span class="s">&quot;.header&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">wfsheader</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">wfs_extension</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="c">#because some of the data.d arrays are numpy objects they need to be an extra layer</span>
+                    <span class="c">#this currently only works for 1D data</span>
+                    <span class="n">wfs_data</span><span class="o">=</span><span class="n">wfs</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">wfs_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+                        <span class="c">#break object fields up</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">wfs_data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">object</span><span class="p">)):</span>
+                            <span class="k">for</span> <span class="n">inner_field</span> <span class="ow">in</span> <span class="n">wfs_data</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+                                <span class="n">field_name</span> <span class="o">=</span> <span class="n">field</span><span class="o">+</span><span class="s">&quot;-&quot;</span><span class="o">+</span><span class="n">inner_field</span>
+                                <span class="n">inner_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wfs_data</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">inner_field</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                             <span class="n">dtype</span> <span class="o">=</span> <span class="n">wfs_data</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">inner_field</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                                <span class="c">#print([field,field_name,inner_array])</span>
+                                <span class="c">#add data to appropriate dataset:</span>
+                                <span class="n">_update_data_d</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">,</span><span class="n">datad_grp</span><span class="p">,</span><span class="n">field</span><span class="p">,</span><span class="n">field_name</span><span class="p">,</span><span class="n">inner_array</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">field_name</span><span class="o">=</span><span class="n">field</span>
+                            <span class="c">#print([field,field_name])</span>
+                            <span class="n">new_array</span> <span class="o">=</span> <span class="n">wfs_data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+                            <span class="n">_update_data_d</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">,</span><span class="n">datad_grp</span><span class="p">,</span><span class="n">field</span><span class="p">,</span><span class="n">field_name</span><span class="p">,</span><span class="n">new_array</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">wfs_extension</span><span class="o">+</span><span class="s">&quot;_filepath&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">wfs_filename</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">wfs_extension</span><span class="o">+</span><span class="s">&quot;.header&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">wfs_header</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wfs_extension</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">wfs_extension</span><span class="o">+</span><span class="s">&quot;.data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">wfs_frame</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">bu_gse_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">directory</span><span class="o">+</span><span class="s">&quot;/bugse.*.idl&quot;</span><span class="p">)</span>
+    <span class="n">bu_gse_files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bu_gse_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bugse_first</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="n">bu_gse_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c">#if scipy.io.readsav puts the image inside an object that h5py can&#39;t save, then break it ou</span>
+            <span class="n">bugse_frame</span><span class="o">=</span><span class="n">bugse_first</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&quot;IMAGE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">bugse_header</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">mlab</span><span class="o">.</span><span class="n">rec_drop_fields</span><span class="p">(</span><span class="n">bugse_first</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">],[</span><span class="s">&quot;IMAGE&quot;</span><span class="p">])</span>     <span class="c">#http://stackoverflow.com/a/15577562/2142498</span>
+            <span class="n">bugse_filename</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bu_gse_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="n">bugse_temp_frame</span><span class="o">=</span><span class="n">bugse_first</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&quot;TEMPSENSORS&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">bugse_header</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">mlab</span><span class="o">.</span><span class="n">rec_drop_fields</span><span class="p">(</span><span class="n">bugse_header</span><span class="p">,[</span><span class="s">&quot;TEMPSENSORS&quot;</span><span class="p">])</span>     <span class="c">#http://stackoverflow.com/a/15577562/2142498                                                                   </span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Error finding files.&quot;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">sav</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bu_gse_files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="n">sav</span><span class="p">)</span>
+                <span class="c">#if scipy.io.readsav puts the image inside an object that h5py can&#39;t save, then break it out:                                                                                                    </span>
+                <span class="n">bugse_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">([</span><span class="n">bugse_frame</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&quot;IMAGE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="n">bugse_temp_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">([</span><span class="n">bugse_temp_frame</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&quot;TEMPSENSORS&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">mlab</span><span class="o">.</span><span class="n">rec_drop_fields</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">],[</span><span class="s">&quot;IMAGE&quot;</span><span class="p">])</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">mlab</span><span class="o">.</span><span class="n">rec_drop_fields</span><span class="p">(</span><span class="n">header</span><span class="p">,[</span><span class="s">&quot;TEMPSENSORS&quot;</span><span class="p">])</span>
+                <span class="n">bugse_header</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">bugse_header</span><span class="p">,</span><span class="n">header</span><span class="p">])</span>
+                <span class="n">bugse_header</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">bugse_header</span><span class="p">,</span><span class="n">header</span><span class="p">])</span>
+                <span class="n">bugse_filename</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">bugse_filename</span><span class="p">,[</span><span class="n">sav</span><span class="p">]])</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">err</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;BU GSE data parsing error in frame:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sav</span><span class="p">))</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;bugse&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">bugse_frame</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;bugse_temp&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">bugse_temp_frame</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;bugse_header&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">bugse_header</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;bugse_filepath&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">bugse_filename</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+
     <span class="c">#finally, try looking for angle tracker data:</span>
-    
     <span class="n">at_files</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">directory</span><span class="o">+</span><span class="s">&quot;/atfull.*.idl&quot;</span><span class="p">)</span>
+    <span class="n">at_files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">at_files</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="c">#at_header,at_frame=collect_data_and_headers(at_files)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -225,11 +362,30 @@
                 <span class="k">continue</span>
         <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;at&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">at_frame</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;at_header&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">at_header</span><span class="p">,</span><span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span><span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-
 </div>
+<span class="k">def</span> <span class="nf">_update_data_d</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">,</span><span class="n">datad_grp</span><span class="p">,</span><span class="n">field</span><span class="p">,</span><span class="n">field_name</span><span class="p">,</span><span class="n">new_array</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        function to write 1D data to a dset within a group, and create dataset if it does not yet exist.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dset</span> <span class="o">=</span> <span class="n">datad_grp</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="n">field_name</span><span class="p">]</span>
+            <span class="n">dset</span><span class="p">[</span><span class="n">index</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">new_array</span>
+            <span class="c">#if new_array.size &gt; 1:</span>
+            <span class="c">#print([field],[field_name],dset[index,:],new_array)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Adding missing key. (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;)&quot;</span><span class="p">)</span>
+            <span class="n">datad_grp</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span>
+                                            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wfs_files</span><span class="p">),</span><span class="n">new_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                            <span class="n">compression</span><span class="o">=</span><span class="s">&quot;gzip&quot;</span><span class="p">,</span>
+                                            <span class="n">fletcher32</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                            <span class="n">track_times</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                            <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">))</span>
+            <span class="n">datad_grp</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="n">field_name</span><span class="p">][</span><span class="n">index</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">new_array</span>
+
 <div class="viewcode-block" id="collect_data_and_headers"><a class="viewcode-back" href="../../../api/picreduce.utils.collect_data_and_headers.html#picreduce.utils.collect_data_and_headers">[docs]</a><span class="k">def</span> <span class="nf">collect_data_and_headers</span><span class="p">(</span><span class="n">globbed_list</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; this function should replace seperate sections for WFS and sci&#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39; this function should replace seperate sections for WFS and sci</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">first</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="n">globbed_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">header</span><span class="o">=</span><span class="n">first</span><span class="p">[</span><span class="s">&quot;header&quot;</span><span class="p">]</span>
@@ -254,19 +410,27 @@
 </div>
 <div class="viewcode-block" id="header_to_FITS_header"><a class="viewcode-back" href="../../../api/picreduce.utils.header_to_FITS_header.html#picreduce.utils.header_to_FITS_header">[docs]</a><span class="k">def</span> <span class="nf">header_to_FITS_header</span><span class="p">(</span><span class="n">inputHeader</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s">&#39;hdf5&#39;</span><span class="p">,</span><span class="n">hdu</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    takes input header and parse into a FITS header</span>
+<span class="sd">    Takes input header from one format and parses it into a FITS header.</span>
 
 <span class="sd">    keywords:</span>
 <span class="sd">    &#39;hdf5&#39; structured numpy array  from a custom PICTURE hdf5 file. </span>
 <span class="sd">    &#39;idlsave&#39; header from a custom IDLSAV file opened with scipy.io</span>
-
+<span class="sd">    </span>
 <span class="sd">    returns:</span>
+<span class="sd">    ----------</span>
 <span class="sd">    astropy.io.fits.PrimaryHDU</span>
 <span class="sd">    </span>
-<span class="sd">    example:</span>
-<span class="sd">    </span>
-<span class="sd">    hdu=  header_to_FITS_header(f[im_dset][&#39;sci_header&#39;][0],input=&#39;hdf5&#39;)</span>
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
 
+<span class="sd">    &gt;&gt;&gt; hdu =  header_to_FITS_header(f[im_dset][&#39;sci_header&#39;][0],input=&#39;hdf5&#39;)</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    ValueError</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">hdu</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">hdu</span><span class="o">=</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">()</span>
@@ -288,14 +452,18 @@
     <span class="k">return</span> <span class="n">hdu</span>
 </div>
 <div class="viewcode-block" id="attribute_to_FITS_header"><a class="viewcode-back" href="../../../api/picreduce.utils.attribute_to_FITS_header.html#picreduce.utils.attribute_to_FITS_header">[docs]</a><span class="k">def</span> <span class="nf">attribute_to_FITS_header</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span><span class="n">hdu</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;takes HDF5 dsets attributes and parses it&#39;s attributes into a FITS header</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Takes HDF5 dsets attributes and parses it&#39;s attributes into a FITS header</span>
 
 <span class="sd">    returns:</span>
+<span class="sd">    ----------</span>
+
 <span class="sd">    astropy.io.fits.PrimaryHDU</span>
 <span class="sd">    </span>
-<span class="sd">    example:</span>
-<span class="sd">    </span>
-<span class="sd">    hdu=  header_to_FITS_header(f[im_dset][&#39;sci_header&#39;][0],input=&#39;hdf5&#39;)</span>
+<span class="sd">    Examples:</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    &gt;&gt;&gt; hdu =  header_to_FITS_header(f[im_dset][&#39;sci_header&#39;][0], input=&#39;hdf5&#39;)</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">hdu</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
@@ -323,15 +491,85 @@
 
 </div>
 <div class="viewcode-block" id="get_dsets"><a class="viewcode-back" href="../../../api/picreduce.utils.get_dsets.html#picreduce.utils.get_dsets">[docs]</a><span class="k">def</span> <span class="nf">get_dsets</span><span class="p">(</span><span class="n">sequence_dir</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Find all the the subdirectories in `sequence_dir` and return as a sorted list</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">dsets</span><span class="o">=</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">sequence_dir</span><span class="o">+</span><span class="s">&quot;/*/&quot;</span><span class="p">)]</span>
     <span class="n">dsets</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">dsets</span></div>
+    <span class="k">return</span> <span class="n">dsets</span>
+
+</div>
+<div class="viewcode-block" id="split_dset"><a class="viewcode-back" href="../../../api/picreduce.utils.split_dset.html#picreduce.utils.split_dset">[docs]</a><span class="k">def</span> <span class="nf">split_dset</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">timestamp_end_target_1</span><span class="p">,</span> <span class="n">timestamp_begin_target_2</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    split an observation data group and retain all ancillary info.</span>
+<span class="sd">    </span>
+<span class="sd">    creates two new groups within the original datafile.</span>
+
+<span class="sd">    It would be nice to be able to do this with pointers. right now they are duplicates.</span>
+
+<span class="sd">    ..warning: implementation assumes data arrays are 2D.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">split_time</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c"># 0. require empty groups for each target in the dataset</span>
+    <span class="n">grp1</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="n">obs</span> <span class="o">+</span> <span class="s">&quot;_target1&quot;</span><span class="p">)</span>
+    <span class="n">grp2</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="n">obs</span> <span class="o">+</span> <span class="s">&quot;_target2&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">timestamp_begin_target_2</span> <span class="o">&lt;</span> <span class="n">timestamp_end_target_1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;the second target should be after the first.&quot;</span><span class="p">)</span>
+        
+    <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="c">#print(dset)</span>
+        
+        <span class="c"># 2. find that timestamp in headers for the science and wfs data</span>
+        <span class="c"># 3. copy the portions of each dataset into the new groups by slicing the</span>
+        <span class="c"># datasets using indices that correspond to the header time stamps which define the split</span>
+
+
+        <span class="k">if</span> <span class="n">dset</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;.header&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">data_str</span> <span class="o">=</span> <span class="n">dset</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;.header&quot;</span><span class="p">,</span><span class="s">&quot;.data&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dset</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;sci_header&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">data_str</span> <span class="o">=</span> <span class="s">&quot;sci&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">data_str</span><span class="p">)</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">][</span><span class="n">dset</span><span class="p">][</span><span class="o">...</span><span class="p">][</span><span class="s">&quot;TIMESTAMP&quot;</span><span class="p">]</span>  <span class="o">&lt;</span> <span class="n">timestamp_end_target_1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">][</span><span class="n">dset</span><span class="p">][</span><span class="o">...</span><span class="p">][</span><span class="s">&quot;TIMESTAMP&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">timestamp_begin_target_2</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">([</span><span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">][</span><span class="n">dset</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">end_index</span><span class="p">])</span>
+
+
+        <span class="n">grp1data</span><span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">][</span><span class="n">data_str</span><span class="p">][:,:,</span><span class="n">start_index</span><span class="p">]</span>
+        <span class="n">grp2data</span><span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">][</span><span class="n">data_str</span><span class="p">][:,:,</span><span class="n">end_index</span><span class="p">]</span>
+        <span class="n">grp2header</span><span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">][</span><span class="n">dset</span><span class="p">][</span><span class="n">end_index</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">grp1header</span><span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">obs</span><span class="p">][</span><span class="n">dset</span><span class="p">][</span><span class="n">start_index</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">grp1</span><span class="o">.</span><span class="n">require_dataset</span><span class="p">(</span><span class="n">data_str</span><span class="p">,</span> <span class="n">grp1data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">grp1data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">fletcher32</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">track_times</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">grp2</span><span class="o">.</span><span class="n">require_dataset</span><span class="p">(</span><span class="n">data_str</span><span class="p">,</span> <span class="n">grp2data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">grp2data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">fletcher32</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">track_times</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+            
+            <span class="n">grp1</span><span class="o">.</span><span class="n">require_dataset</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">grp1header</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">grp1header</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">fletcher32</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">track_times</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">grp2</span><span class="o">.</span><span class="n">require_dataset</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">grp2header</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">grp2header</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">fletcher32</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">track_times</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+
+            <span class="n">grp1</span><span class="p">[</span><span class="n">data_str</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp1data</span>
+            <span class="n">grp2</span><span class="p">[</span><span class="n">data_str</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp2data</span>
+            <span class="n">grp1</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp1header</span>
+            <span class="n">grp2</span><span class="p">[</span><span class="n">dset</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp2header</span>
+
+
+            
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><h3>Page Contents</h3>
 
 
@@ -343,9 +581,9 @@
   <p class="pull-right"> &nbsp;
     <a href="#">Back to Top</a></p>
   <p>
-    &copy; Copyright 2015, douglase.<br/>
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3. &nbsp;
-    Last built 21 Sep 2015. <br/>
+    &copy; Copyright 2016, douglase.<br/>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1. &nbsp;
+    Last built 05 Sep 2016. <br/>
   </p>
 </footer>
   </body>

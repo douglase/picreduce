@@ -137,3 +137,58 @@ def crop_rot_wfs(data_frame):
 
 def crop_rot_raw(data_frame):
     return scipy.ndimage.rotate(data_frame,180-45)[7:-7,7:-7]
+
+
+    
+def crop_rotate_zern(array):
+    return scipy.ndimage.rotate(array, (90-45),order=0,cval=np.nan)[16:-15,16:-15]
+
+def zernikes( npix,  coeffs=np.zeros(30),shear=-0.15,
+             pixelscale=0.006666666666666667):
+
+    optic=zernike_optic(npix = npix,
+                                  zern_coeffs =coeffs,
+                                  nterms=coeffs.size,
+                                 )
+    sheared_composite =  crop_rotate_zern(wfe_funcs.WFE_shear((optic.total_opd),
+                                            shear,pixelscale))
+                                             
+    return sheared_composite
+
+def sheared_zerns(coeffs,data,variance):
+    """assumes square arrays
+    """
+    if np.float(np.sqrt(data.size)) % 1 != 0.0:
+        raise ValueError("input array must be square.")
+    sheared_composite = zernikes(data.shape[0]+6,coeffs)[4:-5,5:-4]
+    #plt.figure()
+    coeffs[0:2] =0
+    #print(coeffs)
+    #plt.imshow(sheared_composite- data)
+    #optic=wfe_funcs.zernike_optic(npix =data.shape[0],
+    #                              zern_coeffs =coeffs,nterms=coeffs.size)
+    #sheared_composite = wfe_funcs.WFE_shear((optic.total_opd),
+    #                                        shear,pixelscale)
+    residual = np.ma.masked_invalid((sheared_composite - data))**2/np.ma.masked_invalid(variance)
+    
+    #/np.ma.masked_invalid(variance).compressed()
+    print(np.nanstd(residual))
+    return residual.compressed()
+def zern_fit_chi2(coeffs,data,variance):
+    
+    '''
+    generate a zernike basis from coeffs, subtract from data
+    and measure the residual magnitude with metric.
+    
+     return the value of the function metric, 
+     which defaults to standard deviation.
+     alternatives could include rms() or np.mean() or median or...
+     
+    '''
+    #re-import depencencies in the engine
+    import wfe_funcs
+    import numpy as np
+
+    val=np.sum( sheared_zerns(coeffs,data,variance))
+
+    return val

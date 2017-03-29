@@ -150,7 +150,7 @@ def zernikes( npix,  coeffs=np.zeros(30),shear=-0.15,
                                   zern_coeffs =coeffs,
                                   nterms=coeffs.size,
                                  )
-    sheared_composite =  crop_rotate_zern(wfe_funcs.WFE_shear((optic.total_opd),
+    sheared_composite =  crop_rotate_zern(WFE_shear((optic.total_opd),
                                             shear,pixelscale))
                                              
     return sheared_composite
@@ -162,7 +162,7 @@ def sheared_zerns(coeffs,data,variance):
         raise ValueError("input array must be square.")
     sheared_composite = zernikes(data.shape[0]+6,coeffs)[4:-5,5:-4]
     #plt.figure()
-    coeffs[0:2] =0
+    #coeffs[0:2] =0
     #print(coeffs)
     #plt.imshow(sheared_composite- data)
     #optic=wfe_funcs.zernike_optic(npix =data.shape[0],
@@ -172,7 +172,7 @@ def sheared_zerns(coeffs,data,variance):
     residual = np.ma.masked_invalid((sheared_composite - data))**2/np.ma.masked_invalid(variance)
     
     #/np.ma.masked_invalid(variance).compressed()
-    print(np.nanstd(residual))
+    #print(np.nanstd(residual))
     return residual.compressed()
 def zern_fit_chi2(coeffs,data,variance):
     
@@ -186,8 +186,8 @@ def zern_fit_chi2(coeffs,data,variance):
      
     '''
     #re-import depencencies in the engine
-    import wfe_funcs
-    import numpy as np
+    #import wfe_funcs
+    #import numpy as np
 
     val=np.sum( sheared_zerns(coeffs,data,variance))
 

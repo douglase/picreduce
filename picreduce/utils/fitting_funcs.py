@@ -193,9 +193,9 @@ def zern_fit_chi2(coeffs,wf,data,variance,N_coeff=25):
                                   zern_coeffs =coeffs,nterms=N_coeff)
     sheared_composite = wfe_funcs.WFE_shear((optic.total_opd),
                                             -0.15,wf.pixelscale*1.3)
-    diff=np.ma.masked_invalid(data - sheared_composite)
-    val=np.sum((diff)**2/variance)
-    
+    diff = np.ma.masked_invalid(data - sheared_composite)
+    val=np.sum((diff)**2/np.ma.masked_invalid(variance))
+    #print(np.nanmax(variance))
     #print(val)
     #plt.figure()
     #plt.imshow(diff)

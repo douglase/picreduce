@@ -32,12 +32,8 @@ def stdnew(array):
 from astropy.modeling import models, fitting
 
 def plane(m_x,m_y,c,x,y):
+    
     return m_y*y + m_x*x + c
-
-#sherpa_data=Data2D('unwrapped',wrapped_test)
-#fcdf = Fit(dcdf, mcdf, LeastSq(), LevMar())
-
-
 
 def fit_line_sherpa(x,y,y_error,verbose=True):
     '''
@@ -57,8 +53,52 @@ def fit_line_sherpa(x,y,y_error,verbose=True):
     if verbose: print(result)
     return result, eres, meval
 
+def plane_func_1D((x,y),c0,cx1,cy1):
+    '''
+    for use with `scipy.optimize.curve_fit`, which assumes `ydata = f(xdata, *params) + eps` 
+    and names coefficients according the the Sherpa conventention
 
-def fit_plane_sherpa(z,error,verbose=True):
+    x and y are expected to be mesh grids, e.g.
+    y, x = np.mgrid[:z.shape[0], :z.shape[1]]
+
+    '''
+    plane= (cy1*y + cx1*x + c0)
+    return plane
+def fit_masked_plane_scipy(z,
+                        error,
+                        verbose=True,
+                        optmethod="lm",
+                        **kwargs):
+    """
+    meant to be drop in replacement for fit_plane_sherpa()
+    assumes covariance matrix is diagonal and requires z be a masked array.
+    """
+    x,y = np.mgrid[:z.shape[0], :z.shape[1]]
+    mask=z.mask
+    
+    scipyfit,scipycovar=scipy.optimize.curve_fit(plane_func_1D, 
+                                   (x[mask != True].flatten(),y[mask != True].flatten()),
+                                   1.0*z[mask != True],
+                                        p0=(0,0,0),
+                                   absolute_sigma=True,
+                                   sigma=1.0*error[mask != True].flatten(),
+                                   method=optmethod,
+                                   **kwargs
+                                   )
+    
+    err=np.sqrt(np.diagonal(scipycovar))
+
+    if verbose:
+        print("scipy fit constants",scipyfit)
+        print("SNR",np.abs(scipyfit)/err)
+    scipyplane=scipyfit[0] + x*scipyfit[1] + y*scipyfit[2]
+    return scipyfit, err, scipyplane
+    
+def fit_plane_sherpa(z,
+                         error,
+                         statistic=Chi2,
+                         verbose=True,
+                         optmethod=LevMar):
     '''
     https://github.com/DougBurke/sherpa-standalone-notebooks/blob/master/simulating%20a%202D%20image%20and%20a%20bit%20of%20error%20analysis.ipynb
     '''
@@ -66,6 +106,8 @@ def fit_plane_sherpa(z,error,verbose=True):
     
     model=Polynom2D('plane')
     d = Data2D('z', x.flatten(), y.flatten(), z.flatten(), shape=x.shape,staterror=error.flatten())
+    d.ignore()
+    d.notice(0)
     model.cy2.freeze()
     model.cx2.freeze()
     model.cy1.val=1
@@ -74,7 +116,7 @@ def fit_plane_sherpa(z,error,verbose=True):
     model.cx2y1.freeze()
     model.cx1y1.freeze()
     model.cx2y2.freeze()
-    fit = Fit(d, model, Chi2(), LevMar())
+    fit = Fit(d, model, statistic(), optmethod())
     result=fit.fit()
     meval = d.eval_model(model).reshape(d.shape)
     fit.estmethod = Covariance()
@@ -123,6 +165,9 @@ def fit_plane(z,plotplane=False):
     plt.title("Residual")
     plt.colorbar()
     return  p(x, y)
+
+
+
 def chi_sq_stat(x,y,y_err):
     ''' pearson's chi squared statistic with known uncertainty-y_err
     Doesn't change any values,
@@ -165,8 +210,6 @@ def zern_fit(coeffs,wf,data,weight=None,metric=np.std,N_coeff=25):
     #plt.figure()
     #plt.imshow(diff)
     #plt.title(np.std(diff))
-
-
     #plt.colorbar()
     return val
 

@@ -1,3 +1,11 @@
+'''
+fitting_funcs.py
+part of the picreduce library
+by Ewan Douglas in the course of analyzing PICTURE interferometer 
+see: http://adsabs.harvard.edu/abs/2016PhDT.......100D
+
+'''
+
 from __future__ import division
 import matplotlib.pyplot as plt
 import astropy

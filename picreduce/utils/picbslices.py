@@ -83,24 +83,24 @@ def create_randomized_folders(source_dir,num_frames=None,ext='fits'):
     Bdir=source_dir+"randomB"+str(num_frames)
     try:
         os.mkdir(Adir)
-    except OSError,err:
+    except OSError as err:
         print(err)
         print("problem creating directory, trying to remove and recreate")
         try:
             shutil.rmtree(Adir)
             os.mkdir(Adir)
-        except OSError,err:
+        except OSError as err:
             print(err)
             raise ValueError 
     try:
         os.mkdir(Bdir)
-    except OSError,err:
+    except OSError as err:
         print(err)
         print("problem creating directory, trying to remove and recreate")
         try:
             shutil.rmtree(Bdir)
             os.mkdir(Bdir)
-        except OSError,err:
+        except OSError as err:
             print("failed to create directory")
             print(err)
             raise ValueError 
@@ -115,7 +115,7 @@ def create_randomized_folders(source_dir,num_frames=None,ext='fits'):
         try:
             cmd="ln -s "+fpath+" /"+Adir+"/"+fname
             subprocess.call(cmd.split(" "))
-        except OSError,err:
+        except OSError as err:
             print(err)     
 
     for fpath in list2:
@@ -123,7 +123,7 @@ def create_randomized_folders(source_dir,num_frames=None,ext='fits'):
         try:
             cmd="ln -s "+fpath+" /"+Bdir+"/"+fname
             subprocess.call(cmd.split(" "))
-        except OSError,err:
+        except OSError as err:
             print(err)
             print(cmd)
 

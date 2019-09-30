@@ -3,9 +3,10 @@ import scipy.ndimage
 import astropy.io.fits as fits
 import numpy as np
 import scipy.optimize
-import PICTURE_IDL_to_HDF5
 import astropy.convolution as conv
-import picbslices
+#import picreduce.utils.picbslices
+#import picreduce.utils.PICTURE_IDL_to_HDF5
+
 def recenter(in_array,newcntr,verbose=True,**kwargs):
     '''
     uses the POPPY centroid measuring routine to find the center of an PSF,

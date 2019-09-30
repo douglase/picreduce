@@ -64,23 +64,23 @@ def load_or_create(data_directory,
     >>> IDL_to_HDF5.load_or_create(data_directory,dset_list=dset_list)
     
     """
-    print("Checking for hdf5 file:"+data_directory+fname)
+    print(("Checking for hdf5 file:"+data_directory+fname))
 
     if not os.path.isfile(data_directory+fname):
         with h5py.File(data_directory+fname,'w') as f:
             if dset_list:
                 for dset in dset_list:
-                    print("creating: "+dset+" in "+fname+" in "+ data_directory)
+                    print(("creating: "+dset+" in "+fname+" in "+ data_directory))
                     jplgse_to_HDF5(f,data_directory,dset,special_keys=special_keys)
                 #f.close()
             else:
                 dset_list=get_dsets(data_directory)
                 for dset in dset_list:
-                    print("creating: "+dset+" in "+fname+" in "+ data_directory)
+                    print(("creating: "+dset+" in "+fname+" in "+ data_directory))
                     jplgse_to_HDF5(f,data_directory,dset,special_keys=special_keys)
                 #raise ValueError("invalid dset list: "+str(dset_list))
     else:
-        print("Found hdf5 file:"+data_directory+fname)
+        print(("Found hdf5 file:"+data_directory+fname))
 
     f = h5py.File(data_directory+fname,readwrite)
     return f
@@ -141,14 +141,14 @@ def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
             sciheader=sci_1st["header"]
             scidateframes=sci_1st["data"]
             sci_frame=sci_1st["data"]
-        except Exception, err:
+        except Exception as err:
             print("error finding SCI camera files")
             print(err)
     
         for i,sci_sav in enumerate(sci_files[1:]):
             try:
                 sci=scipy.io.readsav(sci_sav)
-            except Exception,err:
+            except Exception as err:
                 print(err)
                 print('readsave error')
                 continue
@@ -181,7 +181,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
                     for field in wfs_frame.dtype.fields:
                         datad_grp.create_group(field)
 
-            except Exception, err:
+            except Exception as err:
                 print("error finding WFS files")
                 print(err)
             for i,wfs_sav in enumerate(wfs_files[1:]):
@@ -191,7 +191,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
                     wfs_header=np.vstack([wfs_header,wfs['header']])
                     wfs_filename=np.vstack([wfs_filename,[str(wfs_sav)]])
 
-                except Exception,err:
+                except Exception as err:
                     print(err)
                     print('readsave error')
                     continue
@@ -231,7 +231,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
             bugse_temp_frame=bugse_first['data']["TEMPSENSORS"][0]
             bugse_header=matplotlib.mlab.rec_drop_fields(bugse_header,["TEMPSENSORS"])     #http://stackoverflow.com/a/15577562/2142498                                                                   
 
-        except Exception, err:
+        except Exception as err:
             print("Error finding files.")
             print(err)
             print(err)
@@ -247,8 +247,8 @@ def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
                 bugse_header = np.vstack([bugse_header,header])
                 bugse_filename=np.vstack([bugse_filename,[sav]])
 
-            except Exception,err:
-                print("BU GSE data parsing error in frame:"+str(sav))
+            except Exception as err:
+                print(("BU GSE data parsing error in frame:"+str(sav)))
                 print(err)
                 continue
         grp.create_dataset("bugse", data=bugse_frame,compression="gzip",fletcher32=True,track_times=True)
@@ -273,7 +273,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
             else:
                 at_frame=at_first["imagepkt"]
     
-        except Exception, err:
+        except Exception as err:
             print("error finding files")
             print(err)
         for i,sav in enumerate(at_files[1:]):
@@ -282,7 +282,7 @@ def jplgse_to_HDF5(f,base_dir,sub_dir,special_keys=[]):
                 #if scipy.io.readsav puts the image inside an object that h5py can't save, then break it out:
                 at_frame=np.dstack([at_frame,data['imagepkt']["IMAGE"][0]])
                 at_header=np.vstack([at_header,matplotlib.mlab.rec_drop_fields(data['imagepkt'],["IMAGE"])])
-            except Exception,err:
+            except Exception as err:
                 print("angle tracker frame stacking problem")
                 print(err)
                 continue
@@ -298,8 +298,8 @@ def _update_data_d(wfs_files,datad_grp,field,field_name,new_array,index):
             dset[index,:] = new_array
             #if new_array.size > 1:
             #print([field],[field_name],dset[index,:],new_array)
-        except KeyError, err:
-            print("Adding missing key. (" + str(err)+")")
+        except KeyError as err:
+            print(("Adding missing key. (" + str(err)+")"))
             datad_grp[field].create_dataset(field_name,
                                             shape=(len(wfs_files),new_array.shape[0]),
                                             compression="gzip",
@@ -316,7 +316,7 @@ def collect_data_and_headers(globbed_list):
         first=scipy.io.readsav(globbed_list[0])
         header=first["header"]
         frame=first["data"]
-    except Exception, err:
+    except Exception as err:
         print("error finding files")
         print(err)
     for i,sav in enumerate(globbed_list[1:]):
@@ -324,7 +324,7 @@ def collect_data_and_headers(globbed_list):
             data=scipy.io.readsav(sav)
             header=np.vstack([header,data['header']])
             frame=np.dstack([frame,data['data']])
-        except Exception,err:
+        except Exception as err:
             print(err)
             continue
    
@@ -366,7 +366,7 @@ def header_to_FITS_header(inputHeader,fmt='hdf5',hdu=None):
     header=hdu.header
 
     if fmt == 'hdf5':
-        for field in inputHeader.dtype.fields.keys():
+        for field in list(inputHeader.dtype.fields.keys()):
             #print([field[0],input[field[0]][0]])
             header[str(field)]=inputHeader[field][0]
 
@@ -397,7 +397,7 @@ def attribute_to_FITS_header(attrs,hdu=None):
     elif not isinstance(hdu,fits.PrimaryHDU):
         raise ValueError("unexpected object, "+str(type(HDUout)))
     
-    keys=attrs.keys()
+    keys=list(attrs.keys())
     
     if len(keys) == 0:
         print("no attributes")
@@ -446,7 +446,7 @@ def split_dset(f, obs, timestamp_end_target_1, timestamp_begin_target_2):
     if timestamp_begin_target_2 < timestamp_end_target_1:
         raise ValueError("the second target should be after the first.")
         
-    for dset in f[obs].keys():
+    for dset in list(f[obs].keys()):
         #print(dset)
         
         # 2. find that timestamp in headers for the science and wfs data
@@ -488,5 +488,5 @@ def split_dset(f, obs, timestamp_end_target_1, timestamp_begin_target_2):
 
 
             
-        except RuntimeError, err:
+        except RuntimeError as err:
             print(err)

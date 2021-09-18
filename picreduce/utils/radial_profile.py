@@ -7,6 +7,7 @@ import matplotlib
 import logging
 _log = logging.getLogger('poppy')
 import astropy.io.fits as fits
+from six import string_types
 
 
 
@@ -48,7 +49,7 @@ def radial_profile(HDUlist_or_filename=None, ext=0, EE=False, center=None, stdde
         so you should use (radius+binsize/2) for the radius of the EE curve if you want to be
         as precise as possible.
     """
-    if isinstance(HDUlist_or_filename, basestring):
+    if isinstance(HDUlist_or_filename, string_types):
         HDUlist = fits.open(HDUlist_or_filename)
     elif isinstance(HDUlist_or_filename, fits.HDUList):
         HDUlist = HDUlist_or_filename

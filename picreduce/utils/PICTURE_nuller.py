@@ -5,9 +5,12 @@ example code, shows nulling with the PICTURE (Planet Imaging Concept Testbed Usi
 import sys,os
 sys.path.insert(0, '../poppy')
 home=os.path.expanduser('~')
-import nulling_utils
+#import nulling_utils
 import poppy
-import null
+try:
+    import null
+except:
+    print("failed to import poppy nulling library")
 import astropy
 import numpy as np
 import matplotlib.pylab as plt

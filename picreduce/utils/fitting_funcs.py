@@ -61,7 +61,7 @@ def fit_line_sherpa(x,y,y_error,verbose=True):
     if verbose: print(result)
     return result, eres, meval
 
-def plane_func_1D((x,y),c0,cx1,cy1):
+def plane_func_1D(xy,c0,cx1,cy1):
     '''
     for use with `scipy.optimize.curve_fit`, which assumes `ydata = f(xdata, *params) + eps` 
     and names coefficients according the the Sherpa conventention
@@ -70,6 +70,7 @@ def plane_func_1D((x,y),c0,cx1,cy1):
     y, x = np.mgrid[:z.shape[0], :z.shape[1]]
 
     '''
+    x,y=xy
     plane= (cy1*y + cx1*x + c0)
     return plane
 def fit_masked_plane_scipy(z,
